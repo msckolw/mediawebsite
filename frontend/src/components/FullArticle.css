@@ -1,0 +1,56 @@
+.full-article {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.article-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.category {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin: 1rem 0;
+  color: #333;
+  line-height: 1.2;
+}
+
+.article-meta {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.article-meta span {
+  margin: 0 1rem;
+}
+
+.article-image {
+  margin-bottom: 2rem;
+}
+
+.article-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.article-content {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.article-content p {
+  margin-bottom: 1.5rem;
+} 
