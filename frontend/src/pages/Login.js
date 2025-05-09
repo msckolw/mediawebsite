@@ -12,7 +12,6 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const url = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -20,7 +19,6 @@ const Login = () => {
       navigate('/admin');
     }
   }, []);
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +34,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${url}/auth/login`, formData);
+      const response = await axios.post(`${API_URL}/auth/login`, formData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       navigate('/admin'); // Redirect to admin panel after successful login
