@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../styles/Home.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import {getArticleByCategory} from '../services/api'
+
 const ABC = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,8 +11,10 @@ const ABC = () => {
   const { cat } = useParams();
 
   let navigate = useNavigate();
+  const [pageSetings, setPageSettings] = useState({
+    currentPage: 1, totalPages: 1
+  });
 
-  let API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if(!cat) {
@@ -20,17 +23,30 @@ const ABC = () => {
     else {
         fetchArticles();
     }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Adds a nice scroll animation
+    });
+
   }, [cat]);
 
   function showFullArticle(id) {
     navigate('/article/'+id);
   }
 
-  const fetchArticles = async () => {
+  
+
+  const fetchArticles = async (page=1) => {
     try {
-      //console.log('Called Articles');
-      const response = await axios.get(`${API_URL}/category/${cat}`);
-      setArticles(response.data);
+      const response = await getArticleByCategory(cat,page);
+      setArticles(prev => page==1 ? response.articles : [...prev, ...response.articles]);
+      if(response.articles.length) {
+        setPageSettings({ 
+          currentPage: response.currentPage,
+          totalPages: response.totalPages
+        });
+      }
     } catch (error) {
       console.error('Error fetching articles:', error);
     } finally {
@@ -39,16 +55,16 @@ const ABC = () => {
   };
 
   return (
-    <div className="home">
-      {/* <section className="hero" style={{ height: '35vh' }}	>
-        <h1>{cat.toLocaleUpperCase()}</h1>
-        <p>Stay updated with the latest news and stories</p>
-      </section> */}
+    <div className="home" id="mainDiv">
+      
 
       <section className="latest-news">
-        {/* <h2>Latest News</h2> */}
+        
         {loading ? (
-          <div className="loading">Loading articles...</div>
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading article...</p>
+          </div>
         ) : articles.length === 0 ? (
           <div className="no-articles">No articles found.</div>
         ) : (
@@ -77,16 +93,24 @@ const ABC = () => {
                   <span style={{display: 'flex', justifyContent: 'center',
                     alignItems: 'center'
                   }} className="article-category">
-                    <span style={{textAlign: 'left', width: '100%', padding: '0% 1% 0% 1%'}}>{article.title}</span>
+                    <span style={{textAlign: 'left', width: '98%', padding: '0% 1% 0% 1%',
+                      minHeight: '58px', overflowWrap: 'break-word'
+                    }}>{article.title}</span>
                     {/* <span style={{textAlign: 'right', width: '49%', paddingRight: '1%'}}>{article.category.toUpperCase()}</span> */}
                   </span>
-                  <p className="article-summary">{article.summary}</p>
+                  <p className="article-summary" style={{height: '120px', overflowWrap: 'break-word'}} >{
+                  (article.summary.length>=60) ? article.summary.substr(0,60)+'...' : 
+                  article.summary}</p>
                   <Link className="read-more-button">
                     Read More
                   </Link>
                 </div>
               </div>
             ))}
+            { pageSetings.currentPage!=pageSetings.totalPages &&
+            <button type='button' onClick={() => fetchArticles(pageSetings.currentPage+1)}>
+              LOAD MORE
+            </button> }
           </div>
         )}
       </section>

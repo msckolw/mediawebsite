@@ -212,4 +212,15 @@
   .logo-text {
     font-size: 1rem;
   }
-} 
+
+}
+  
+.fade-out {
+  /* opacity: 0; */
+  filter: blur(10px);
+}
+
+
+body {
+  transition: filter 0.4s ease;
+}

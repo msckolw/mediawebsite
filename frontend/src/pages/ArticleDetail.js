@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import '../styles/ArticleDetail.css';
+import {getArticle} from '../services/api'
 
 const ArticleDetail = () => {
   const { id } = useParams();
@@ -9,15 +9,16 @@ const ArticleDetail = () => {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const url = process.env.REACT_APP_API_URL;
+  
   
   useEffect(() => {
     const fetchArticle = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${url}/news/${id}`);
-        if (response.data) {
-          setArticle(response.data);
+        //const response = await axios.get(`${url}/news/${id}`);
+        const response = await getArticle(id);
+        if (response) {
+          setArticle(response);
         } else {
           setError('Article not found');
         }
@@ -30,7 +31,15 @@ const ArticleDetail = () => {
     };
     
     fetchArticle();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Adds a nice scroll animation
+    });
+
   }, [id]);
+
+  
   
   if (loading) {
     return (
@@ -69,8 +78,8 @@ const ArticleDetail = () => {
         ← Back to Articles
       </button>
       
-      <div className="article-header">
-        <h1>{article.title}</h1>
+      <div className="article-header" id="mainDiv">
+        <h1 style={{overflowWrap: 'break-word'}}>{article.title}</h1>
         <div className="article-meta">
           <span className="category">{article.category}</span>
           <span className="date">
@@ -80,7 +89,7 @@ const ArticleDetail = () => {
       </div>
       
       <div className="article-image">
-        <img 
+        <img style={{objectFit: 'contain'}}
           src={article.imageUrl}
           alt={article.title}
           onError={(e) => {
@@ -93,12 +102,12 @@ const ArticleDetail = () => {
       <div className="article-content">
         <div className="article-summary">
           <h2>Summary</h2>
-          <p>{article.summary}</p>
+          <p style={{overflowWrap: 'break-word'}}>{article.summary}</p>
         </div>
         
         <div className="article-body">
           <h2>Full Article</h2>
-          <p>{article.content}</p>
+          <p style={{overflowWrap: 'break-word'}}>{article.content}</p>
         </div>
         
         <div className="news-sources-container">

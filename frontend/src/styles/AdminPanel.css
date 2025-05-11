@@ -178,11 +178,11 @@
 }
 
 .close-btn {
-  background: #f1f1f1;
+  background-color: silver;
   border: none;
-  border-radius: 50%;
+  border-radius: 12%;
   font-size: 1.2rem;
-  color: #666;
+  color: red;
   cursor: pointer;
   padding: 0.3rem 0.7rem;
   line-height: 1;
@@ -190,9 +190,9 @@
 }
 
 .close-btn:hover {
-  background-color: #e0e0e0;
-  color: #ff3b30;
-  transform: scale(1.1);
+  background-color: red;
+  color: white;
+  /* transform: scale(1.1); */
 }
 
 .modal-body {
@@ -404,6 +404,26 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
 .article-details h3 {

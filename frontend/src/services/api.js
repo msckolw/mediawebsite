@@ -1,10 +1,9 @@
 import axios from 'axios';
-import { API_URL } from '../config';
 
 const BASE_URL = process.env.REACT_APP_API_URL;
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -27,9 +26,10 @@ api.interceptors.request.use((config) => {
 });
 
 // Articles API
-export const getArticles = async () => {
+export const getArticles = async (page=1) => {
   try {
-    const response = await api.get('/articles');
+    const response = await api.get('/news?page='+page);
+    console.log(response)
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch articles');
@@ -38,7 +38,35 @@ export const getArticles = async () => {
 
 export const getArticle = async (id) => {
   try {
-    const response = await api.get(`/articles/${id}`);
+    const response = await api.get(`/news/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch article');
+  }
+};
+
+export const deleteArticle = async (id) => {
+  try {
+    const response = await api.delete(`/news/${id}`);
+    return response.data;
+  } catch (error) {
+    let status = error.response.status;
+    throw new Error(status)
+  }
+};
+
+export const getSourceType = async () => {
+  try {
+    const response = await api.get(`/source`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch sources');
+  }
+};
+
+export const getArticleByCategory = async (cat,page=1) => {
+  try {
+    const response = await api.get(`/category/${cat}?page=${page}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch article');
@@ -52,6 +80,16 @@ export const login = async (credentials) => {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Login failed');
+  }
+};
+
+export const addArticle = async (data) => {
+  try {
+    const response = await api.post('/news', data);
+    return response.data;
+  } catch (error) {
+    let status = error.response.status;
+    throw new Error(status)
   }
 };
 

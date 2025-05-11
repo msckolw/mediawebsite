@@ -11,8 +11,23 @@ const mongoose = require('mongoose');
 // Get all articles
 router.get('/news', async (req, res) => {
   try {
-    const articles = await News.find().sort({ createdAt: -1 });
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1; 
+    const limit = 10; 
+    const skip = (page - 1) * limit; 
+
+    const articles = await News
+      .find({}, {source: false})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalArticles = await News.countDocuments(); 
+
+    res.status(200).json({
+      articles,
+      currentPage: page,
+      totalPages: Math.ceil(totalArticles / limit)
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -20,12 +35,29 @@ router.get('/news', async (req, res) => {
 
 router.get('/category/:cat', async (req, res) => {
   try {
+
+    const page = parseInt(req.query.page) || 1; 
+    const limit = 10; 
+    const skip = (page - 1) * limit;
+
     let cat = req.params.cat;
     if (!cat) return res.status(400).json({ message: 'Category is Mandatory!' });
-    const articles = await News.find({
+    const articles = await News
+    .find({
+      category: new RegExp(`^${cat}$`, 'i')}, {source: false})
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);  
+
+    const totalArticles = await News.countDocuments({
       category: new RegExp(`^${cat}$`, 'i')
-    }).sort({ createdAt: -1 });    
-    res.status(200).json(articles);
+    });
+
+    res.status(200).json({
+      articles,
+      currentPage: page,
+      totalPages: Math.ceil(totalArticles / limit)
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

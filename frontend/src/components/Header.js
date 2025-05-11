@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
+import Swal from 'sweetalert2'
 // Import your logo here (uncomment after adding the logo file)
 // import logo from '../assets/logo.png';
 
@@ -31,13 +32,35 @@ const Header = () => {
   };
 
   const handleCategoryClick = (path) => {
+
+    if(window.location.pathname==path) { 
+      setIsMenuOpen(false);
+      return;
+    }
+    
+    //console.log(path)
+    //const page = document.body;
+    //page.classList.add("fade-out");
     navigate(path);
     setIsMenuOpen(false);
+
+    /*setTimeout(() => {
+      page.classList.remove("fade-out");
+    }, 800);*/
+    
   };
 
   const handleLogout = () => {
+    Swal.fire({
+      toast: true,
+      position: "top-end",
+      icon: "success",
+      title: "Logout Success!",
+      showConfirmButton: false,
+      timer: 4000,
+    });
     localStorage.removeItem('token');
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -85,10 +108,12 @@ const Header = () => {
           <div className="menu-overlay" onClick={toggleMenu}></div>
           <div className="dropdown-menu active">
             <div className="menu-header">
-              <h3 style={{width: '60%', textAlign: 'left'}}>Categories</h3>
+              <h3 style={{width: '60%', textAlign: 'left',
+                fontWeight: 'bold'
+              }}>Categories</h3>
               <span style={{width: '40%', textAlign: 'right',}}>
                 <button className="close-btn" style={{width: '30%', minWidth: '70px', 
-                  fontWeight: 'bold', backgroundColor: 'red'}} onClick={toggleMenu}>×</button>
+                  fontWeight: 'bold'}} onClick={toggleMenu}>×</button>
               </span>
             </div>
             {filterCategories(categories).map((category) => (

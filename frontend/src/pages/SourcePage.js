@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/SourcePage.css';
-import axios from 'axios';
+import { getArticle } from '../services/api';
 
 const SourcePage = () => {
   const navigate = useNavigate();
@@ -42,18 +42,18 @@ const SourcePage = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const url = process.env.REACT_APP_API_URL;
   const [sourceCategories,setSourceCategories] = useState([]);
+  
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${url}/news/${id}`);
-        if (response.data && response.data.source.length) {
+        const response = await getArticle(id);
+        if (response && response.source.length) {
           //setArticle(response.data);
           let tempSrc={};
-          for(let s of response.data.source) {
+          for(let s of response.source) {
             if(!tempSrc[s.source_type])
               tempSrc[s.source_type]=[];
             tempSrc[s.source_type].push(s.url);
@@ -66,6 +66,7 @@ const SourcePage = () => {
             }
             setSourceCategories(tempArr);
             setExpandedSections(tempSections);
+            
             //console.log(tempArr,tempSections);
           //}
         } else {
@@ -80,7 +81,15 @@ const SourcePage = () => {
     };
     
     fetchArticle();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Adds a nice scroll animation
+    });
+
   }, [id]);
+
+  
 
   const openExternalLink = (url) => {
     window.open(url, '_blank');
@@ -118,8 +127,8 @@ const SourcePage = () => {
   }
 
   return (
-    <div className="source-page">
-      <div className="source-header">
+    <div className="source-page" >
+      <div className="source-header"id="mainDiv">
         <button className="back-button" onClick={() => navigate(-1)}>
           ← Back to Article
         </button>

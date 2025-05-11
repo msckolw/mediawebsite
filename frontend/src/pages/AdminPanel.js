@@ -1,9 +1,9 @@
-// AdminPanel.js - Updated to use the improved SourceModal component
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import '../styles/AdminPanel.css';
 import { useNavigate } from 'react-router-dom';
 import SourceModal from './SourceModal'; // Import the new component
+import Swal from 'sweetalert2'
+import { addArticle, deleteArticle, getArticles, getSourceType } from '../services/api';
 
 const categories = [
   'Politics',
@@ -18,6 +18,7 @@ const categories = [
 
 const AdminPanel = () => {
   let nav = useNavigate();
+  let articlePosted=useRef(true);
   let imgAsBase = useRef(false);
   const [articles, setArticles] = useState([]);
   const [sourceType, setSourceType] = useState([]);
@@ -32,11 +33,12 @@ const AdminPanel = () => {
   });
   const [previewUrl, setPreviewUrl] = useState('');
   const [error, setError] = useState(null);
+  const [pageSetings, setPageSettings] = useState({
+    currentPage: 1, totalPages: 1
+  });
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
-
-  let API_URL = process.env.REACT_APP_API_URL;
 
   function removeImage() {
     setFormData(prevState => ({
@@ -50,24 +52,35 @@ const AdminPanel = () => {
 
   useEffect(() => {
     if(!localStorage.getItem('token')) {
-      nav('/');
+      nav('/login');
     }
     else {
       fetchArticles();
       fetchSourceType();
     }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Adds a nice scroll animation
+    });
+
+    
   }, []);
 
-  const fetchArticles = async () => {
+
+  const fetchArticles = async (page=1) => {
     try {
-      console.log('Fetching articles from:', `${API_URL}/news`);
-      const response = await axios.get(`${API_URL}/news`);
-      console.log('Received articles:', response.data);
-      setArticles(response.data);
-      setLoading(false);
+      const response = await getArticles(page);
+      if(response.articles.length) {
+        setArticles(prev => page==1 ? response.articles : [...prev, ...response.articles]);
+        setPageSettings({ 
+          currentPage: response.currentPage,
+          totalPages: response.totalPages
+        });
+      }
     } catch (error) {
       console.error('Error fetching articles:', error);
-      setError('Failed to load articles. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
@@ -75,9 +88,9 @@ const AdminPanel = () => {
   const fetchSourceType = async () => {
     try {
       //console.log('Fetching articles from:', `${API_URL}/news`);
-      const response = await axios.get(`${API_URL}/source`);
+      const response = await getSourceType();
       //console.log('Received articles:', response.data);
-      setSourceType(response.data);
+      setSourceType(response);
       //setLoading(false);
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -165,6 +178,8 @@ const AdminPanel = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    articlePosted.current=false;
     
     try {
       // Validate required fields
@@ -172,6 +187,9 @@ const AdminPanel = () => {
         setError('Please fill in all required fields');
         return;
       }
+
+      
+      document.getElementById("mainDiv").scrollIntoView({behavior: "smooth"});
 
       // Format the article data according to the News model
       const articleData = {
@@ -184,19 +202,12 @@ const AdminPanel = () => {
         createdAt: new Date().toISOString()
       };
 
-      console.log('Submitting article data:', JSON.stringify(articleData, null, 2));
 
       // Send the request with proper headers
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/news`, articleData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
-        }
-      });
+      const response = await addArticle(articleData);
 
-      console.log('Server response:', response.data);
       
-      if (response.data) {
+      if (response) {
         // Reset form
         setFormData({
           title: '',
@@ -208,6 +219,16 @@ const AdminPanel = () => {
         });
         setPreviewUrl('');
         document.getElementById('imgUrl').value='';
+
+
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Article Add Success!",
+          showConfirmButton: false,
+          timer: 4000,
+        });
         
         // Refresh articles list
         await fetchArticles();
@@ -216,45 +237,68 @@ const AdminPanel = () => {
         //alert('Article added successfully!');
       }
     } catch (error) {
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-      
-      if (error.response?.data?.message) {
-        setError(`Server error: ${error.response.data.message}`);
-      } else if (error.response?.status === 400) {
-        setError('Invalid data format. Please check your input and try again.');
-      } else {
+      if (error.message==401) {
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "warning",
+          title: "Session Expired",
+          showConfirmButton: false,
+          timer: 3000,
+        });
+        localStorage.removeItem('token');
+        nav('/login');
+      }
+      else {
         setError('Failed to add article. Please try again.');
       }
+    }
+    finally {
+      articlePosted.current=true;
     }
   };
 
   const handleDelete = async (id) => {
     try {
       console.log('Deleting article:', id);
-      await axios.delete(`${API_URL}/news/${id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
-        }
-      });
+      await deleteArticle(id);
       console.log('Article deleted successfully');
-      fetchArticles();
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Article Deleted!",
+        showConfirmButton: false,
+        timer: 4000,
+      });
+      await fetchArticles();
     } catch (error) {
-      console.error('Error deleting article:', error);
-      setError('Failed to delete article');
+        if (error.message==401) {
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "warning",
+            title: "Session Expired",
+            showConfirmButton: false,
+            timer: 3000,
+          });
+          localStorage.removeItem('token');
+          nav('/login');
+        }
+        else
+          setError('Failed to delete article');
     }
   };
 
   if (loading) {
-    return <div className="loading">Loading articles...</div>;
+    return <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading article...</p>
+           </div>
   }
 
   return (
-    <div className="admin-panel">
+    <div className="admin-panel" id="mainDiv">
       <h1>Admin Panel</h1>
       
       {error && <div className="error-message">{error}</div>}
@@ -370,7 +414,8 @@ const AdminPanel = () => {
             </div>
             
             <div className="form-actions">
-              <button type="submit" className="submit-btn">Add Article</button>
+              <button type="submit" className="submit-btn" disabled={articlePosted.current ? false : true}
+              >Add Article</button>
             </div>
           </form>
           
@@ -424,6 +469,10 @@ const AdminPanel = () => {
                 <p>No articles found. Add some articles to get started.</p>
               </div>
             )}
+            { pageSetings.currentPage!=pageSetings.totalPages &&
+            <button type='button' onClick={() => fetchArticles(pageSetings.currentPage+1)}>
+              LOAD MORE
+            </button> }
           </div>
         </div>
       </div>

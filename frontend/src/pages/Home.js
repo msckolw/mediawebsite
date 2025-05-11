@@ -1,28 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../styles/Home.css';
 import { Link, useNavigate } from 'react-router-dom';
+import {getArticles} from '../services/api'
+
 const Home = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pageSetings, setPageSettings] = useState({
+    currentPage: 1, totalPages: 1
+  });
 
   let navigate = useNavigate();
 
-  let API_URL = process.env.REACT_APP_API_URL;
+  
 
   useEffect(() => {
     fetchArticles();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Adds a nice scroll animation
+    });
+
   }, []);
+
+  
+
 
   function showFullArticle(id) {
     navigate('/article/'+id);
   }
 
-  const fetchArticles = async () => {
+  const fetchArticles = async (page=1) => {
     try {
       //console.log('Called Articles');
-      const response = await axios.get(`${API_URL}/news`);
-      setArticles(response.data);
+      //const response = await axios.get(`${API_URL}/news`);
+      const response = await getArticles(page);
+      if(response.articles.length) {
+        setArticles(prev => page==1 ? response.articles : [...prev, ...response.articles]);
+        setPageSettings({ 
+          currentPage: response.currentPage,
+          totalPages: response.totalPages
+        });
+      }
     } catch (error) {
       console.error('Error fetching articles:', error);
     } finally {
@@ -31,7 +51,7 @@ const Home = () => {
   };
 
   return (
-    <div className="home">
+    <div className="home" id="mainDiv">
       <section className="hero" style={{ height: '25vh' }}	>
         <h1>Welcome to Our News Portal</h1>
         <p>Stay updated with the latest news and stories</p>
@@ -40,7 +60,10 @@ const Home = () => {
       <section className="latest-news">
         <h2>Latest News</h2>
         {loading ? (
-          <div className="loading">Loading articles...</div>
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading article...</p>
+          </div>
         ) : articles.length === 0 ? (
           <div className="no-articles">No articles found.</div>
         ) : (
@@ -48,7 +71,9 @@ const Home = () => {
             {articles.map((article) => (
               <div key={article._id} className="article-card"
               onClick={(e) => showFullArticle(article._id)}>
-                <div className="article-image" style={{position: 'relative'}}>
+                <div className="article-image" style={{position: 'relative',
+                  marginBottom: '20px'
+                }}>
                   <img 
                     src={article.imageUrl} 
                     alt={article.title}
@@ -69,16 +94,24 @@ const Home = () => {
                   <span style={{display: 'flex', justifyContent: 'center',
                     alignItems: 'center'
                   }} className="article-category">
-                    <span style={{textAlign: 'left', width: '100%', padding: '0% 1% 0% 1%'}}>{article.title}</span>
+                    <span style={{textAlign: 'left', width: '98%', padding: '0% 1% 0% 1%',
+                      minHeight: '58px', overflowWrap: 'break-word'
+                    }}>{article.title}</span>
                     {/* <span style={{textAlign: 'right', width: '49%', paddingRight: '1%'}}>{article.category.toUpperCase()}</span> */}
                   </span>
-                  <p className="article-summary">{article.summary}</p>
+                  <p className="article-summary" style={{height: '120px', overflowWrap: 'break-word'}} >{
+                  (article.summary.length>=60) ? article.summary.substr(0,60)+'...' : 
+                  article.summary}</p>
                   <Link className="read-more-button">
                     Read More
                   </Link>
                 </div>
               </div>
             ))}
+            { pageSetings.currentPage!=pageSetings.totalPages &&
+            <button type='button' onClick={() => fetchArticles(pageSetings.currentPage+1)}>
+              LOAD MORE
+            </button> }
           </div>
         )}
       </section>

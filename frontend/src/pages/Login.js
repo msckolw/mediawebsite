@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-// Remove the config import since we're using environment variable
 import '../styles/Login.css';
+import Swal from 'sweetalert2'
+import {login} from '../services/api'
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,6 +18,10 @@ const Login = () => {
     if (token) {
       navigate('/admin');
     }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Adds a nice scroll animation
+    });
   }, []);
 
   const handleInputChange = (e) => {
@@ -34,12 +38,20 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, formData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      const response = await login(formData);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Login Success!",
+        showConfirmButton: false,
+        timer: 4000,
+      });
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
       navigate('/admin'); // Redirect to admin panel after successful login
     } catch (error) {
-      setError(error.response?.data?.message || 'Login failed. Please try again.');
+      setError(error.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
