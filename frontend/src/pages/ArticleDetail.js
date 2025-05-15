@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/ArticleDetail.css';
-import {getArticle} from '../services/api'
+import {getArticle, loginOAuth, verifyToken} from '../services/api'
+import {useGoogleLogin} from '@react-oauth/google'
+import Swal from 'sweetalert2'
 
 const ArticleDetail = () => {
   const { id } = useParams();
@@ -38,6 +40,80 @@ const ArticleDetail = () => {
     });
 
   }, [id]);
+
+  async function verifyAccessToken() {
+    let status = await verifyToken();
+    if(status==200) {
+      navigate('/source/'+id);
+    }
+    else {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "warning",
+        title: "Session Expired!",
+        showConfirmButton: false,
+        timer: 4000,
+      });
+      localStorage.removeItem('token');
+      localStorage.removeItem('user_role');
+      localStorage.removeItem('user_name');
+      if(localStorage.getItem('user_role')=='admin') {
+        navigate('/login');
+      }
+      else {
+        navigate(window.location.pathname);
+        googleAuth();
+      }
+    }
+  }
+
+  function checkLogin(id) {
+    if(localStorage.getItem('token')) {
+      verifyAccessToken();
+    }
+    else {
+      googleAuth();
+    }
+  }
+
+  let googleAuth = useGoogleLogin({
+    onSuccess: async (tok) => {
+      //console.log('Token ->',tok)
+      try {
+        let url = 'https://www.googleapis.com/oauth2/v3/userinfo';
+        //let url = 'https://www.googleapis.com/userinfo/v2/me';
+        let user = await fetch(url,{
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer '+tok.access_token
+          }
+        });
+        let data = await user.json();
+        //console.log('User ->',data);
+        data['access_token']=tok.access_token;
+        const response = await loginOAuth(data);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Login Success!",
+          showConfirmButton: false,
+          timer: 4000,
+        });
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user_role', response.user.role);
+        localStorage.setItem('user_name', response.user.name);
+        navigate('/source/'+id);
+      }
+      catch(error) {
+        console.log('Error',error);
+      }
+    },
+    onError: async (error) => {
+      console.log('Error',error)
+    }
+  });
 
   
   
@@ -109,14 +185,18 @@ const ArticleDetail = () => {
           <h2>Full Article</h2>
           <p style={{overflowWrap: 'break-word'}}>{article.content}</p>
         </div>
+
+        
         
         <div className="news-sources-container">
+          
           <button 
             className="news-sources-button"
-            onClick={() => navigate('/source/'+id)}
+            onClick={() => checkLogin(id)}
           >
             News Sources
           </button>
+
         </div>
       </div>
     </div>

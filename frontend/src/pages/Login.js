@@ -15,7 +15,8 @@ const Login = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const user = localStorage.getItem('user_role');
+    if (token && user=='admin') {
       navigate('/admin');
     }
     window.scrollTo({
@@ -48,7 +49,8 @@ const Login = () => {
         timer: 4000,
       });
       localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem('user_role', response.user.role);
+      localStorage.setItem('user_name', response.user.name);
       navigate('/admin'); // Redirect to admin panel after successful login
     } catch (error) {
       setError(error.error || 'Login failed. Please try again.');

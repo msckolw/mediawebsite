@@ -9,6 +9,8 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('token') ? true : false; 
+  const isAdmin = localStorage.getItem('user_role')=='admin' ? true : false;
+  const userName = localStorage.getItem('user_name');
  
 
   const categories = [
@@ -24,7 +26,7 @@ const Header = () => {
   ];
 
   function filterCategories(arr) {
-    return isLoggedIn ? arr : arr.filter(elem => elem.name!='Profile');
+    return isLoggedIn && isAdmin ? arr : arr.filter(elem => elem.name!='Profile');
   }
 
   const toggleMenu = () => {
@@ -60,6 +62,8 @@ const Header = () => {
       timer: 4000,
     });
     localStorage.removeItem('token');
+    localStorage.removeItem('user_name');
+    localStorage.removeItem('user_role');
     navigate('/');
   };
 
@@ -75,7 +79,7 @@ const Header = () => {
           </button>
         </span>
 
-        <span style={{width: '75%', textAlign: 'center', display: 'flex', justifyContent: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} >
+        <span style={{width: '70%', textAlign: 'center', display: 'flex', justifyContent: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} >
           <Link to="/" >
             <span className="logo-text">The NoBias Media</span>
           </Link>
@@ -83,7 +87,7 @@ const Header = () => {
         
         {
          !isLoggedIn && (
-            <div className="header-buttons" style={{width: '20%', textAlign: 'right'}}>
+            <div className="header-buttons" style={{width: '15%', textAlign: 'right'}}>
             <Link to="/login" className="login-btn" style={{backgroundColor: 'green', color: 'white',
               border: 'none'
             }}>Login</Link>
@@ -93,10 +97,10 @@ const Header = () => {
         }
        {
          isLoggedIn && (
-            <div className="header-buttons" style={{width: '20%', textAlign: 'right'}}>
+            <div className="header-buttons" style={{width: '15%', textAlign: 'right'}}>
             <a href="javascipt:void(0)" className="login-btn" onClick={handleLogout}
             style={{backgroundColor: 'red', color: 'white',
-              border: 'none'
+              border: 'none', marginLeft: '5%'
             }}>Sign Out</a>
           </div>
           )

@@ -54,6 +54,9 @@ const AdminPanel = () => {
     if(!localStorage.getItem('token')) {
       nav('/login');
     }
+    else if(localStorage.getItem('user_role')=='user') {
+      nav('/');
+    }
     else {
       fetchArticles();
       fetchSourceType();

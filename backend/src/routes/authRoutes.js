@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const OauthUsers = require('../models/OAuth');
 
 
 // verify creds & generate access token
@@ -88,6 +89,54 @@ router.post('/verifyAccessToken', (req, res) => {
   });
 
 });
+
+router.post('/googleSignIn', async (req,res) => {
+
+  const { email, name } = req.body;
+  const newUserData = {
+      user_details: req.body
+  };
+
+  try {
+      const userDoc = await OauthUsers.findOneAndUpdate(
+        { email },
+        { 
+            $push: { name: name, user_data: newUserData }, 
+            $set: { updatedAt: Date.now() } 
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+
+      //console.log(await OauthUsers.find())
+
+      const token = jwt.sign(
+        { 
+          email: email,
+          role: 'user'
+        },
+        //env.JWT_SECRET,
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        token: token,
+        //refresh: refresh,
+        user: {
+          email: email,
+          role: 'user',
+          name: name
+        }
+      });
+
+      
+  } catch (error) {
+      res.status(400).json({error: error});
+  }
+
+})
 
 
 module.exports = router; 

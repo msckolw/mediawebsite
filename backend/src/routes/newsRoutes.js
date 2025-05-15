@@ -66,9 +66,22 @@ router.get('/category/:cat', async (req, res) => {
 // Get a single article
 router.get('/news/:id', async (req, res) => {
   try {
-    const article = await News.findById(req.params.id);
+    //const article = await News.findById(req.params.id);
+    let souce_page = req.query.source=='true' ? true : false;
+
+    if(souce_page) {
+
+      let {message, code} = validateJWT(req.headers.authorization);
+
+      if(code!=1) {
+        return res.status(code).json({message});
+      }      
+
+    }
+
+    const article = await News.find({_id: req.params.id},{source: souce_page});
     if (!article) return res.status(400).json({ message: 'Article not found' });
-    res.status(200).json(article);
+    res.status(200).json(article[0]);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

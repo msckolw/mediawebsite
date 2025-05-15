@@ -36,9 +36,9 @@ export const getArticles = async (page=1) => {
   }
 };
 
-export const getArticle = async (id) => {
+export const getArticle = async (id,source=false) => {
   try {
-    const response = await api.get(`/news/${id}`);
+    const response = await api.get(`/news/${id}?source=${source}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch article');
@@ -108,6 +108,26 @@ export const uploadImage = async (file) => {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to upload image');
   }
-};
+}
+
+  export const loginOAuth = async (credentials) => {
+    try {
+      const response = await api.post('/auth/googleSignIn', credentials);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Login failed');
+    }
+  };
+
+  export const verifyToken = async () => {
+    try {
+      const response = await api.post('/auth/verifyAccessToken');
+      return response.status;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Login failed');
+    }
+  };
+
+
 
 export default api; 

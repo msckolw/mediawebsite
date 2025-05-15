@@ -49,7 +49,7 @@ const SourcePage = () => {
     const fetchArticle = async () => {
       try {
         setLoading(true);
-        const response = await getArticle(id);
+        const response = await getArticle(id,true);
         if (response && response.source.length) {
           //setArticle(response.data);
           let tempSrc={};
@@ -73,7 +73,7 @@ const SourcePage = () => {
           setError('No Source found');
         }
       } catch (error) {
-        setError('Failed to load source. Please try again later.');
+        setError(error.message);
         console.error('Error fetching article:', error);
       } finally {
         setLoading(false);

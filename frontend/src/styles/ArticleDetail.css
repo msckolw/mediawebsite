@@ -89,11 +89,18 @@
   line-height: 1.8;
 }
 
+.info {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
 .news-sources-container {
   display: flex;
   justify-content: center;
   margin: 3rem 0;
 }
+
+
 
 .news-sources-button {
   background-color: #1e3c72;
