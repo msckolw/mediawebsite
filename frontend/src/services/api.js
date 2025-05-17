@@ -130,4 +130,5 @@ export const uploadImage = async (file) => {
 
 
 
+
 export default api; 

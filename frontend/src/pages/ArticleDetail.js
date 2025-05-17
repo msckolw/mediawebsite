@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/ArticleDetail.css';
 import {getArticle, loginOAuth, verifyToken} from '../services/api'
-import {useGoogleLogin} from '@react-oauth/google'
 import Swal from 'sweetalert2'
+import { useGoogleHook } from '../hooks/gHook';
 
 const ArticleDetail = () => {
   const { id } = useParams();
@@ -12,6 +12,7 @@ const ArticleDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  let gHook = useGoogleHook('/source/'+id,false);
   
   useEffect(() => {
     const fetchArticle = async () => {
@@ -77,43 +78,7 @@ const ArticleDetail = () => {
     }
   }
 
-  let googleAuth = useGoogleLogin({
-    onSuccess: async (tok) => {
-      //console.log('Token ->',tok)
-      try {
-        let url = 'https://www.googleapis.com/oauth2/v3/userinfo';
-        //let url = 'https://www.googleapis.com/userinfo/v2/me';
-        let user = await fetch(url,{
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer '+tok.access_token
-          }
-        });
-        let data = await user.json();
-        //console.log('User ->',data);
-        data['access_token']=tok.access_token;
-        const response = await loginOAuth(data);
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: "Login Success!",
-          showConfirmButton: false,
-          timer: 4000,
-        });
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user_role', response.user.role);
-        localStorage.setItem('user_name', response.user.name);
-        navigate('/source/'+id);
-      }
-      catch(error) {
-        console.log('Error',error);
-      }
-    },
-    onError: async (error) => {
-      console.log('Error',error)
-    }
-  });
+  let googleAuth = () => gHook();
 
   
   

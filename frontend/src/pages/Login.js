@@ -15,9 +15,13 @@ const Login = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user_role');
-    if (token && user=='admin') {
-      navigate('/admin');
+    //setIsAdmin(localStorage.getItem('user_role')=='admin' ? true : false);
+    const admin = localStorage.getItem('user_role')=='admin' ? true : false;
+    if (token) {
+      if(admin)
+        navigate('/admin');
+      else 
+        navigate('/');
     }
     window.scrollTo({
       top: 0,

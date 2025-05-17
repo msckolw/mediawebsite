@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import Swal from 'sweetalert2'
+import { useGoogleHook } from '../hooks/gHook';
 // Import your logo here (uncomment after adding the logo file)
 // import logo from '../assets/logo.png';
 
@@ -11,7 +12,7 @@ const Header = () => {
   const isLoggedIn = localStorage.getItem('token') ? true : false; 
   const isAdmin = localStorage.getItem('user_role')=='admin' ? true : false;
   const userName = localStorage.getItem('user_name');
- 
+
 
   const categories = [
     { name: 'Politics', path: '/category/politics' },
@@ -24,6 +25,8 @@ const Header = () => {
     { name: 'World', path: '/category/world' },
     { name: 'Profile', path: '/admin' }
   ];
+
+  let gHook = useGoogleHook(window.location.pathname,true);
 
   function filterCategories(arr) {
     return isLoggedIn && isAdmin ? arr : arr.filter(elem => elem.name!='Profile');
@@ -52,6 +55,7 @@ const Header = () => {
     
   };
 
+
   const handleLogout = () => {
     Swal.fire({
       toast: true,
@@ -66,6 +70,8 @@ const Header = () => {
     localStorage.removeItem('user_role');
     navigate('/');
   };
+
+  let handleLogin = () => gHook();
 
   return (
     <header className="header">
@@ -88,10 +94,13 @@ const Header = () => {
         {
          !isLoggedIn && (
             <div className="header-buttons" style={{width: '15%', textAlign: 'right'}}>
-            <Link to="/login" className="login-btn" style={{backgroundColor: 'green', color: 'white',
+            {/*<Link to="/login" className="login-btn" style={{backgroundColor: 'green', color: 'white',
               border: 'none'
-            }}>Login</Link>
-            {/* <Link to="/signup" className="signup-btn">Sign Up</Link> */}
+            }}>Login</Link>*/}
+            <a href="javascipt:void(0)" className="login-btn" onClick={handleLogin}
+            style={{backgroundColor: 'green', color: 'white',
+              border: 'none', marginLeft: '5%'
+            }}>Login</a>
           </div>
           )
         }
@@ -132,6 +141,8 @@ const Header = () => {
           </div>
         </>
       )}
+
+
     </header>
   );
 };
