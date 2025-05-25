@@ -122,9 +122,11 @@ export const uploadImage = async (file) => {
   export const verifyToken = async () => {
     try {
       const response = await api.post('/auth/verifyAccessToken');
+      //console.log(response)
       return response.status;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Login failed');
+    } 
+    catch (error) {
+      throw new Error(error?.status || 'Login failed');
     }
   };
 

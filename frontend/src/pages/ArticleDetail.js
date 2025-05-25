@@ -43,11 +43,11 @@ const ArticleDetail = () => {
   }, [id]);
 
   async function verifyAccessToken() {
-    let status = await verifyToken();
-    if(status==200) {
+    try {
+      let status = await verifyToken();
       navigate('/source/'+id);
     }
-    else {
+    catch(e) {
       Swal.fire({
         toast: true,
         position: "top-end",
