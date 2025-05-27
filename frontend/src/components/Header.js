@@ -77,15 +77,16 @@ const Header = () => {
     <header className="header">
       <div className="header-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{width: '15%', textAlign: 'left'}}>
-          <button onClick={toggleMenu} style={{width: '30%', backgroundColor: '#1e3c72', minWidth: '80px',
-            textAlign: 'center'
+          <button onClick={toggleMenu} style={{width: '30%', backgroundColor: '#1e3c72', minWidth: '60px',
+            textAlign: 'center', fontSize: '0.9em'
           }}
           >
             <span style={{color: 'white'}}>☰</span>
           </button>
         </span>
 
-        <span style={{width: '70%', textAlign: 'center', display: 'flex', justifyContent: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} >
+        <span style={{width: '60%', textAlign: 'center', display: 'flex', justifyContent: 'center', 
+          position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} >
           <Link to="/" >
             <span className="logo-text">The NoBias Media</span>
           </Link>
@@ -93,7 +94,7 @@ const Header = () => {
         
         {
          !isLoggedIn && (
-            <div className="header-buttons" style={{width: '15%', textAlign: 'right'}}>
+            <div className="header-buttons" style={{width: '25%', textAlign: 'right', fontSize: '0.9em'}}>
             {/*<Link to="/login" className="login-btn" style={{backgroundColor: 'green', color: 'white',
               border: 'none'
             }}>Login</Link>*/}
@@ -106,7 +107,7 @@ const Header = () => {
         }
        {
          isLoggedIn && (
-            <div className="header-buttons" style={{width: '15%', textAlign: 'right'}}>
+            <div className="header-buttons" style={{width: '25%', textAlign: 'right', fontSize: '0.9em'}}>
             <a href="javascipt:void(0)" className="login-btn" onClick={handleLogout}
             style={{backgroundColor: 'red', color: 'white',
               border: 'none', marginLeft: '5%'
