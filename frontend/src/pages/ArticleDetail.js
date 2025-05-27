@@ -56,11 +56,12 @@ const ArticleDetail = () => {
         showConfirmButton: false,
         timer: 4000,
       });
+      let role = localStorage.getItem('user_role');
       localStorage.removeItem('token');
       localStorage.removeItem('user_role');
       localStorage.removeItem('user_name');
-      if(localStorage.getItem('user_role')=='admin') {
-        navigate('/login');
+      if(role=='admin') {
+        navigate('/login?ru=/source/'+id);
       }
       else {
         navigate(window.location.pathname);

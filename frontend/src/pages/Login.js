@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../styles/Login.css';
 import Swal from 'sweetalert2'
 import {login} from '../services/api'
@@ -12,6 +12,7 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  let [param] = useSearchParams();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -55,7 +56,14 @@ const Login = () => {
       localStorage.setItem('token', response.token);
       localStorage.setItem('user_role', response.user.role);
       localStorage.setItem('user_name', response.user.name);
-      navigate('/admin'); // Redirect to admin panel after successful login
+      let redirectURL = param.get('ru');
+      if(redirectURL) {
+        //window.location.href=redirectURL;
+        navigate(redirectURL)
+      }
+      else {
+        navigate('/admin'); // Redirect to admin panel after successful login
+      }
     } catch (error) {
       setError(error.error || 'Login failed. Please try again.');
     } finally {

@@ -54,12 +54,12 @@ const AdminPanel = () => {
     if(!localStorage.getItem('token')) {
       nav('/login');
     }
-    else if(localStorage.getItem('user_role')=='user') {
-      nav('/');
-    }
-    else {
+    else if(localStorage.getItem('token') && localStorage.getItem('user_role')=='admin') {
       fetchArticles();
       fetchSourceType();
+    }
+    else {
+      nav('/');
     }
 
     window.scrollTo({
