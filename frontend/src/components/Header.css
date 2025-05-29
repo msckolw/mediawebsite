@@ -129,6 +129,8 @@
   right: 2rem;
 }
 
+
+
 .login-btn, .signup-btn {
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -149,9 +151,6 @@
   color: #fff;
 }
 
-.login-btn:hover {
-  background-color: #f5f5f5;
-}
 
 .signup-btn:hover {
   background-color: #152a4f;
@@ -224,4 +223,3 @@
 body {
   transition: filter 0.4s ease;
 }
-

@@ -65,7 +65,7 @@ const Login = () => {
         navigate('/admin'); // Redirect to admin panel after successful login
       }
     } catch (error) {
-      setError(error.error || 'Login failed. Please try again.');
+      setError(error.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -74,10 +74,10 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-form">
-        <h2>Admin Login</h2>
+        <h2>Admin</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="form-groupL">
             <label htmlFor="email">Email</label>
             <input
               type="email"
@@ -88,7 +88,7 @@ const Login = () => {
               required
             />
           </div>
-          <div className="form-group">
+          <div className="form-groupL">
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -99,7 +99,7 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading} className='login-button'>
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>

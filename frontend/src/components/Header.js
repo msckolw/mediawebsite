@@ -93,16 +93,17 @@ const Header = () => {
         </span>
         
         {
-         !isLoggedIn && (
+         !isLoggedIn && 
+         (
             <div className="header-buttons" style={{width: '25%', textAlign: 'right', fontSize: '0.9em'}}>
-            {/*<Link to="/login" className="login-btn" style={{backgroundColor: 'green', color: 'white',
-              border: 'none'
-            }}>Login</Link>*/}
+            
             <a href="javascipt:void(0)" className="login-btn" onClick={handleLogin}
             style={{backgroundColor: 'green', color: 'white',
               border: 'none', marginLeft: '5%'
             }}>Login</a>
-          </div>
+           </div>
+
+
           )
         }
        {

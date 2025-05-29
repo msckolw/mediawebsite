@@ -7,50 +7,55 @@
 }
 
 .login-form {
-  background: white;
+  background: #152a4f;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
+  border-radius: 21px 8px 21px 8px;
   width: 100%;
   max-width: 400px;
   margin-top: -200px;
+  color: white;
+  box-shadow: 0 0 15px rgb(25, 24, 24);
+  
 }
 
 .login-form h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #333;
 }
 
-.form-group {
+.form-groupL {
   margin-bottom: 1rem;
 }
 
-.form-group label {
+.form-groupL label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #666;
+  color: white;
 }
 
-.form-group input {
+.form-groupL input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid hsl(216, 2%, 58%);
   border-radius: 4px;
   font-size: 1rem;
+  outline: 0;
+  background-color: #152a4f;
+  padding: 0.75rem 1rem;
+  color: rgba(243, 244, 246, 1);
 }
 
-.form-group input:focus {
+.form-groupL input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  border-color: rgb(232, 230, 237);
 }
 
-button {
+.login-button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #007bff;
-  color: white;
+  background-color: rgb(217, 226, 217);
+  color: #152a4f;
+  font-weight: 700;
   border: none;
   border-radius: 4px;
   font-size: 1rem;
@@ -58,11 +63,12 @@ button {
   transition: background-color 0.2s;
 }
 
-button:hover {
-  background-color: #0056b3;
+.login-button:hover {
+  background-color: rgb(55, 157, 55);
+  color: white;
 }
 
-button:disabled {
+.login-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }

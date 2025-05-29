@@ -60,10 +60,16 @@ const Home = () => {
       <section className="latest-news">
         <h2>Latest News</h2>
         {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading article...</p>
+          // <div className="loading-container">
+          //   <div className="loading-spinner"></div>
+          //   <p>Loading article...</p>
+          // </div>
+
+          <div class="loader">
+            <span class="loader-text">loading</span>
+              <span class="load"></span>
           </div>
+
         ) : articles.length === 0 ? (
           <div className="no-articles">No articles found.</div>
         ) : (
