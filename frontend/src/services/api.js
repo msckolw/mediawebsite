@@ -7,7 +7,9 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  //withCredentials: true
 });
+
 
 // Helper function to construct image URL
 export const getImageUrl = (imagePath) => {
@@ -16,7 +18,7 @@ export const getImageUrl = (imagePath) => {
   return `${BASE_URL}${imagePath}`;
 };
 
-// Add token to requests if it exists
+//Add token to requests if it exists
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
