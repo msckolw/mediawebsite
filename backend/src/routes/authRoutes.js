@@ -39,7 +39,7 @@ router.post('/login', async (req, res) => {
     res.cookie('access_token',token,{
       httpOnly: true,
       sameSite: 'lax',
-      secure: true
+      secure: false
     })
     
     res.json({
@@ -131,7 +131,7 @@ router.post('/googleSignIn', async (req,res) => {
       res.cookie('access_token',token,{
         httpOnly: true,
         sameSite: 'lax',
-        secure: true
+        secure: false
       })
 
       res.status(200).json({
