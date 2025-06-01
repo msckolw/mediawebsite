@@ -71,7 +71,8 @@ router.get('/news/:id', async (req, res) => {
 
     if(souce_page) {
 
-      let {message, code} = validateJWT(req.headers.authorization);
+      //let {message, code} = validateJWT(req.headers.authorization);
+      let {message, code} = validateJWT(req.cookies.access_token);
 
       if(code!=1) {
         return res.status(code).json({message});
@@ -93,7 +94,8 @@ router.post('/news', async (req, res) => {
     // console.log('Received article data:', req.body);
 
     //JWT Validation
-    let {message, code, role} = validateJWT(req.headers.authorization);
+    //let {message, code, role} = validateJWT(req.headers.authorization);
+    let {message, code, role} = validateJWT(req.cookies.access_token);
 
     if(code!=1) {
       return res.status(code).json({message});
@@ -143,7 +145,8 @@ router.put('/news', async (req, res) => {
   try {
 
     //JWT Validation
-    let {message, code, role} = validateJWT(req.headers.authorization);
+    //let {message, code, role} = validateJWT(req.headers.authorization);
+    let {message, code, role} = validateJWT(req.cookies.access_token);
 
     if(code!=1) {
       return res.status(code).json({message});
@@ -203,7 +206,8 @@ router.delete('/news/:id', async (req, res) => {
   try {
 
     //JWT Validation
-    let {message, code, role} = validateJWT(req.headers.authorization);
+    //let {message, code, role} = validateJWT(req.headers.authorization);
+    let {message, code, role} = validateJWT(req.cookies.access_token);
 
     if(code!=1) {
       return res.status(code).json({message});
@@ -226,7 +230,8 @@ router.delete('/news', async (req, res) => {
   try {
 
     //JWT Validation
-    let {message, code, role} = validateJWT(req.headers.authorization);
+    //let {message, code, role} = validateJWT(req.headers.authorization);
+    let {message, code, role} = validateJWT(req.cookies.access_token);
 
     if(code!=1) {
       return res.status(code).json({message});
@@ -266,7 +271,8 @@ router.post('/source', async (req, res) => {
     console.log('Received source type:', req.body);
 
     //JWT Validation
-    let {message, code, role} = validateJWT(req.headers.authorization);
+    //let {message, code, role} = validateJWT(req.headers.authorization);
+    let {message, code, role} = validateJWT(req.cookies.access_token);
 
     if(code!=1) {
       return res.status(code).json({message});

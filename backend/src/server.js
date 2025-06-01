@@ -14,12 +14,12 @@ const app = express();
 
 // Middleware
 app.use(cors(
-/*{
-  origin: ['http://localhost:3000'],
+{
+  origin: ['https://www.thenobiasmedia.com','http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true
-}*/
+}
 ));
 app.use(cookie())
 app.use(express.json({ limit: '50mb' }));

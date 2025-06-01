@@ -7,7 +7,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  //withCredentials: true
+  withCredentials: true
 });
 
 
@@ -19,13 +19,13 @@ export const getImageUrl = (imagePath) => {
 };
 
 //Add token to requests if it exists
-api.interceptors.request.use((config) => {
+/*api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+});*/
 
 // Articles API
 export const getArticles = async (page=1) => {

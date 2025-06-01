@@ -34,7 +34,7 @@ function App() {
             <Suspense fallback={
               <div className="loading-container">
                 <div className="loading-spinner"></div>
-                <p>Loading article...</p>
+                <p>Loading...</p>
               </div>
               }>{route.element}
             </Suspense>}

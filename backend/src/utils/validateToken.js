@@ -14,7 +14,8 @@ function validateJWT(token=null) {
   
     else if(token!=null) {
       try {
-        const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
+        //const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         return { 
           message: 'Token Valid',
           code: 1,
