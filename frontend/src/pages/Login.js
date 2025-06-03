@@ -43,8 +43,12 @@ const Login = () => {
     setError('');
     setLoading(true);
 
+    let form_data = new FormData();
+    form_data.append('email',formData.email);
+    form_data.append('password',formData.password);
+
     try {
-      const response = await login(formData);
+      const response = await login(form_data);
       Swal.fire({
         toast: true,
         position: "top-end",

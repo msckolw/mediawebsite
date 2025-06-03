@@ -6,6 +6,7 @@ const SourceType = require('../models/SourceType');
 const { validateJWT } = require('../utils/validateToken');
 
 const mongoose = require('mongoose');
+const { getIo } = require('../socket');
 
 
 // Get all articles
@@ -126,8 +127,32 @@ router.post('/news', async (req, res) => {
     //console.log('Creating article:', article);
     const newArticle = await article.save();
     console.log('Article created successfully:', newArticle);
-    
+
     res.status(201).json(newArticle);
+    
+    //
+    
+    /*const page = 1; 
+    const limit = 10; 
+    const skip = (page - 1) * limit; 
+
+    const articles = await News
+      .find({}, {source: false})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalArticles = await News.countDocuments(); 
+
+    let obj={
+      articles,
+      currentPage: page,
+      totalPages: Math.ceil(totalArticles / limit)
+    };*/
+    let io = getIo();
+    io.emit('newArticle', 'call fetchArticles function'); //socket emits
+    //
+    
   } catch (error) {
     console.error('Error creating article:', error);
     res.status(400).json({ 
@@ -219,6 +244,10 @@ router.delete('/news/:id', async (req, res) => {
 
     const article = await News.findByIdAndDelete(req.params.id);
     if (!article) return res.status(400).json({ message: 'Article not found' });
+    //
+    let io = getIo();
+    io.emit('newArticle', 'call fetchArticles function'); //socket emits
+    //
     res.status(200).json({ message: 'Article deleted successfully' });
   } catch (error) {
     res.status(400).json({ message: error.message });

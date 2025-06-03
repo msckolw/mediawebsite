@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const cookie = require('cookie-parser')
+const http = require('http'); // Required for socket.io with Express
+const socketIo = require('socket.io');
+const { initSocket } = require("./socket");
 
 
 //let MONGODB_URI=`mongodb+srv://manisankar:77HFY1n0QsN6d76L@cluster0.kkwdaye.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -11,6 +14,9 @@ const cookie = require('cookie-parser')
 dotenv.config();
 
 const app = express();
+
+const server = http.createServer(app); // Create an HTTP server instance
+initSocket(server)
 
 // Middleware
 app.use(cors(
@@ -57,6 +63,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Start server
 const PORT = process.env.PORT || 5002;
-app.listen(PORT, () => {
+
+//changed app to server for socket
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

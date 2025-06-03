@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Home.css';
 import { Link, useNavigate } from 'react-router-dom';
 import {getArticles} from '../services/api'
+import io from 'socket.io-client';
+
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
@@ -10,17 +12,60 @@ const Home = () => {
     currentPage: 1, totalPages: 1
   });
 
+  const socketRef = useRef(null);
+
   let navigate = useNavigate();
 
-  
-
   useEffect(() => {
-    fetchArticles();
+
+    fetchArticles(1);
+
+    if (!socketRef.current) { // Only create if it doesn't exist
+        //socketRef.current = io('http://localhost:5002');
+        socketRef.current = io('https://nobiasmedia.onrender.com');
+        console.log('Socket connection established');
+    }
+
+    const socket = socketRef.current;
+
+    socket.on('connect', () => {
+      console.log('Connected to Socket');
+    });
+
+    socket.on('newArticle', (newArticle) => {
+      console.log('Received article via Socket');
+      fetchArticles(1);
+      /*setArticles(newArticle.articles);
+      setPageSettings({ 
+        currentPage: newArticle.currentPage,
+        totalPages: newArticle.totalPages
+      });*/
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from Socket');
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+    });
 
     window.scrollTo({
       top: 0,
       behavior: "smooth", // Adds a nice scroll animation
     });
+
+    return () => {
+      socket.off('connect');
+      socket.off('newArticle');
+      socket.off('disconnect');
+      socket.off('connect_error');
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null; // Clear the ref
+        console.log('Socket connection disconnected for ArticlesPage.');
+      }
+    };
 
   }, []);
 
@@ -33,8 +78,7 @@ const Home = () => {
 
   const fetchArticles = async (page=1) => {
     try {
-      //console.log('Called Articles');
-      //const response = await axios.get(`${API_URL}/news`);
+      
       const response = await getArticles(page);
       if(response.articles.length) {
         setArticles(prev => page==1 ? response.articles : [...prev, ...response.articles]);
@@ -42,9 +86,11 @@ const Home = () => {
           currentPage: response.currentPage,
           totalPages: response.totalPages
         });
-      }
+      } 
     } catch (error) {
+      
       console.error('Error fetching articles:', error);
+      
     } finally {
       setLoading(false);
     }
