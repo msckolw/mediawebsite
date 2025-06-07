@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/AdminPanel.css';
 
-const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 5, typeList }) => {
+const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20, typeList }) => {
   const [sources, setSources] = useState([{ source_type: '', url: '', _id: '' }]);
   const modalRef = useRef(null);
   const [sourceOptions, setSourceOptions] = useState([{ source_type: '', url: '', _id: '' }]);
