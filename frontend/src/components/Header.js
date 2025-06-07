@@ -87,7 +87,16 @@ const Header = () => {
 
         <span style={{width: '60%', textAlign: 'center', display: 'flex', justifyContent: 'center', 
           position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} >
-          <Link to="/" >
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+            <img 
+              src="/logo1.png" 
+              alt="NoBias Media Logo" 
+              style={{ 
+                height: '40px', 
+                width: 'auto',
+                objectFit: 'contain'
+              }} 
+            />
             <span className="logo-text">The NoBias Media</span>
           </Link>
         </span>

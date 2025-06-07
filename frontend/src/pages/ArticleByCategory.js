@@ -99,8 +99,8 @@ const ABC = () => {
                     }}>{article.title}</span>
                     {/* <span style={{textAlign: 'right', width: '49%', paddingRight: '1%'}}>{article.category.toUpperCase()}</span> */}
                   </span>
-                  <p className="article-summary" style={{height: '120px', overflowWrap: 'break-word'}} >{
-                  (article.summary.length>=60) ? article.summary.substr(0,60)+'...' : 
+                  <p className="article-summary" style={{height: '400px', overflowWrap: 'break-word'}} >{
+                  (article.summary.length>=60) ? article.summary.substr(0,550)+'...' : 
                   article.summary}</p>
                   <Link className="read-more-button">
                     Read More
