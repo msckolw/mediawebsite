@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-section">
-          <h3>The No BiasMedia</h3>
+          <h3>The NoBias Media</h3>
           <p>Delivering unbiased news and analysis from around the world.</p>
         </div>
         
