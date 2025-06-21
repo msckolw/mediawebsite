@@ -1,0 +1,23 @@
+
+ 
+#scrollToTopBtn {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 30px; /* Place the button at the bottom */
+    right: 30px; /* Place the button at the right */
+    z-index: 99; /* Make sure it's on top */
+    border: none; /* Remove borders */
+    outline: none; /* Remove outline */
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px 20px; /* Some padding */
+    border-radius: 50%; /* Rounded corners (makes it a circle) */
+    font-size: 20px; /* Increase font size */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow */
+    transition: opacity 0.3s ease-in-out; /* Smooth transition for appearance/disappearance */
+}
+
+#scrollToTopBtn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}

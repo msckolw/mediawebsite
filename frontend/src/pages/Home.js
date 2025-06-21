@@ -16,6 +16,7 @@ const Home = () => {
 
   let navigate = useNavigate();
 
+
   useEffect(() => {
 
     fetchArticles(1);
@@ -50,12 +51,10 @@ const Home = () => {
       console.error('Socket connection error:', err.message);
     });
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth", // Adds a nice scroll animation
-    });
+    goToTop();
 
     return () => {
+      
       socket.off('connect');
       socket.off('newArticle');
       socket.off('disconnect');
@@ -69,8 +68,12 @@ const Home = () => {
 
   }, []);
 
-  
-
+  function goToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Adds a nice scroll animation
+    });
+  }
 
   function showFullArticle(id) {
     navigate('/article/'+id);
@@ -151,8 +154,8 @@ const Home = () => {
                     }}>{article.title}</span>
                     {/* <span style={{textAlign: 'right', width: '49%', paddingRight: '1%'}}>{article.category.toUpperCase()}</span> */}
                   </span>
-                  <p className="article-summary" style={{height: '120px', overflowWrap: 'break-word'}} >{
-                  (article.summary.length>=60) ? article.summary.substr(0,60)+'...' : 
+                  <p className="article-summary" style={{height: '400px', overflowWrap: 'break-word'}} >{
+                  (article.summary.length>=80) ? article.summary.substr(0,500)+'...' : 
                   article.summary}</p>
                   <Link className="read-more-button">
                     Read More
@@ -166,6 +169,7 @@ const Home = () => {
             </button> }
           </div>
         )}
+        
       </section>
     </div>
   );

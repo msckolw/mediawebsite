@@ -130,11 +130,11 @@ body {
 }
 
 .article-summary {
-  color: #666;
+  color: #111111;
   line-height: 1.5;
   margin-bottom: 1rem;
   font-size: 1.2rem;
-  font-family: monospace;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Meta information */
@@ -239,8 +239,14 @@ body {
   .article-card {
     padding: 0.5rem;
   }
+    .read-more-button {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    position: static;
+    margin-top: 1rem;
+    width: 100%;
+    }
 }
-
 @media (max-width: 480px) {
   .article-card {
     padding: 0.25rem;
@@ -380,5 +386,5 @@ body {
   }
 }
  
- 
+
 

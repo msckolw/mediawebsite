@@ -428,7 +428,7 @@ const AdminPanel = () => {
             onClose={closeModal}
             initialSources={formData.sources}
             onSave={handleSaveSources}
-            maxSources={5}
+            maxSources={20}
             typeList={sourceType}
           />
         </div>

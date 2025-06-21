@@ -5,11 +5,14 @@ import './App.css';
 import './styles/Login.css';
 import './styles/Home.css';
 import './styles/ArticleDetail.css';
+import './components/ScrollTopButton.css';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ScrollToTopButton from './components/ScrollTopButton';
 import Home from './pages/Home';
 import { routes } from './routes';
+
 // import Login from './pages/Login';
 // import AdminPanel from './pages/AdminPanel';
 // import ArticleDetail from './pages/ArticleDetail';
@@ -17,6 +20,8 @@ import { routes } from './routes';
 // import SourcePage from './pages/SourcePage';
 
 function App() {
+
+
   return (
     <div className="app">
       <Header />
@@ -44,6 +49,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <ScrollToTopButton />
     </div>
   );
 }

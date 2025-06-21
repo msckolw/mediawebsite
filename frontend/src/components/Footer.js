@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-section">
-          <h3>The NoBiasMedia</h3>
+          <h3>The NoBias Media</h3>
           <p>Delivering unbiased news and analysis from around the world.</p>
         </div>
         
@@ -22,8 +22,7 @@ const Footer = () => {
         <div className="footer-section">
           <h3>Contact Info</h3>
           <address>
-            <p>Pune, Maharashtra, India</p>
-            <p>PIN: 411045</p>
+            <p>S. No.268/1/A, Rajib Gandhi Infotech Park,Hinjewadi Phase 1,Pune, Maharashtra, India, PIN: 411057</p>
             <p>Email: manisankar@thenobiasmedia.com</p>
           </address>
         </div>
