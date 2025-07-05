@@ -22,7 +22,7 @@ const Footer = () => {
         <div className="footer-section">
           <h3>Contact Info</h3>
           <address>
-            <p>S. No.268/1/A, Rajib Gandhi Infotech Park,Hinjewadi Phase 1,Pune, Maharashtra, India, PIN: 411057</p>
+            <p>Rajib Gandhi Infotech Park,Hinjewadi Phase 1,Pune, Maharashtra, India, PIN: 411057</p>
             <p>Email: manisankar@thenobiasmedia.com</p>
           </address>
         </div>
