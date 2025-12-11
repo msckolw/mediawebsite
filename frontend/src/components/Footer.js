@@ -12,24 +12,36 @@ const Footer = () => {
         </div>
         
         <div className="footer-section">
-          <h3>Quick Links</h3>
+          <h3>Legal</h3>
           <ul>
-            <li><Link to="/about">About Us</Link></li>
-            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link to="/terms-conditions">Terms and Conditions</Link></li>
           </ul>
         </div>
         
         <div className="footer-section">
-          <h3>Contact Info</h3>
-          <address>
-            <p>Rajib Gandhi Infotech Park,Hinjewadi Phase 1,Pune, Maharashtra, India, PIN: 411057</p>
-            <p>Email: manisankar@thenobiasmedia.com</p>
-          </address>
+          <h3>Quick Links</h3>
+          <ul>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/media-bias-details">Media Bias Details</Link></li>
+          </ul>
         </div>
       </div>
       
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} The NoBiasMedia. All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} The NoBiasMedia. All rights reserved. 
+          Developed by{' '}
+          <a 
+            href="https://www.teroment.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: '#ffffff', textDecoration: 'underline', fontWeight: 'bold' }}
+          >
+            Teroment Solutions
+          </a>
+        </p>
       </div>
     </footer>
   );

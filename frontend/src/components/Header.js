@@ -87,17 +87,17 @@ const Header = () => {
 
         <span style={{width: '60%', textAlign: 'center', display: 'flex', justifyContent: 'center', 
           position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} >
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
             <img 
-              src="/logo1.png" 
-              alt="NoBias Media Logo" 
+              src="/logo.svg" 
+              alt="The NoBias Media" 
               style={{ 
-                height: '40px', 
+                height: '65px', 
                 width: 'auto',
+                transform: 'scaleX(1.3)',
                 objectFit: 'contain'
               }} 
             />
-            <span className="logo-text">The NoBias Media</span>
           </Link>
         </span>
         
