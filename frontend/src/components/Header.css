@@ -185,17 +185,53 @@
 }
 
 @media (max-width: 768px) {
+  .header {
+    padding: 1rem 0;
+  }
+
   .header-container {
-    padding: 1rem;
+    padding: 0.5rem 1rem;
+    position: relative;
+    justify-content: space-between !important;
+  }
+
+  /* Menu button */
+  .header-container > span:first-child {
+    width: auto !important;
+    flex-shrink: 0;
+  }
+
+  /* Logo container */
+  .header-container > span:nth-child(2) {
+    position: static !important;
+    transform: none !important;
+    width: auto !important;
+    flex: 1;
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 1rem;
+  }
+
+  .header-container > span:nth-child(2) img {
+    height: 45px !important;
+    transform: scaleX(1.1) !important;
+  }
+
+  /* Login/Logout buttons */
+  .header-buttons {
+    width: auto !important;
+    flex-shrink: 0;
+  }
+
+  .header-buttons .login-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    margin-left: 0 !important;
   }
 
   .logo-text {
     font-size: 1.2rem;
   }
-  
-  /* .header-buttons {
-    display: none;
-  } */
 
   .menu-item {
     font-size: 1.2rem;
@@ -204,6 +240,24 @@
 }
 
 @media (max-width: 480px) {
+  .header-container {
+    padding: 0.5rem 0.8rem;
+  }
+
+  .header-container > span:nth-child(2) {
+    margin: 0 0.5rem;
+  }
+
+  .header-container > span:nth-child(2) img {
+    height: 40px !important;
+    transform: scaleX(1.0) !important;
+  }
+
+  .header-buttons .login-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
   .logo-image {
     height: 30px;
   }
@@ -211,7 +265,6 @@
   .logo-text {
     font-size: 1rem;
   }
-
 }
   
 .fade-out {

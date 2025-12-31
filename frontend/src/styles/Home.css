@@ -21,26 +21,30 @@ body {
 /* Hero section */
 .hero {
   text-align: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   color: white;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  min-height: 20vh;
+  border-radius: 16px;
+  margin-bottom: 3rem;
+  min-height: 18vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 4px 20px rgba(30, 60, 114, 0.15);
 }
 
 .hero h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  letter-spacing: -0.02em;
 }
 
 .hero p {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   opacity: 0.9;
+  font-weight: 400;
 }
 
 .latest-news {
@@ -218,9 +222,9 @@ body {
     padding: 0.5rem;
   }
   .hero {
-    padding: 1.5rem 0.5rem;
+    padding: 1rem 0.5rem;
     font-size: 1rem;
-    min-height: 16vh;
+    min-height: 10vh;
   }
   .hero h1,
   .latest-news h2 {

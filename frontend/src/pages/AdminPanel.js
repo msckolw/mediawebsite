@@ -7,13 +7,10 @@ import { addArticle, deleteArticle, getArticles, getSourceType } from '../servic
 
 const categories = [
   'Politics',
-  'Sports',
-  'Technology',
   'Business',
-  'Entertainment',
-  'Health',
-  'Science',
-  'World'
+  'World News',
+  'Legal',
+  'Miscellaneous'
 ];
 
 const AdminPanel = () => {

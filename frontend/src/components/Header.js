@@ -16,13 +16,10 @@ const Header = () => {
 
   const categories = [
     { name: 'Politics', path: '/category/politics' },
-    { name: 'Sports', path: '/category/sports' },
-    { name: 'Technology', path: '/category/technology' },
     { name: 'Business', path: '/category/business' },
-    { name: 'Entertainment', path: '/category/entertainment' },
-    { name: 'Health', path: '/category/health' },
-    { name: 'Science', path: '/category/science' },
-    { name: 'World', path: '/category/world' },
+    { name: 'World News', path: '/category/world news' },
+    { name: 'Legal', path: '/category/legal' },
+    { name: 'Miscellaneous', path: '/category/miscellaneous' },
     { name: 'Profile', path: '/admin' }
   ];
 
@@ -149,6 +146,42 @@ const Header = () => {
                 {category.name}
               </div>
             ))}
+            
+            {/* Social Media Icons */}
+            <div style={{ padding: '1rem', borderTop: '1px solid #eee', marginTop: '1rem' }}>
+              <h4 style={{ margin: '0 0 1rem 0', color: '#333', fontSize: '1rem' }}>Follow Us</h4>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href="https://www.linkedin.com/company/110920348/admin/dashboard/" target="_blank" rel="noopener noreferrer" 
+                   style={{ color: '#0077b5', fontSize: '1.5rem' }}>
+                  <i className="fab fa-linkedin"></i>
+                </a>
+                <a href="https://x.com/TheNoBiasMedia" target="_blank" rel="noopener noreferrer" 
+                   style={{ color: '#000', fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none' }}>
+                  𝕏
+                </a>
+                <a href="https://www.facebook.com/people/The-NoBias-Media/61585968146610/" target="_blank" rel="noopener noreferrer" 
+                   style={{ color: '#1877f2', fontSize: '1.5rem' }}>
+                  <i className="fab fa-facebook"></i>
+                </a>
+                <a href="https://www.instagram.com/nobias_media/" target="_blank" rel="noopener noreferrer" 
+                   style={{ color: '#e4405f', fontSize: '1.5rem' }}>
+                  <i className="fab fa-instagram"></i>
+                </a>
+              </div>
+            </div>
+
+            {/* App Store Icons */}
+            <div style={{ padding: '1rem', borderTop: '1px solid #eee' }}>
+              <h4 style={{ margin: '0 0 1rem 0', color: '#333', fontSize: '1rem' }}>Download App</h4>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <span style={{ color: '#34a853', fontSize: '1.5rem', cursor: 'not-allowed' }} title="Coming Soon">
+                  <i className="fab fa-google-play"></i>
+                </span>
+                <span style={{ color: '#007aff', fontSize: '1.5rem', cursor: 'not-allowed' }} title="Coming Soon">
+                  <i className="fab fa-apple"></i>
+                </span>
+              </div>
+            </div>
           </div>
         </>
       )}

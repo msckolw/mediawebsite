@@ -27,6 +27,38 @@ const Footer = () => {
             <li><Link to="/media-bias-details">Media Bias Details</Link></li>
           </ul>
         </div>
+
+        <div className="footer-section">
+          <h3>Follow Us</h3>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            <a href="https://www.linkedin.com/company/110920348/admin/dashboard/" target="_blank" rel="noopener noreferrer" 
+               style={{ color: '#fff', fontSize: '1.5rem', opacity: '0.9' }}>
+              <i className="fab fa-linkedin"></i>
+            </a>
+            <a href="https://x.com/TheNoBiasMedia" target="_blank" rel="noopener noreferrer" 
+               style={{ color: '#fff', fontSize: '1.5rem', opacity: '0.9', fontWeight: 'bold', textDecoration: 'none' }}>
+              𝕏
+            </a>
+            <a href="https://www.facebook.com/people/The-NoBias-Media/61585968146610/" target="_blank" rel="noopener noreferrer" 
+               style={{ color: '#fff', fontSize: '1.5rem', opacity: '0.9' }}>
+              <i className="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/nobias_media/" target="_blank" rel="noopener noreferrer" 
+               style={{ color: '#fff', fontSize: '1.5rem', opacity: '0.9' }}>
+              <i className="fab fa-instagram"></i>
+            </a>
+          </div>
+          
+          <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Download App</h4>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <span style={{ color: '#34a853', fontSize: '1.5rem', cursor: 'not-allowed', opacity: '0.6' }} title="Coming Soon">
+              <i className="fab fa-google-play"></i>
+            </span>
+            <span style={{ color: '#007aff', fontSize: '1.5rem', cursor: 'not-allowed', opacity: '0.6' }} title="Coming Soon">
+              <i className="fab fa-apple"></i>
+            </span>
+          </div>
+        </div>
       </div>
       
       <div className="footer-bottom">

@@ -1,7 +1,5 @@
 .news-tile {
-  display: block;
-  text-decoration: none;
-  color: inherit;
+  position: relative;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -14,6 +12,13 @@
 .news-tile:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.news-tile-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
 }
 
 .news-tile-content {
@@ -99,6 +104,57 @@
   font-size: 0.875rem;
 }
 
+/* Action Buttons */
+.news-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.news-tile:hover .news-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+.save-btn {
+  color: #666;
+}
+
+.save-btn.saved {
+  background: #1a73e8;
+  color: white;
+}
+
+.share-btn {
+  color: #666;
+}
+
+.share-btn:hover {
+  color: #1a73e8;
+}
+
 @media (max-width: 768px) {
   .news-tile {
     height: auto;
@@ -116,5 +172,9 @@
 
   .news-title {
     font-size: 1.1rem;
+  }
+
+  .news-actions {
+    opacity: 1;
   }
 } 

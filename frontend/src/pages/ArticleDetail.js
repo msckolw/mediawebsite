@@ -11,6 +11,7 @@ const ArticleDetail = () => {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
   
   let gHook = useGoogleHook('/source/'+id,false);
   
@@ -81,6 +82,84 @@ const ArticleDetail = () => {
 
   let googleAuth = () => gHook();
 
+  const handleSave = () => {
+    const isLoggedIn = localStorage.getItem('token');
+    if (!isLoggedIn) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "warning",
+        title: "Please login to save articles",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      return;
+    }
+    
+    setIsSaved(!isSaved);
+    // TODO: Implement save functionality with backend
+    console.log('Save article:', id);
+    
+    Swal.fire({
+      toast: true,
+      position: "top-end",
+      icon: isSaved ? "info" : "success",
+      title: isSaved ? "Article removed from saved" : "Article saved!",
+      showConfirmButton: false,
+      timer: 2000,
+    });
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share && navigator.canShare) {
+        const shareData = {
+          title: article.title,
+          text: article.summary,
+          url: window.location.href
+        };
+        
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+        } else {
+          throw new Error('Cannot share this content');
+        }
+      } else {
+        throw new Error('Web Share API not supported');
+      }
+    } catch (error) {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Link copied to clipboard!",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      } catch (clipboardError) {
+        // Final fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Link copied to clipboard!",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
+    }
+  };
+
   
   
   if (loading) {
@@ -121,7 +200,25 @@ const ArticleDetail = () => {
       </button>
       
       <div className="article-header" id="mainDiv">
-        <h1 style={{overflowWrap: 'break-word'}}>{article.title}</h1>
+        <div className="article-title-section">
+          <h1 style={{overflowWrap: 'break-word'}}>{article.title}</h1>
+          <div className="article-actions">
+            <button 
+              className={`action-btn save-btn ${isSaved ? 'saved' : ''}`}
+              onClick={handleSave}
+              title={isSaved ? 'Remove from saved' : 'Save article'}
+            >
+              <i className={`fas ${isSaved ? 'fa-bookmark' : 'fa-bookmark'}`} style={{color: isSaved ? '#fff' : '#666'}}></i>
+            </button>
+            <button 
+              className="action-btn share-btn"
+              onClick={handleShare}
+              title="Share article"
+            >
+              <i className="fas fa-share-alt"></i>
+            </button>
+          </div>
+        </div>
         <div className="article-meta">
           <span className="category">{article.category}</span>
           <span className="date">

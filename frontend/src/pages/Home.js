@@ -101,7 +101,7 @@ const Home = () => {
 
   return (
     <div className="home" id="mainDiv">
-      <section className="hero" style={{ height: '25vh' }}	>
+      <section className="hero" style={{ height: '20vh' }}	>
         <h1>Welcome to Our News Portal</h1>
         <p>Stay updated with the latest news and stories</p>
       </section>
