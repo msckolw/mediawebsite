@@ -20,13 +20,20 @@ const Header = () => {
     { name: 'World News', path: '/category/world news' },
     { name: 'Legal', path: '/category/legal' },
     { name: 'Miscellaneous', path: '/category/miscellaneous' },
+    { name: 'Bookmarks', path: '/bookmarks' },
     { name: 'Profile', path: '/admin' }
   ];
 
   let gHook = useGoogleHook(window.location.pathname,true);
 
   function filterCategories(arr) {
-    return isLoggedIn && isAdmin ? arr : arr.filter(elem => elem.name!='Profile');
+    if (isLoggedIn && isAdmin) {
+      return arr; // Show all including Profile and Bookmarks
+    } else if (isLoggedIn) {
+      return arr.filter(elem => elem.name !== 'Profile'); // Show Bookmarks but not Profile
+    } else {
+      return arr.filter(elem => elem.name !== 'Profile' && elem.name !== 'Bookmarks'); // Hide both
+    }
   }
 
   const toggleMenu = () => {

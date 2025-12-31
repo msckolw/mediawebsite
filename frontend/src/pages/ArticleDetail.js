@@ -23,6 +23,11 @@ const ArticleDetail = () => {
         const response = await getArticle(id);
         if (response) {
           setArticle(response);
+          
+          // Check if article is already bookmarked
+          const existingBookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]');
+          const isBookmarked = existingBookmarks.some(bookmark => bookmark.id === response._id);
+          setIsSaved(isBookmarked);
         } else {
           setError('Article not found');
         }
@@ -82,7 +87,7 @@ const ArticleDetail = () => {
 
   let googleAuth = () => gHook();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const isLoggedIn = localStorage.getItem('token');
     if (!isLoggedIn) {
       Swal.fire({
@@ -96,18 +101,48 @@ const ArticleDetail = () => {
       return;
     }
     
-    setIsSaved(!isSaved);
-    // TODO: Implement save functionality with backend
-    console.log('Save article:', id);
+    // Get existing bookmarks from localStorage
+    const existingBookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]');
     
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: isSaved ? "info" : "success",
-      title: isSaved ? "Article removed from saved" : "Article saved!",
-      showConfirmButton: false,
-      timer: 2000,
-    });
+    if (!isSaved) {
+      // Add to bookmarks
+      const bookmarkData = {
+        id: article._id,
+        title: article.title,
+        summary: article.summary,
+        imageUrl: article.imageUrl,
+        category: article.category,
+        createdAt: article.createdAt,
+        bookmarkedAt: new Date().toISOString()
+      };
+      
+      existingBookmarks.push(bookmarkData);
+      localStorage.setItem('bookmarkedArticles', JSON.stringify(existingBookmarks));
+      setIsSaved(true);
+      
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Article saved to bookmarks!",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    } else {
+      // Remove from bookmarks
+      const updatedBookmarks = existingBookmarks.filter(bookmark => bookmark.id !== article._id);
+      localStorage.setItem('bookmarkedArticles', JSON.stringify(updatedBookmarks));
+      setIsSaved(false);
+      
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "info",
+        title: "Article removed from bookmarks",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
   };
 
   const handleShare = async () => {

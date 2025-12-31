@@ -10,6 +10,7 @@ let TermsConditions = React.lazy(() => import('./pages/TermsConditions'))
 let AboutUs = React.lazy(() => import('./pages/AboutUs'))
 let MediaBiasDetails = React.lazy(() => import('./pages/MediaBiasDetails'))
 let ContactUs = React.lazy(() => import('./pages/ContactUs'))
+let Bookmarks = React.lazy(() => import('./pages/Bookmarks'))
 
 export const routes = [
     {path: "/login", element: <Login />},
@@ -21,5 +22,6 @@ export const routes = [
     {path: "/terms-conditions", element: <TermsConditions />},
     {path: "/about", element: <AboutUs />},
     {path: "/media-bias-details", element: <MediaBiasDetails />},
-    {path: "/contact", element: <ContactUs />}
+    {path: "/contact", element: <ContactUs />},
+    {path: "/bookmarks", element: <Bookmarks />}
 ]

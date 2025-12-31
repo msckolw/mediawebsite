@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../services/api';
 import './NewsTile.css';
 
 const NewsTile = ({ article }) => {
   const [isSaved, setIsSaved] = useState(false);
+
+  // Check if article is bookmarked when component mounts
+  useEffect(() => {
+    const existingBookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]');
+    const isBookmarked = existingBookmarks.some(bookmark => bookmark.id === article._id);
+    setIsSaved(isBookmarked);
+  }, [article._id]);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -16,9 +23,32 @@ const NewsTile = ({ article }) => {
       return;
     }
     
-    setIsSaved(!isSaved);
-    // TODO: Implement save functionality with backend
-    console.log('Save article:', article._id);
+    // Get existing bookmarks from localStorage
+    const existingBookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]');
+    
+    if (!isSaved) {
+      // Add to bookmarks
+      const bookmarkData = {
+        id: article._id,
+        title: article.title,
+        summary: article.summary,
+        imageUrl: article.imageUrl,
+        category: article.category,
+        createdAt: article.createdAt,
+        bookmarkedAt: new Date().toISOString()
+      };
+      
+      existingBookmarks.push(bookmarkData);
+      localStorage.setItem('bookmarkedArticles', JSON.stringify(existingBookmarks));
+      setIsSaved(true);
+      alert('Article saved to bookmarks!');
+    } else {
+      // Remove from bookmarks
+      const updatedBookmarks = existingBookmarks.filter(bookmark => bookmark.id !== article._id);
+      localStorage.setItem('bookmarkedArticles', JSON.stringify(updatedBookmarks));
+      setIsSaved(false);
+      alert('Article removed from bookmarks');
+    }
   };
 
   const handleShare = async (e) => {
