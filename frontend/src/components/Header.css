@@ -192,24 +192,27 @@
   .header-container {
     padding: 0.5rem 1rem;
     position: relative;
-    justify-content: space-between !important;
+    display: grid !important;
+    grid-template-columns: 60px 1fr 80px;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   /* Menu button */
   .header-container > span:first-child {
     width: auto !important;
-    flex-shrink: 0;
+    justify-self: start;
   }
 
-  /* Logo container */
+  /* Logo container - perfectly centered */
   .header-container > span:nth-child(2) {
     position: static !important;
     transform: none !important;
     width: auto !important;
-    flex: 1;
     display: flex !important;
     justify-content: center !important;
-    margin: 0 1rem;
+    justify-self: center;
+    margin: 0;
   }
 
   .header-container > span:nth-child(2) img {
@@ -220,7 +223,7 @@
   /* Login/Logout buttons */
   .header-buttons {
     width: auto !important;
-    flex-shrink: 0;
+    justify-self: end;
   }
 
   .header-buttons .login-btn {
@@ -242,10 +245,7 @@
 @media (max-width: 480px) {
   .header-container {
     padding: 0.5rem 0.8rem;
-  }
-
-  .header-container > span:nth-child(2) {
-    margin: 0 0.5rem;
+    grid-template-columns: 50px 1fr 70px;
   }
 
   .header-container > span:nth-child(2) img {

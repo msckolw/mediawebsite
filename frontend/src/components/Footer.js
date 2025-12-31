@@ -30,7 +30,7 @@ const Footer = () => {
 
         <div className="footer-section">
           <h3>Follow Us</h3>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <div className="social-icons" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
             <a href="https://www.linkedin.com/company/110920348/admin/dashboard/" target="_blank" rel="noopener noreferrer" 
                style={{ color: '#fff', fontSize: '1.5rem', opacity: '0.9' }}>
               <i className="fab fa-linkedin"></i>
@@ -50,7 +50,7 @@ const Footer = () => {
           </div>
           
           <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Download App</h4>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="app-icons" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <span style={{ color: '#34a853', fontSize: '1.5rem', cursor: 'not-allowed', opacity: '0.6' }} title="Coming Soon">
               <i className="fab fa-google-play"></i>
             </span>

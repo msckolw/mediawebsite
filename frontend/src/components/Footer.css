@@ -79,4 +79,16 @@
   .footer-section {
     margin-bottom: 2rem;
   }
+
+  /* Center social media and app icons on mobile */
+  .social-icons,
+  .app-icons {
+    justify-content: center !important;
+  }
+
+  /* Ensure titles are centered */
+  .footer-section h3,
+  .footer-section h4 {
+    text-align: center;
+  }
 } 
