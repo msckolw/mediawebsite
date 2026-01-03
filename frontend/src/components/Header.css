@@ -216,8 +216,8 @@
   }
 
   .header-container > span:nth-child(2) img {
-    height: 45px !important;
-    transform: scaleX(1.1) !important;
+    height: 55px !important;
+    transform: scaleX(1.2) !important;
   }
 
   /* Login/Logout buttons */
@@ -249,8 +249,8 @@
   }
 
   .header-container > span:nth-child(2) img {
-    height: 40px !important;
-    transform: scaleX(1.0) !important;
+    height: 50px !important;
+    transform: scaleX(1.1) !important;
   }
 
   .header-buttons .login-btn {

@@ -93,12 +93,12 @@ const Header = () => {
           position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} >
           <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
             <img 
-              src="/logo.svg" 
+              src="/Simplification.svg" 
               alt="The NoBias Media" 
               style={{ 
-                height: '65px', 
+                height: '90px', 
                 width: 'auto',
-                transform: 'scaleX(1.3)',
+                transform: 'scaleX(1.4)',
                 objectFit: 'contain'
               }} 
             />
