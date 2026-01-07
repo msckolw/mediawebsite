@@ -257,7 +257,7 @@ const Home = () => {
                     }}>{article.title}</span>
                     {/* <span style={{textAlign: 'right', width: '49%', paddingRight: '1%'}}>{article.category.toUpperCase()}</span> */}
                   </span>
-                  <p className="article-summary" style={{height: '400px', overflowWrap: 'break-word'}} >{
+                  <p className="article-summary" style={{overflowWrap: 'break-word'}} >{
                   (article.summary.length>=80) ? article.summary.substr(0,500)+'...' : 
                   article.summary}</p>
                   <div className="article-buttons">

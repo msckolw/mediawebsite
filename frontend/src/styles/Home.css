@@ -250,6 +250,7 @@ body {
   .article-summary {
     font-size: 1rem;
     height: auto;
+    margin-bottom: 0.5rem;
   }
   .article-image {
     height: 145px;
@@ -258,13 +259,14 @@ body {
     padding: 0.5rem;
   }
     .article-buttons {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
+    opacity: 1;
+    transform: translateY(0);
     position: static;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     width: 100%;
     flex-direction: column;
     gap: 0.5rem;
+    padding: 0;
     }
     
     .read-more-button,
