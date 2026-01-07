@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Home.css';
 import { Link, useNavigate } from 'react-router-dom';
-import {getArticles} from '../services/api'
+import {getArticles, verifyToken, loginOAuth} from '../services/api'
 import io from 'socket.io-client';
+import { useGoogleLogin } from '@react-oauth/google';
+import Swal from 'sweetalert2';
 
 
 const Home = () => {
@@ -13,8 +15,65 @@ const Home = () => {
   });
 
   const socketRef = useRef(null);
-
   let navigate = useNavigate();
+  
+  // Create Google login with dynamic redirect
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tok) => {
+      try {
+        let url = 'https://www.googleapis.com/oauth2/v3/userinfo';
+        let user = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + tok.access_token
+          }
+        });
+        let data = await user.json();
+        data['access_token'] = tok.access_token;
+        const response = await loginOAuth(data);
+        
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Login Success!",
+          showConfirmButton: false,
+          timer: 4000,
+        });
+        
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user_role', response.user.role);
+        localStorage.setItem('user_name', response.user.name);
+        
+        // Get the pending source ID and redirect
+        const pendingSourceId = localStorage.getItem('pendingSourceRedirect');
+        if (pendingSourceId) {
+          localStorage.removeItem('pendingSourceRedirect');
+          navigate(`/source/${pendingSourceId}`);
+        }
+      } catch (error) {
+        console.log('Error', error);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Login Failed!",
+          showConfirmButton: false,
+          timer: 4000,
+        });
+      }
+    },
+    onError: async (error) => {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Login Failed!",
+        showConfirmButton: false,
+        timer: 4000,
+      });
+    }
+  });
 
 
   useEffect(() => {
@@ -77,6 +136,50 @@ const Home = () => {
 
   function showFullArticle(id) {
     navigate('/article/'+id);
+  }
+
+  function showSources(id, e) {
+    e.stopPropagation(); // Prevent card click
+    checkLogin(id);
+  }
+
+  function checkLogin(id) {
+    if(localStorage.getItem('token')) {
+      verifyAccessToken(id);
+    }
+    else {
+      // Store the article ID for redirect after login
+      localStorage.setItem('pendingSourceRedirect', id);
+      googleLogin();
+    }
+  }
+
+  async function verifyAccessToken(id) {
+    try {
+      let status = await verifyToken();
+      navigate('/source/'+id);
+    }
+    catch(e) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "warning",
+        title: "Session Expired!",
+        showConfirmButton: false,
+        timer: 4000,
+      });
+      let role = localStorage.getItem('user_role');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user_role');
+      localStorage.removeItem('user_name');
+      if(role=='admin') {
+        navigate('/login?ru=/source/'+id);
+      }
+      else {
+        navigate(window.location.pathname);
+        googleLogin();
+      }
+    }
   }
 
   const fetchArticles = async (page=1) => {
@@ -157,9 +260,17 @@ const Home = () => {
                   <p className="article-summary" style={{height: '400px', overflowWrap: 'break-word'}} >{
                   (article.summary.length>=80) ? article.summary.substr(0,500)+'...' : 
                   article.summary}</p>
-                  <Link className="read-more-button">
-                    Read More
-                  </Link>
+                  <div className="article-buttons">
+                    <Link to={`/article/${article._id}`} className="read-more-button">
+                      Read More
+                    </Link>
+                    <button 
+                      className="news-sources-button"
+                      onClick={(e) => showSources(article._id, e)}
+                    >
+                      News Sources
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

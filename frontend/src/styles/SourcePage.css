@@ -60,21 +60,23 @@
   }
   
   .back-button {
-    background: none;
-    border: none;
-    color: #1e3c72;
+    background: #1e3c72;
+    border: 1px solid #1e3c72;
+    color: white;
     font-size: 1rem;
     cursor: pointer;
-    padding: 0.5rem;
-    transition: color 0.3s ease;
-    display: block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: inline-block;
     margin: 0 0 2rem 0;
     text-align: left;
   }
   
   .back-button:hover {
+    background: #152a4f;
+    border-color: #152a4f;
     color: white;
-    background: #1e3c72;
   }
   
   .source-categories {

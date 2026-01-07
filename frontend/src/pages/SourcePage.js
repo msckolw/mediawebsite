@@ -155,7 +155,7 @@ const SourcePage = () => {
   return (
     <div className="source-page">
       <div className="source-header" id="mainDiv">
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button className="back-button" onClick={() => navigate(`/article/${id}`, { state: { from: 'sources' } })}>
           ← Back to Article
         </button>
         <h1>News Sources</h1>

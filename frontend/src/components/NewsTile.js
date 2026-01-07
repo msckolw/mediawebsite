@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../services/api';
 import './NewsTile.css';
 
 const NewsTile = ({ article }) => {
   const [isSaved, setIsSaved] = useState(false);
+  const navigate = useNavigate();
 
   // Check if article is bookmarked when component mounts
   useEffect(() => {
@@ -89,44 +90,74 @@ const NewsTile = ({ article }) => {
     }
   };
 
+  const handleViewSources = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('News Sources button clicked for article:', article._id);
+    
+    const isLoggedIn = localStorage.getItem('token');
+    if (!isLoggedIn) {
+      alert('Please login to view sources');
+      return;
+    }
+    
+    navigate(`/source/${article._id}`);
+  };
+
   return (
     <div className="news-tile">
-      <Link to={`/article/${article._id}`} className="news-tile-link">
-        <div className="news-tile-content">
-          <div className="news-image-container">
-            <img 
-              src={getImageUrl(article.imageUrl)} 
-              alt={article.title} 
-              className="news-image"
-            />
-          </div>
-          <div className="news-details">
+      <div className="news-tile-content">
+        <div className="news-image-container">
+          <img 
+            src={getImageUrl(article.imageUrl)} 
+            alt={article.title} 
+            className="news-image"
+          />
+        </div>
+        <div className="news-details">
+          <div className="news-header">
             <h3 className="news-title">{article.title}</h3>
-            <p className="news-summary">{article.summary}</p>
-            <div className="news-meta">
-              <span className="news-category">{article.category}</span>
-              <span className="news-author">By {article.author}</span>
+            {/* Save and Share Icons - Always visible */}
+            <div className="news-actions">
+              <button 
+                className={`action-btn save-btn ${isSaved ? 'saved' : ''}`}
+                onClick={handleSave}
+                title={isSaved ? 'Remove from saved' : 'Save article'}
+              >
+                <i className="fas fa-bookmark" style={{color: isSaved ? '#1a73e8' : '#666'}}></i>
+              </button>
+              <button 
+                className="action-btn share-btn"
+                onClick={handleShare}
+                title="Share article"
+              >
+                <i className="fas fa-share-alt"></i>
+              </button>
             </div>
           </div>
+          
+          <p className="news-summary">{article.summary}</p>
+          
+          <div className="news-meta">
+            <span className="news-category">{article.category}</span>
+            <span className="news-author">By {article.author}</span>
+          </div>
+          
+          {/* Bottom Action Buttons */}
+          <div className="news-bottom-actions" style={{border: '1px solid red', padding: '10px'}}>
+            <Link to={`/article/${article._id}`} className="read-more-btn" style={{border: '1px solid blue'}}>
+              Read More
+            </Link>
+            <button 
+              className="view-sources-btn"
+              onClick={handleViewSources}
+              style={{border: '1px solid green'}}
+            >
+              News Sources
+            </button>
+          </div>
         </div>
-      </Link>
-      
-      {/* Save and Share Icons */}
-      <div className="news-actions">
-        <button 
-          className={`action-btn save-btn ${isSaved ? 'saved' : ''}`}
-          onClick={handleSave}
-          title={isSaved ? 'Remove from saved' : 'Save article'}
-        >
-          <i className="fas fa-bookmark" style={{color: isSaved ? '#1a73e8' : '#666'}}></i>
-        </button>
-        <button 
-          className="action-btn share-btn"
-          onClick={handleShare}
-          title="Share article"
-        >
-          <i className="fas fa-share-alt"></i>
-        </button>
       </div>
     </div>
   );

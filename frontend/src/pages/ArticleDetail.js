@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/ArticleDetail.css';
 import {getArticle, loginOAuth, verifyToken} from '../services/api'
 import Swal from 'sweetalert2'
@@ -8,12 +8,26 @@ import { useGoogleHook } from '../hooks/gHook';
 const ArticleDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   
   let gHook = useGoogleHook('/source/'+id,false);
+
+  // Check if user came from sources page
+  const cameFromSources = location.state?.from === 'sources';
+
+  const handleBackNavigation = () => {
+    if (cameFromSources) {
+      // If came from sources, go back to homepage
+      navigate('/');
+    } else {
+      // If came from homepage or direct link, go to homepage
+      navigate('/');
+    }
+  };
   
   useEffect(() => {
     const fetchArticle = async () => {
@@ -230,7 +244,7 @@ const ArticleDetail = () => {
   
   return (
     <div className="article-detail">
-      <button className="back-button" onClick={() => navigate(-1)}>
+      <button className="back-button" onClick={handleBackNavigation}>
         ← Back to Articles
       </button>
       
