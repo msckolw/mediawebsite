@@ -19,7 +19,44 @@
     color: #666;
     font-size: 1.1rem;
     max-width: 700px;
-    margin: 0 auto;
+    margin: 0 auto 2rem auto;
+  }
+
+  /* Political Alignment Legend */
+  .political-legend {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 2rem auto;
+    max-width: 600px;
+  }
+
+  .political-legend h3 {
+    margin: 0 0 1rem 0;
+    color: #1e3c72;
+    font-size: 1.2rem;
+  }
+
+  .legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #333;
+  }
+
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: inline-block;
   }
   
   .back-button {
@@ -63,33 +100,12 @@
     align-items: center;
     padding: 1.5rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  /* Color theming for different categories */
-  .source-category:nth-child(1) .category-header {
-    background-color: #d32f2f;
+    transition: all 0.3s ease;
     color: white;
   }
-  
-  .source-category:nth-child(2) .category-header {
-    background-color: #f44336;
-    color: white;
-  }
-  
-  .source-category:nth-child(3) .category-header {
-    background-color: #9e9e9e;
-    color: white;
-  }
-  
-  .source-category:nth-child(4) .category-header {
-    background-color: #2196f3;
-    color: white;
-  }
-  
-  .source-category:nth-child(5) .category-header {
-    background-color: #0d47a1;
-    color: white;
+
+  .category-header:hover {
+    opacity: 0.9;
   }
   
   .category-header h2 {
@@ -123,6 +139,9 @@
     cursor: pointer;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .category-content li:last-child {
@@ -131,6 +150,18 @@
   
   .category-content li:hover {
     background-color: #f8f9fa;
+  }
+
+  .source-url {
+    flex: 1;
+    word-break: break-all;
+    color: #333;
+  }
+
+  .external-link-icon {
+    margin-left: 1rem;
+    color: #666;
+    font-size: 0.9rem;
   }
   
   @media (max-width: 768px) {
@@ -141,6 +172,19 @@
     .source-header h1 {
       font-size: 2rem;
     }
+
+    .political-legend {
+      padding: 1rem;
+    }
+
+    .legend-items {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .legend-item {
+      font-size: 0.85rem;
+    }
   
     .category-header {
       padding: 1.2rem;
@@ -148,5 +192,17 @@
   
     .category-header h2 {
       font-size: 1.2rem;
+    }
+
+    .category-content li {
+      padding: 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .external-link-icon {
+      margin-left: 0;
+      align-self: flex-end;
     }
   }

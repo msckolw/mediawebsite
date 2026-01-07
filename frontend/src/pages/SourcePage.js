@@ -5,70 +5,54 @@ import { getArticle } from '../services/api';
 
 const SourcePage = () => {
   const navigate = useNavigate();
-  const [expandedSections, setExpandedSections] = useState({
-    /*right: false,
-    centerRight: false,
-    swingState: false,
-    centerLeft: false,
-    left: false*/
-  });
+  const [expandedSections, setExpandedSections] = useState({});
+
+  // Political alignment color mapping
+  const politicalColors = {
+    'Left': '#C62828',           // Red
+    'Liberal': '#C62828',        // Red  
+    'Center Left': '#E53935',    // Medium Red
+    'Center Right': '#1E88E5',   // Medium Blue
+    'Right': '#0D47A1',          // Blue
+    'Conservative': '#0D47A1',   // Blue
+    'Swing Media': '#7E57C2',    // Purple
+    'Swing': '#7E57C2',          // Purple
+    'Independent': '#7E57C2',    // Purple
+    'Neutral': '#7E57C2'         // Purple
+  };
 
   const toggleSection = (section) => {
-    //console.log(expandedSections[section])
     setExpandedSections({
       ...expandedSections,
       [section]: !expandedSections[section]
     });
   };
 
-  /*const sourceCategories = {
-    right: [
-     
-    ],
-    centerRight: [
-     
-    ],
-    swingState: [
-     
-    ],
-    centerLeft: [
-     
-    ],
-    left: [
-   
-    ]
-  };*/
-
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sourceCategories,setSourceCategories] = useState([]);
+  const [sourceCategories, setSourceCategories] = useState([]);
   
-
   useEffect(() => {
     const fetchArticle = async () => {
       try {
         setLoading(true);
-        const response = await getArticle(id,true);
+        const response = await getArticle(id, true);
         if (response && response.source.length) {
-          //setArticle(response.data);
-          let tempSrc={};
-          for(let s of response.source) {
-            if(!tempSrc[s.source_type])
-              tempSrc[s.source_type]=[];
+          let tempSrc = {};
+          for (let s of response.source) {
+            if (!tempSrc[s.source_type])
+              tempSrc[s.source_type] = [];
             tempSrc[s.source_type].push(s.url);
           }
-          //if(tempSrc.length) {
-            let tempArr=[], tempSections={};
-            for(let key in tempSrc) {
-              tempArr.push({source: key, data: tempSrc[key]});
-              tempSections[key]=false;
-            }
-            setSourceCategories(tempArr);
-            setExpandedSections(tempSections);
-            
-            //console.log(tempArr,tempSections);
-          //}
+          
+          let tempArr = [], tempSections = {};
+          for (let key in tempSrc) {
+            tempArr.push({ source: key, data: tempSrc[key] });
+            tempSections[key] = false;
+          }
+          setSourceCategories(tempArr);
+          setExpandedSections(tempSections);
         } else {
           setError('No Source found');
         }
@@ -84,15 +68,16 @@ const SourcePage = () => {
 
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // Adds a nice scroll animation
+      behavior: "smooth",
     });
-
   }, [id]);
-
-  
 
   const openExternalLink = (url) => {
     window.open(url, '_blank');
+  };
+
+  const getPoliticalColor = (sourceType) => {
+    return politicalColors[sourceType] || '#666666'; // Default gray if not found
   };
 
   if (loading) {
@@ -127,135 +112,69 @@ const SourcePage = () => {
   }
 
   return (
-    <div className="source-page" >
-      <div className="source-header"id="mainDiv">
+    <div className="source-page">
+      <div className="source-header" id="mainDiv">
         <button className="back-button" onClick={() => navigate(-1)}>
           ← Back to Article
         </button>
         <h1>News Sources</h1>
         <p>Explore different perspectives from various news sources across the political spectrum</p>
+        
+        {/* Political Alignment Legend */}
+        <div className="political-legend">
+          <h3>Political Alignment Guide</h3>
+          <div className="legend-items">
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: '#C62828' }}></span>
+              <span>Left / Liberal</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: '#E53935' }}></span>
+              <span>Center Left</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: '#7E57C2' }}></span>
+              <span>Swing Media</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: '#1E88E5' }}></span>
+              <span>Center Right</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: '#0D47A1' }}></span>
+              <span>Right / Conservative</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="source-categories">
-        {sourceCategories.map((s,i) =>
-        <div className="source-category" key={i}>
-          <div 
-            className="category-header"
-            onClick={() => toggleSection(s.source)}
-          >
-            <h2>{s.source}</h2>
-            <span className={`arrow ${expandedSections[s.source] ? 'up' : 'down'}`}>
-              {expandedSections[s.source] ? '▲' : '▼'}
-            </span>
-          </div>
-          {expandedSections[s.source] && (
-            <div className="category-content">
-              <ul>
-                {s.data.map((source, index) => (
-                  <li key={index} onClick={() => openExternalLink(source)}>
-                    {source}
-                  </li>
-                ))}
-              </ul>
+        {sourceCategories.map((s, i) => (
+          <div className="source-category" key={i}>
+            <div 
+              className="category-header"
+              onClick={() => toggleSection(s.source)}
+              style={{ backgroundColor: getPoliticalColor(s.source) }}
+            >
+              <h2>{s.source}</h2>
+              <span className={`arrow ${expandedSections[s.source] ? 'up' : 'down'}`}>
+                {expandedSections[s.source] ? '▲' : '▼'}
+              </span>
             </div>
-          )}
-        </div> )}
-
-        
-        {/* <div className="source-category"> 
-          <div 
-            className="category-header"
-            onClick={() => toggleSection('centerRight')}
-          >
-            <h2>Center Right</h2>
-            <span className={`arrow ${expandedSections.centerRight ? 'up' : 'down'}`}>
-              {expandedSections.centerRight ? '▲' : '▼'}
-            </span>
+            {expandedSections[s.source] && (
+              <div className="category-content">
+                <ul>
+                  {s.data.map((source, index) => (
+                    <li key={index} onClick={() => openExternalLink(source)}>
+                      <span className="source-url">{source}</span>
+                      <span className="external-link-icon">↗</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-          {expandedSections.centerRight && (
-            <div className="category-content">
-              <ul>
-                {sourceCategories.centerRight.map((source, index) => (
-                  <li key={index} onClick={() => openExternalLink(source.url)}>
-                    {source.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        
-        <div className="source-category">
-          <div 
-            className="category-header"
-            onClick={() => toggleSection('swingState')}
-          >
-            <h2>Swing State</h2>
-            <span className={`arrow ${expandedSections.swingState ? 'up' : 'down'}`}>
-              {expandedSections.swingState ? '▲' : '▼'}
-            </span>
-          </div>
-          {expandedSections.swingState && (
-            <div className="category-content">
-              <ul>
-                {sourceCategories.swingState.map((source, index) => (
-                  <li key={index} onClick={() => openExternalLink(source.url)}>
-                    {source.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        
-        <div className="source-category">
-          <div 
-            className="category-header"
-            onClick={() => toggleSection('centerLeft')}
-          >
-            <h2>Center Left</h2>
-            <span className={`arrow ${expandedSections.centerLeft ? 'up' : 'down'}`}>
-              {expandedSections.centerLeft ? '▲' : '▼'}
-            </span>
-          </div>
-          {expandedSections.centerLeft && (
-            <div className="category-content">
-              <ul>
-                {sourceCategories.centerLeft.map((source, index) => (
-                  <li key={index} onClick={() => openExternalLink(source.url)}>
-                    {source.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        
-        <div className="source-category">
-          <div 
-            className="category-header"
-            onClick={() => toggleSection('left')}
-          >
-            <h2>Left</h2>
-            <span className={`arrow ${expandedSections.left ? 'up' : 'down'}`}>
-              {expandedSections.left ? '▲' : '▼'}
-            </span>
-          </div>
-          {expandedSections.left && (
-            <div className="category-content">
-              <ul>
-                {sourceCategories.left.map((source, index) => (
-                  <li key={index} onClick={() => openExternalLink(source.url)}>
-                    {source.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>*/}
+        ))}
       </div>
     </div>
   );
