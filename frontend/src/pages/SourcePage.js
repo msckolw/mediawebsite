@@ -9,16 +9,18 @@ const SourcePage = () => {
 
   // Political alignment color mapping
   const politicalColors = {
-    'Left': '#C62828',           // Red
-    'Liberal': '#C62828',        // Red  
-    'Center Left': '#E53935',    // Medium Red
-    'Center Right': '#1E88E5',   // Medium Blue
-    'Right': '#0D47A1',          // Blue
-    'Conservative': '#0D47A1',   // Blue
-    'Swing Media': '#7E57C2',    // Purple
-    'Swing': '#7E57C2',          // Purple
-    'Independent': '#7E57C2',    // Purple
-    'Neutral': '#7E57C2'         // Purple
+    'Left': '#C62828',                    // Red
+    'Liberal': '#C62828',                 // Red  
+    'Left / Liberal': '#C62828',          // Red
+    'Center Left': '#E53935',             // Medium Red
+    'Center Right': '#1E88E5',            // Medium Blue
+    'Right': '#0D47A1',                   // Blue
+    'Conservative': '#0D47A1',            // Blue
+    'Right / Conservative': '#0D47A1',    // Blue
+    'Swing Media': '#7E57C2',             // Purple
+    'Swing': '#7E57C2',                   // Purple
+    'Independent': '#7E57C2',             // Purple
+    'Neutral': '#7E57C2'                  // Purple
   };
 
   const toggleSection = (section) => {
@@ -50,6 +52,8 @@ const SourcePage = () => {
           for (let key in tempSrc) {
             tempArr.push({ source: key, data: tempSrc[key] });
             tempSections[key] = false;
+            // Debug: Log the source types to console
+            console.log('Source type found:', key);
           }
           setSourceCategories(tempArr);
           setExpandedSections(tempSections);
@@ -77,7 +81,44 @@ const SourcePage = () => {
   };
 
   const getPoliticalColor = (sourceType) => {
-    return politicalColors[sourceType] || '#666666'; // Default gray if not found
+    // Direct match first
+    if (politicalColors[sourceType]) {
+      return politicalColors[sourceType];
+    }
+    
+    // Case-insensitive and partial matching
+    const normalizedSourceType = sourceType.toLowerCase().trim();
+    
+    // Check for Left/Liberal variations
+    if (normalizedSourceType.includes('left') && normalizedSourceType.includes('liberal')) {
+      return '#C62828'; // Red
+    }
+    if (normalizedSourceType.includes('left') || normalizedSourceType.includes('liberal')) {
+      if (normalizedSourceType.includes('center')) {
+        return '#E53935'; // Medium Red for Center Left
+      }
+      return '#C62828'; // Red for Left/Liberal
+    }
+    
+    // Check for Right/Conservative variations
+    if (normalizedSourceType.includes('right') && normalizedSourceType.includes('conservative')) {
+      return '#0D47A1'; // Blue
+    }
+    if (normalizedSourceType.includes('right') || normalizedSourceType.includes('conservative')) {
+      if (normalizedSourceType.includes('center')) {
+        return '#1E88E5'; // Medium Blue for Center Right
+      }
+      return '#0D47A1'; // Blue for Right/Conservative
+    }
+    
+    // Check for Swing/Independent/Neutral
+    if (normalizedSourceType.includes('swing') || 
+        normalizedSourceType.includes('independent') || 
+        normalizedSourceType.includes('neutral')) {
+      return '#7E57C2'; // Purple
+    }
+    
+    return '#666666'; // Default gray if not found
   };
 
   if (loading) {
