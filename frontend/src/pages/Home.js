@@ -140,7 +140,8 @@ const Home = () => {
 
   function showSources(id, e) {
     e.stopPropagation(); // Prevent card click
-    checkLogin(id);
+    // Direct navigation to sources without authentication
+    navigate('/source/'+id);
   }
 
   function checkLogin(id) {

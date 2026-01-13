@@ -304,7 +304,7 @@ const ArticleDetail = () => {
           
           <button 
             className="news-sources-button"
-            onClick={() => checkLogin(id)}
+            onClick={() => navigate('/source/'+id)}
           >
             News Sources
           </button>
