@@ -63,8 +63,10 @@ const Footer = () => {
       
       <div className="footer-bottom">
         <p>
-          &copy; {new Date().getFullYear()} The NoBiasMedia. All rights reserved. 
-          Developed by{' '}
+          &copy; {new Date().getFullYear()} The NoBias Media. All rights reserved.
+        </p>
+        <p style={{ marginTop: '0.5rem' }}>
+          An initiative by{' '}
           <a 
             href="https://www.teroment.com" 
             target="_blank" 
