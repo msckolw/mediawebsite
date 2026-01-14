@@ -10,6 +10,7 @@ import './components/ScrollTopButton.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTopButton from './components/ScrollTopButton';
+import CookieConsent from './components/CookieConsent';
 import Home from './pages/Home';
 import { routes } from './routes';
 
@@ -50,6 +51,7 @@ function App() {
       </main>
       <Footer />
       <ScrollToTopButton />
+      <CookieConsent />
     </div>
   );
 }
