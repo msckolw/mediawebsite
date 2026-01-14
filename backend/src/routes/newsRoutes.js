@@ -67,25 +67,17 @@ router.get('/category/:cat', async (req, res) => {
 // Get a single article
 router.get('/news/:id', async (req, res) => {
   try {
-    //const article = await News.findById(req.params.id);
-    let souce_page = req.query.source=='true' ? true : false;
+    let source_page = req.query.source=='true' ? true : false;
 
-    if(souce_page) {
-
-      //let {message, code} = validateJWT(req.headers.authorization);
-      let {message, code} = validateJWT(req.cookies.access_token);
-
-      if(code!=1) {
-        return res.status(code).json({message});
-      }      
-
+    // Always allow access to articles with sources - no authentication required
+    const article = await News.find({_id: req.params.id},{source: source_page});
+    if (!article || article.length === 0) {
+      return res.status(404).json({ message: 'Article not found' });
     }
-
-    const article = await News.find({_id: req.params.id},{source: souce_page});
-    if (!article) return res.status(400).json({ message: 'Article not found' });
     res.status(200).json(article[0]);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error fetching article:', error);
+    res.status(500).json({ message: error.message });
   }
 });
 
