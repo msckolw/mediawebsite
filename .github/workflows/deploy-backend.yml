@@ -1,0 +1,62 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create SSH key file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/github_actions_ec2
+          chmod 600 ~/.ssh/github_actions_ec2
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              -i ~/.ssh/github_actions_ec2 \
+              ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          
+          echo "🚀 Starting deployment..."
+          
+          # Navigate to project directory
+          cd ~/mediawebsite || cd /home/ubuntu/mediawebsite || { echo "Project directory not found"; exit 1; }
+          
+          echo "📥 Pulling latest changes from GitHub..."
+          git pull origin main
+          
+          echo "📦 Installing backend dependencies..."
+          cd backend
+          npm install --production
+          
+          echo "🔄 Restarting backend service..."
+          pm2 restart nobias-backend || pm2 start src/server.js --name nobias-backend
+          
+          echo "💾 Saving PM2 configuration..."
+          pm2 save
+          
+          echo "✅ Deployment completed successfully!"
+          
+          echo "📊 Backend status:"
+          pm2 status nobias-backend
+          
+          echo "📝 Recent logs:"
+          pm2 logs nobias-backend --lines 10 --nostream
+          
+          EOF
+
+      - name: Verify deployment
+        run: |
+          echo "✅ Backend deployed successfully to EC2!"
+          echo "🌐 Your backend should be running at: http://${{ secrets.EC2_HOST }}:5002"
