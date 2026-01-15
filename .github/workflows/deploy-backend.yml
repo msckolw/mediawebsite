@@ -28,17 +28,27 @@ jobs:
           ssh -o StrictHostKeyChecking=no \
               -i ~/.ssh/github_actions_ec2 \
               ubuntu@${{ secrets.EC2_HOST }} bash -s << 'ENDSSH'
-          set -e
           
-          echo "🔍 Finding backend directory..."
-          find /home/ubuntu -maxdepth 3 -type d -name backend 2>/dev/null || echo "No backend dir found"
-          find /home/ubuntu -maxdepth 3 -type d -name mediawebsite 2>/dev/null || echo "No mediawebsite dir found"
+          echo "🔍 Discovering EC2 environment..."
+          echo "Current user:"
+          whoami
           
-          echo "📂 Listing /home/ubuntu contents:"
-          ls -la /home/ubuntu/
+          echo "Home directory:"
+          echo $HOME
           
-          echo "❌ Stopping here to show directory structure"
-          exit 1
+          echo "Current working directory:"
+          pwd
+          
+          echo "Listing current directory:"
+          ls -la
+          
+          echo "Searching for backend in common locations:"
+          find ~ -maxdepth 3 -type d -name backend 2>/dev/null || echo "No backend found in home"
+          find /var/www -maxdepth 3 -type d -name backend 2>/dev/null || echo "No backend in /var/www"
+          find /opt -maxdepth 3 -type d -name backend 2>/dev/null || echo "No backend in /opt"
+          
+          echo "Checking PM2 process:"
+          pm2 list || echo "PM2 not running or no processes"
           
           ENDSSH
 
