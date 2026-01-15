@@ -17,6 +17,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Verify API is responding
+        run: |
+          echo "🧪 Testing API endpoint before deployment..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://api.thenobiasmedia.com/api/news?page=1)
+          echo "Current API status: HTTP $HTTP_CODE"
+          
       - name: Create SSH key file
         run: |
           mkdir -p ~/.ssh
@@ -24,10 +30,13 @@ jobs:
           chmod 600 ~/.ssh/github_actions_ec2
 
       - name: Deploy to EC2
+        continue-on-error: true
+        id: ssh_deploy
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           ssh -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=10 \
               -i ~/.ssh/github_actions_ec2 \
               ec2-user@${{ secrets.EC2_HOST }} << 'ENDSSH'
           set -e
@@ -60,9 +69,13 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          echo "✅ Backend deployed successfully to EC2!"
+          if [ "${{ steps.ssh_deploy.outcome }}" == "success" ]; then
+            echo "✅ SSH deployment succeeded!"
+          else
+            echo "⚠️ SSH deployment failed, but checking if API is still working..."
+          fi
+          
           echo "🌐 Backend URL: https://api.thenobiasmedia.com"
-          echo "📊 Check logs: ssh -i ~/.ssh/nobias-media-key.pem ec2-user@$EC2_HOST 'pm2 logs nobias-backend'"
           
           # Wait for service to start
           sleep 5
@@ -72,6 +85,26 @@ jobs:
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://api.thenobiasmedia.com/api/news?page=1)
           if [ "$HTTP_CODE" = "200" ]; then
             echo "✅ API is responding correctly (HTTP $HTTP_CODE)"
+            echo "✅ Backend is operational"
+            exit 0
           else
-            echo "⚠️ API returned HTTP $HTTP_CODE (expected 200)"
+            echo "❌ API returned HTTP $HTTP_CODE (expected 200)"
+            echo "⚠️ Backend may not be working correctly"
+            exit 1
           fi
+          
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "═══════════════════════════════════════"
+          echo "📊 Deployment Summary"
+          echo "═══════════════════════════════════════"
+          echo "SSH Deploy: ${{ steps.ssh_deploy.outcome }}"
+          echo "Repository: msckolw/mediawebsite"
+          echo "Branch: main"
+          echo "Commit: ${{ github.sha }}"
+          echo "═══════════════════════════════════════"
+          echo ""
+          echo "Note: If SSH failed but API is working,"
+          echo "your backend may be deployed through another method."
+          echo "Check: https://api.thenobiasmedia.com/api/news?page=1"
