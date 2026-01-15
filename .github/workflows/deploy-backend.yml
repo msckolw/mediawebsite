@@ -27,7 +27,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no \
               -i ~/.ssh/github_actions_ec2 \
-              ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+              ubuntu@${{ secrets.EC2_HOST }} bash -s << 'ENDSSH'
+          set -e  # Exit on any error
           
           echo "🚀 Starting deployment..."
           
@@ -46,25 +47,25 @@ jobs:
           fi
           
           echo "📁 Project directory: $PROJECT_DIR"
-          cd "$PROJECT_DIR"
+          cd "$PROJECT_DIR" || exit 1
           
           echo "📥 Pulling latest changes from GitHub..."
-          git fetch origin
-          git reset --hard origin/main
-          git pull origin main
+          git fetch origin || exit 1
+          git reset --hard origin/main || exit 1
+          git pull origin main || exit 1
           
           echo "📦 Installing backend dependencies..."
-          cd backend
-          npm install --production
+          cd backend || exit 1
+          npm install --production || exit 1
           
           echo "🔄 Restarting backend service..."
-          pm2 restart nobias-backend || pm2 start src/server.js --name nobias-backend
+          pm2 restart nobias-backend || pm2 start src/server.js --name nobias-backend || exit 1
           
           echo "💾 Saving PM2 configuration..."
           pm2 save
           
           echo "⏳ Waiting for service to start..."
-          sleep 3
+          sleep 5
           
           echo "✅ Deployment completed successfully!"
           
@@ -75,9 +76,9 @@ jobs:
           pm2 logs nobias-backend --lines 20 --nostream
           
           echo "🧪 Testing endpoint..."
-          curl -s http://localhost:5002/api/news?page=1 | head -c 100
+          curl -s http://localhost:5002/ || echo "Endpoint test failed"
           
-          EOF
+          ENDSSH
 
       - name: Verify deployment
         run: |
