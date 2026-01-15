@@ -64,7 +64,7 @@ router.get('/category/:cat', async (req, res) => {
   }
 });
 
-// Get a single article
+// Get a single article - PUBLIC ENDPOINT (no auth required)
 router.get('/news/:id', async (req, res) => {
   try {
     let source_page = req.query.source=='true' ? true : false;
