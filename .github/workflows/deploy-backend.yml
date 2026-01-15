@@ -30,10 +30,26 @@ jobs:
           
           echo "🚀 Starting deployment..."
           
-          # Navigate to project directory
-          cd ~/mediawebsite || cd /home/ubuntu/mediawebsite || { echo "Project directory not found"; exit 1; }
+          # Find the project directory
+          if [ -d ~/mediawebsite ]; then
+            PROJECT_DIR=~/mediawebsite
+          elif [ -d /home/ubuntu/mediawebsite ]; then
+            PROJECT_DIR=/home/ubuntu/mediawebsite
+          elif [ -d /var/www/mediawebsite ]; then
+            PROJECT_DIR=/var/www/mediawebsite
+          else
+            echo "❌ Project directory not found!"
+            echo "Searching for project..."
+            find ~ -name "mediawebsite" -type d 2>/dev/null | head -1
+            exit 1
+          fi
+          
+          echo "📁 Project directory: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
           
           echo "📥 Pulling latest changes from GitHub..."
+          git fetch origin
+          git reset --hard origin/main
           git pull origin main
           
           echo "📦 Installing backend dependencies..."
@@ -46,13 +62,19 @@ jobs:
           echo "💾 Saving PM2 configuration..."
           pm2 save
           
+          echo "⏳ Waiting for service to start..."
+          sleep 3
+          
           echo "✅ Deployment completed successfully!"
           
           echo "📊 Backend status:"
           pm2 status nobias-backend
           
           echo "📝 Recent logs:"
-          pm2 logs nobias-backend --lines 10 --nostream
+          pm2 logs nobias-backend --lines 20 --nostream
+          
+          echo "🧪 Testing endpoint..."
+          curl -s http://localhost:5002/api/news?page=1 | head -c 100
           
           EOF
 

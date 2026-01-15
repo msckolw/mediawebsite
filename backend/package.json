@@ -1,7 +1,7 @@
 {
   "name": "news-website-backend",
-  "version": "1.0.0",
-  "description": "Backend for News Website",
+  "version": "1.1.0",
+  "description": "Backend for News Website - Auth removed for news sources",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
