@@ -27,16 +27,13 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no \
               -i ~/.ssh/github_actions_ec2 \
-              ubuntu@${{ secrets.EC2_HOST }} \
-              'echo "🔍 Discovering EC2 environment..." && \
-               echo "Current user:" && whoami && \
-               echo "Home directory:" && echo $HOME && \
-               echo "Current working directory:" && pwd && \
-               echo "Listing current directory:" && ls -la && \
-               echo "Searching for backend:" && \
-               find ~ -maxdepth 3 -type d -name backend 2>/dev/null || echo "No backend in home" && \
-               echo "Checking PM2:" && \
-               pm2 list || echo "PM2 not found"'
+              ubuntu@${{ secrets.EC2_HOST }} << 'ENDSSH'
+          whoami
+          pwd
+          ls -la
+          find ~ -maxdepth 3 -type d -name backend 2>/dev/null
+          pm2 list
+          ENDSSH
 
       - name: Verify deployment
         run: |
