@@ -30,38 +30,15 @@ jobs:
               ubuntu@${{ secrets.EC2_HOST }} bash -s << 'ENDSSH'
           set -e
           
-          echo "🚀 Starting deployment..."
+          echo "🔍 Finding backend directory..."
+          find /home/ubuntu -maxdepth 3 -type d -name backend 2>/dev/null || echo "No backend dir found"
+          find /home/ubuntu -maxdepth 3 -type d -name mediawebsite 2>/dev/null || echo "No mediawebsite dir found"
           
-          cd /home/ubuntu/mediawebsite/backend || {
-            echo "❌ Backend directory not found"
-            exit 1
-          }
+          echo "📂 Listing /home/ubuntu contents:"
+          ls -la /home/ubuntu/
           
-          echo "📥 Pulling latest code..."
-          git pull origin main
-          
-          echo "📦 Installing dependencies..."
-          npm install --production
-          
-          echo "🔄 Restarting PM2..."
-          pm2 restart nobias-backend || pm2 start src/server.js --name nobias-backend
-          
-          echo "💾 Saving PM2 configuration..."
-          pm2 save
-          
-          echo "⏳ Waiting for service to start..."
-          sleep 3
-          
-          echo "✅ Deployment completed successfully!"
-          
-          echo "📊 Backend status:"
-          pm2 status nobias-backend
-          
-          echo "📝 Recent logs:"
-          pm2 logs nobias-backend --lines 15 --nostream
-          
-          echo "🧪 Testing endpoint..."
-          curl -s http://localhost:5002/ || echo "Endpoint test failed"
+          echo "❌ Stopping here to show directory structure"
+          exit 1
           
           ENDSSH
 
