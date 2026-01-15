@@ -1,9 +1,11 @@
 name: SSH Connection Test
 
 on:
-  push:
-    branches:
-      - main
+  # Disabled - uncomment to re-enable
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:  # Can still run manually
 
 jobs:
   test-ssh:

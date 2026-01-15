@@ -69,4 +69,9 @@ jobs:
           
           # Test the endpoint
           echo "🧪 Testing API endpoint..."
-          curl -f https://api.thenobiasmedia.com/api/news?page=1 || echo "⚠️ API test failed"
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://api.thenobiasmedia.com/api/news?page=1)
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ API is responding correctly (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️ API returned HTTP $HTTP_CODE (expected 200)"
+          fi
