@@ -20,6 +20,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no \
               -i ~/.ssh/github_actions_ec2 \
-              ubuntu@${{ secrets.EC2_HOST }} \
-              "echo 'GitHub Actions connected successfully'; hostname; uptime"
+              ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          echo "GitHub Actions connected successfully"
+          hostname
+          uptime
+          EOF
 
