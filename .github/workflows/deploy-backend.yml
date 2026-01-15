@@ -24,18 +24,49 @@ jobs:
           chmod 600 ~/.ssh/github_actions_ec2
 
       - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           ssh -o StrictHostKeyChecking=no \
               -i ~/.ssh/github_actions_ec2 \
-              ubuntu@${{ secrets.EC2_HOST }} << 'ENDSSH'
-          whoami
-          pwd
-          ls -la
-          find ~ -maxdepth 3 -type d -name backend 2>/dev/null
-          pm2 list
+              ec2-user@${{ secrets.EC2_HOST }} << 'ENDSSH'
+          set -e
+          echo "🚀 Starting deployment..."
+          
+          # Navigate to project directory
+          cd ~/mediawebsite
+          
+          # Pull latest changes
+          echo "📥 Pulling latest code from GitHub..."
+          git pull origin main
+          
+          # Navigate to backend
+          cd backend
+          
+          # Install dependencies
+          echo "📦 Installing dependencies..."
+          npm install --production
+          
+          # Restart PM2 process
+          echo "🔄 Restarting backend service..."
+          pm2 restart nobias-backend
+          
+          # Check status
+          echo "✅ Deployment complete!"
+          pm2 status nobias-backend
           ENDSSH
 
       - name: Verify deployment
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           echo "✅ Backend deployed successfully to EC2!"
-          echo "🌐 Your backend should be running at: http://${{ secrets.EC2_HOST }}:5002"
+          echo "🌐 Backend URL: https://api.thenobiasmedia.com"
+          echo "📊 Check logs: ssh -i ~/.ssh/nobias-media-key.pem ec2-user@$EC2_HOST 'pm2 logs nobias-backend'"
+          
+          # Wait for service to start
+          sleep 5
+          
+          # Test the endpoint
+          echo "🧪 Testing API endpoint..."
+          curl -f https://api.thenobiasmedia.com/api/news?page=1 || echo "⚠️ API test failed"

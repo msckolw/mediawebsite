@@ -4,10 +4,13 @@
 
 ### Step 1: Connect to Your EC2 Instance
 
-Replace `YOUR_KEY.pem` and `YOUR_EC2_IP` with your actual values:
-
 ```bash
-ssh -i /path/to/YOUR_KEY.pem ec2-user@YOUR_EC2_IP
+ssh -i ~/.ssh/nobias-media-key.pem ec2-user@api.thenobiasmedia.com
+```
+
+Or using the IP directly:
+```bash
+ssh -i ~/.ssh/nobias-media-key.pem ec2-user@<EC2_PUBLIC_IP>
 ```
 
 ### Step 2: Deploy the Changes
@@ -51,7 +54,7 @@ pm2 logs nobias-backend --lines 30
 If you want to do it all at once:
 
 ```bash
-ssh -i /path/to/YOUR_KEY.pem ec2-user@YOUR_EC2_IP "cd ~/mediawebsite && git pull origin main && cd backend && pm2 restart nobias-backend && pm2 logs nobias-backend --lines 20"
+ssh -i ~/.ssh/nobias-media-key.pem ec2-user@api.thenobiasmedia.com "cd ~/mediawebsite && git pull origin main && cd backend && pm2 restart nobias-backend && pm2 logs nobias-backend --lines 20"
 ```
 
 ---
@@ -67,7 +70,7 @@ pm2 save
 
 ### If you get permission errors:
 ```bash
-chmod 400 /path/to/YOUR_KEY.pem
+chmod 400 ~/.ssh/nobias-media-key.pem
 ```
 
 ### If git pull fails:
@@ -100,6 +103,43 @@ pm2 restart nobias-backend
 
 ---
 
+## AWS CLI Commands
+
+### Check EC2 Instance Status
+```bash
+aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=nobias-media-backend" \
+  --query "Reservations[*].Instances[*].[InstanceId,State.Name,PublicIpAddress]" \
+  --output table
+```
+
+### Start/Stop EC2 Instance
+```bash
+# Stop instance
+aws ec2 stop-instances --instance-ids <INSTANCE_ID>
+
+# Start instance
+aws ec2 start-instances --instance-ids <INSTANCE_ID>
+
+# Reboot instance
+aws ec2 reboot-instances --instance-ids <INSTANCE_ID>
+```
+
+### Check Security Group Rules
+```bash
+aws ec2 describe-security-groups \
+  --group-ids <SECURITY_GROUP_ID> \
+  --query "SecurityGroups[*].IpPermissions[*].[IpProtocol,FromPort,ToPort,IpRanges]" \
+  --output table
+```
+
+### View CloudWatch Logs (if configured)
+```bash
+aws logs tail /aws/ec2/nobias-backend --follow
+```
+
+---
+
 ## Need Help?
 
 If you encounter any issues:
@@ -111,12 +151,17 @@ If you encounter any issues:
 
 ---
 
-## Your EC2 Setup Info Needed
+## Your EC2 Setup Info
 
-To help you better, please provide:
-- EC2 instance IP address
-- Path to your SSH key file
-- Directory where your project is located on EC2
-- Username (usually `ec2-user` or `ubuntu`)
+**Current Configuration:**
+- **Domain:** api.thenobiasmedia.com
+- **SSH Key:** ~/.ssh/nobias-media-key.pem
+- **Project Directory:** ~/mediawebsite
+- **Username:** ec2-user
+- **Backend Port:** 5002
+- **PM2 Process Name:** nobias-backend
 
-Then I can give you the exact commands to run!
+**AWS EC2 Instance Details:**
+- **Instance Type:** t2.micro (or as configured)
+- **Region:** us-east-1 (or your configured region)
+- **Security Group:** Must allow ports 22 (SSH), 5002 (Backend), 443 (HTTPS)

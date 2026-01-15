@@ -20,23 +20,20 @@ const newsSchema = new mongoose.Schema({
     type: String,
     default: 'https://placehold.co/300x200?text=Nobiased+Media'
   },
-  source: {
-    type: {
-      source_type: {
-        type: String,
-        trim: true
-      },
-      _id: {
-        type: String,
-        trim: true
-      },
-      url: {
-        type: String,
-        trim: true
-      }
+  source: [{
+    source_type: {
+      type: String,
+      trim: true
     },
-    default: []
-  },
+    _id: {
+      type: String,
+      trim: true
+    },
+    url: {
+      type: String,
+      trim: true
+    }
+  }],
   category: {
     type: String,
     required: [true, 'Category is required'],

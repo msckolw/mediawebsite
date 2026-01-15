@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "NoBias Media",
+    "slug": "nobias-media",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1e3c72"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nobiasmedia.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#1e3c72"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.nobiasmedia.app"
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bc6f2a68-bf0b-46c1-a89d-bfb52c98d122"
+      }
+    }
+  }
+}

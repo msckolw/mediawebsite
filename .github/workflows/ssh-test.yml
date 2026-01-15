@@ -20,9 +20,13 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no \
               -i ~/.ssh/github_actions_ec2 \
-              ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          echo "GitHub Actions connected successfully"
-          hostname
-          uptime
+              ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+          echo "✅ GitHub Actions connected successfully"
+          echo "📍 Hostname: $(hostname)"
+          echo "⏰ Uptime: $(uptime)"
+          echo "💾 Disk usage:"
+          df -h | grep -E '^/dev/'
+          echo "🔧 PM2 status:"
+          pm2 status
           EOF
 

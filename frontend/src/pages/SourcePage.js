@@ -15,8 +15,8 @@ const SourcePage = () => {
     'Center Left': '#E53935',             // Medium Red
     'Center Right': '#1E88E5',            // Medium Blue
     'Right': '#0D47A1',                   // Blue
-    'Conservative': '#0D47A1',            // Blue
-    'Right / Conservative': '#0D47A1',    // Blue
+    'Traditionalist': '#0D47A1',          // Blue
+    'Right / Traditionalist': '#0D47A1',  // Blue
     'Swing Media': '#7E57C2',             // Purple
     'Swing': '#7E57C2',                   // Purple
     'Independent': '#7E57C2',             // Purple
@@ -100,15 +100,15 @@ const SourcePage = () => {
       return '#C62828'; // Red for Left/Liberal
     }
     
-    // Check for Right/Conservative variations
-    if (normalizedSourceType.includes('right') && normalizedSourceType.includes('conservative')) {
+    // Check for Right/Traditionalist variations
+    if (normalizedSourceType.includes('right') && normalizedSourceType.includes('traditionalist')) {
       return '#0D47A1'; // Blue
     }
-    if (normalizedSourceType.includes('right') || normalizedSourceType.includes('conservative')) {
+    if (normalizedSourceType.includes('right') || normalizedSourceType.includes('traditionalist')) {
       if (normalizedSourceType.includes('center')) {
         return '#1E88E5'; // Medium Blue for Center Right
       }
-      return '#0D47A1'; // Blue for Right/Conservative
+      return '#0D47A1'; // Blue for Right/Traditionalist
     }
     
     // Check for Swing/Independent/Neutral
@@ -183,7 +183,7 @@ const SourcePage = () => {
             </div>
             <div className="legend-item">
               <span className="legend-color" style={{ backgroundColor: '#0D47A1' }}></span>
-              <span>Right / Conservative</span>
+              <span>Right / Traditionalist</span>
             </div>
           </div>
         </div>
