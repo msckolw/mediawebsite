@@ -28,44 +28,29 @@ jobs:
           ssh -o StrictHostKeyChecking=no \
               -i ~/.ssh/github_actions_ec2 \
               ubuntu@${{ secrets.EC2_HOST }} bash -s << 'ENDSSH'
-          set -e  # Exit on any error
+          set -e
           
           echo "🚀 Starting deployment..."
           
-          # Find the project directory
-          if [ -d ~/mediawebsite ]; then
-            PROJECT_DIR=~/mediawebsite
-          elif [ -d /home/ubuntu/mediawebsite ]; then
-            PROJECT_DIR=/home/ubuntu/mediawebsite
-          elif [ -d /var/www/mediawebsite ]; then
-            PROJECT_DIR=/var/www/mediawebsite
-          else
-            echo "❌ Project directory not found!"
-            echo "Searching for project..."
-            find ~ -name "mediawebsite" -type d 2>/dev/null | head -1
+          cd /home/ubuntu/mediawebsite/backend || {
+            echo "❌ Backend directory not found"
             exit 1
-          fi
+          }
           
-          echo "📁 Project directory: $PROJECT_DIR"
-          cd "$PROJECT_DIR" || exit 1
+          echo "📥 Pulling latest code..."
+          git pull origin main
           
-          echo "📥 Pulling latest changes from GitHub..."
-          git fetch origin || exit 1
-          git reset --hard origin/main || exit 1
-          git pull origin main || exit 1
+          echo "📦 Installing dependencies..."
+          npm install --production
           
-          echo "📦 Installing backend dependencies..."
-          cd backend || exit 1
-          npm install --production || exit 1
-          
-          echo "🔄 Restarting backend service..."
-          pm2 restart nobias-backend || pm2 start src/server.js --name nobias-backend || exit 1
+          echo "🔄 Restarting PM2..."
+          pm2 restart nobias-backend || pm2 start src/server.js --name nobias-backend
           
           echo "💾 Saving PM2 configuration..."
           pm2 save
           
           echo "⏳ Waiting for service to start..."
-          sleep 5
+          sleep 3
           
           echo "✅ Deployment completed successfully!"
           
@@ -73,7 +58,7 @@ jobs:
           pm2 status nobias-backend
           
           echo "📝 Recent logs:"
-          pm2 logs nobias-backend --lines 20 --nostream
+          pm2 logs nobias-backend --lines 15 --nostream
           
           echo "🧪 Testing endpoint..."
           curl -s http://localhost:5002/ || echo "Endpoint test failed"
