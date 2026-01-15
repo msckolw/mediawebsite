@@ -1,9 +1,15 @@
 // Service Worker for caching
-const CACHE_NAME = 'nobias-media-cache-v1';
+const CACHE_NAME = 'nobias-media-cache-v2';
+// IMPORTANT:
+// Do NOT hardcode CRA build asset paths like `/static/js/main.js` or `/static/css/main.css`
+// because production filenames are hashed (e.g. main.abc123.js) and these URLs 404,
+// causing `cache.addAll()` to fail the install.
+//
+// Keep this list small and stable.
 const urlsToCache = [
   '/',
-  '/static/css/main.css',
-  '/static/js/main.js',
+  '/index.html',
+  '/manifest.json',
   '/favicon.ico',
   '/NBM Transparent logo.png'
 ];
@@ -14,7 +20,15 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        // `addAll` fails the whole install if *any* request fails.
+        // Cache items individually so one missing file doesn't break SW installation.
+        return Promise.all(
+          urlsToCache.map((url) =>
+            cache.add(url).catch((err) => {
+              console.warn('SW: failed to cache', url, err);
+            })
+          )
+        );
       })
   );
 });
