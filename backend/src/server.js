@@ -2,7 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const cookie = require('cookie-parser')
+const cookie = require('cookie-parser');
+
+// Version: 1.1.0 - Removed authentication for news sources
 const http = require('http'); // Required for socket.io with Express
 const socketIo = require('socket.io');
 const { initSocket } = require("./socket");
