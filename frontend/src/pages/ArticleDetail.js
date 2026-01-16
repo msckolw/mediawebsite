@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/ArticleDetail.css';
-import {getArticle, loginOAuth, verifyToken} from '../services/api'
+import {getArticle} from '../services/api'
 import Swal from 'sweetalert2'
-import { useGoogleHook } from '../hooks/gHook';
 
 const ArticleDetail = () => {
   const { id } = useParams();
@@ -13,8 +12,6 @@ const ArticleDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
-  
-  let gHook = useGoogleHook('/source/'+id,false);
 
   // Check if user came from sources page
   const cameFromSources = location.state?.from === 'sources';
@@ -61,45 +58,6 @@ const ArticleDetail = () => {
     });
 
   }, [id]);
-
-  async function verifyAccessToken() {
-    try {
-      let status = await verifyToken();
-      navigate('/source/'+id);
-    }
-    catch(e) {
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "warning",
-        title: "Session Expired!",
-        showConfirmButton: false,
-        timer: 4000,
-      });
-      let role = localStorage.getItem('user_role');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user_role');
-      localStorage.removeItem('user_name');
-      if(role=='admin') {
-        navigate('/login?ru=/source/'+id);
-      }
-      else {
-        navigate(window.location.pathname);
-        googleAuth();
-      }
-    }
-  }
-
-  function checkLogin(id) {
-    if(localStorage.getItem('token')) {
-      verifyAccessToken();
-    }
-    else {
-      googleAuth();
-    }
-  }
-
-  let googleAuth = () => gHook();
 
   const handleSave = async () => {
     const isLoggedIn = localStorage.getItem('token');

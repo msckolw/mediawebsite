@@ -51,7 +51,7 @@ const AdminPanel = () => {
     if(!localStorage.getItem('token')) {
       nav('/login');
     }
-    else if(localStorage.getItem('token') && localStorage.getItem('user_role')=='admin') {
+    else if(localStorage.getItem('token') && localStorage.getItem('user_role')==='admin') {
       fetchArticles();
       fetchSourceType();
     }
@@ -65,14 +65,14 @@ const AdminPanel = () => {
     });
 
     
-  }, []);
+  }, [nav]);
 
 
   const fetchArticles = async (page=1) => {
     try {
       const response = await getArticles(page);
       if(response.articles.length) {
-        setArticles(prev => page==1 ? response.articles : [...prev, ...response.articles]);
+        setArticles(prev => page===1 ? response.articles : [...prev, ...response.articles]);
         setPageSettings({ 
           currentPage: response.currentPage,
           totalPages: response.totalPages
@@ -237,7 +237,7 @@ const AdminPanel = () => {
         //alert('Article added successfully!');
       }
     } catch (error) {
-      if (error.message==401) {
+      if (error.message===401) {
         Swal.fire({
           toast: true,
           position: "top-end",
@@ -273,7 +273,7 @@ const AdminPanel = () => {
       });
       await fetchArticles();
     } catch (error) {
-        if (error.message==401) {
+        if (error.message===401) {
           Swal.fire({
             toast: true,
             position: "top-end",
@@ -469,7 +469,7 @@ const AdminPanel = () => {
                 <p>No articles found. Add some articles to get started.</p>
               </div>
             )}
-            { pageSetings.currentPage!=pageSetings.totalPages &&
+            { pageSetings.currentPage!==pageSetings.totalPages &&
             <button type='button' onClick={() => fetchArticles(pageSetings.currentPage+1)}>
               LOAD MORE
             </button> }

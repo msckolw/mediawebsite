@@ -17,7 +17,7 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     //setIsAdmin(localStorage.getItem('user_role')=='admin' ? true : false);
-    const admin = localStorage.getItem('user_role')=='admin' ? true : false;
+    const admin = localStorage.getItem('user_role')==='admin' ? true : false;
     if (token) {
       if(admin)
         navigate('/admin');
@@ -28,7 +28,7 @@ const Login = () => {
       top: 0,
       behavior: "smooth", // Adds a nice scroll animation
     });
-  }, []);
+  }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

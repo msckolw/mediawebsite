@@ -18,19 +18,23 @@ const ABC = () => {
 
 
   useEffect(() => {
-    if(!cat) {
-        navigate('/');
-    }
-    else {
-        fetchArticles();
-    }
+    const fetchData = async () => {
+      if(!cat) {
+          navigate('/');
+      }
+      else {
+          await fetchArticles();
+      }
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth", // Adds a nice scroll animation
-    });
-
-  }, [cat]);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth", // Adds a nice scroll animation
+      });
+    };
+    
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cat, navigate]);
 
   function showFullArticle(id) {
     navigate('/article/'+id);
@@ -41,7 +45,7 @@ const ABC = () => {
   const fetchArticles = async (page=1) => {
     try {
       const response = await getArticleByCategory(cat,page);
-      setArticles(prev => page==1 ? response.articles : [...prev, ...response.articles]);
+      setArticles(prev => page===1 ? response.articles : [...prev, ...response.articles]);
       if(response.articles.length) {
         setPageSettings({ 
           currentPage: response.currentPage,
@@ -108,7 +112,7 @@ const ABC = () => {
                 </div>
               </div>
             ))}
-            { pageSetings.currentPage!=pageSetings.totalPages &&
+            { pageSetings.currentPage!==pageSetings.totalPages &&
             <button type='button' onClick={() => fetchArticles(pageSetings.currentPage+1)}>
               LOAD MORE
             </button> }

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Home.css';
 import { Link, useNavigate } from 'react-router-dom';
-import {getArticles, verifyToken, loginOAuth} from '../services/api'
+import {getArticles} from '../services/api'
 import io from 'socket.io-client';
-import { useGoogleLogin } from '@react-oauth/google';
-import Swal from 'sweetalert2';
 
 
 const Home = () => {
@@ -16,64 +14,6 @@ const Home = () => {
 
   const socketRef = useRef(null);
   let navigate = useNavigate();
-  
-  // Create Google login with dynamic redirect
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (tok) => {
-      try {
-        let url = 'https://www.googleapis.com/oauth2/v3/userinfo';
-        let user = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + tok.access_token
-          }
-        });
-        let data = await user.json();
-        data['access_token'] = tok.access_token;
-        const response = await loginOAuth(data);
-        
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: "Login Success!",
-          showConfirmButton: false,
-          timer: 4000,
-        });
-        
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user_role', response.user.role);
-        localStorage.setItem('user_name', response.user.name);
-        
-        // Get the pending source ID and redirect
-        const pendingSourceId = localStorage.getItem('pendingSourceRedirect');
-        if (pendingSourceId) {
-          localStorage.removeItem('pendingSourceRedirect');
-          navigate(`/source/${pendingSourceId}`);
-        }
-      } catch (error) {
-        console.log('Error', error);
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "error",
-          title: "Login Failed!",
-          showConfirmButton: false,
-          timer: 4000,
-        });
-      }
-    },
-    onError: async (error) => {
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "error",
-        title: "Login Failed!",
-        showConfirmButton: false,
-        timer: 4000,
-      });
-    }
-  });
 
 
   useEffect(() => {
@@ -144,51 +84,12 @@ const Home = () => {
     navigate('/source/'+id);
   }
 
-  function checkLogin(id) {
-    if(localStorage.getItem('token')) {
-      verifyAccessToken(id);
-    }
-    else {
-      // Store the article ID for redirect after login
-      localStorage.setItem('pendingSourceRedirect', id);
-      googleLogin();
-    }
-  }
-
-  async function verifyAccessToken(id) {
-    try {
-      let status = await verifyToken();
-      navigate('/source/'+id);
-    }
-    catch(e) {
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "warning",
-        title: "Session Expired!",
-        showConfirmButton: false,
-        timer: 4000,
-      });
-      let role = localStorage.getItem('user_role');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user_role');
-      localStorage.removeItem('user_name');
-      if(role=='admin') {
-        navigate('/login?ru=/source/'+id);
-      }
-      else {
-        navigate(window.location.pathname);
-        googleLogin();
-      }
-    }
-  }
-
   const fetchArticles = async (page=1) => {
     try {
       
       const response = await getArticles(page);
       if(response.articles.length) {
-        setArticles(prev => page==1 ? response.articles : [...prev, ...response.articles]);
+        setArticles(prev => page===1 ? response.articles : [...prev, ...response.articles]);
         setPageSettings({ 
           currentPage: response.currentPage,
           totalPages: response.totalPages
@@ -275,7 +176,7 @@ const Home = () => {
                 </div>
               </div>
             ))}
-            { pageSetings.currentPage!=pageSetings.totalPages &&
+            { pageSetings.currentPage!==pageSetings.totalPages &&
             <button type='button' onClick={() => fetchArticles(pageSetings.currentPage+1)}>
               LOAD MORE
             </button> }

@@ -24,7 +24,7 @@ const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20,
       setSources([{ source_type: '', url: '', _id: '' }]);
     }
     setSourceOptions(typeList);
-  }, [initialSources, isOpen]);
+  }, [initialSources, isOpen, typeList]);
 
   // Handle click outside to close modal
   useEffect(() => {

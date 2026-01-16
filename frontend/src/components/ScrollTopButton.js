@@ -1,16 +1,37 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './ScrollTopButton.css'; // We'll create this CSS file next
 
 const ScrollToTopButton = () => {
     
-    let mybutton = document.getElementById("scrollToTopBtn");
+    const mybutton = useRef(null);
     const scrollThreshold = 1;
     
     // useEffect hook to add and remove the scroll event listener
     useEffect(() => {
         // Add event listener when the component mounts
-        mybutton = document.getElementById("scrollToTopBtn");
+        mybutton.current = document.getElementById("scrollToTopBtn");
+
+        const handleScroll = () => {
+            if (!mybutton.current) return;
+            
+            if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+                // If scrolled past the threshold, show the button
+                if(window.location.pathname!=='/login' && window.location.pathname!=='/admin') {
+                    mybutton.current.style.display = "block";
+                    mybutton.current.style.opacity = "1"; // Ensure full visibility 
+                }
+            } else {
+                // If at or above the threshold (near the top of the page), hide the button
+                mybutton.current.style.opacity = "0"; // Start fade out
+                // After the fade out transition completes, set display to none to remove it from flow
+                setTimeout(() => {
+                    if (mybutton.current) {
+                        mybutton.current.style.display = "none";
+                    }
+                }, 300); // This delay should match the CSS transition duration
+            }
+        };
 
         window.addEventListener('scroll', handleScroll);
 
@@ -27,24 +48,6 @@ const ScrollToTopButton = () => {
             behavior: 'smooth' // Smooth scrolling animation
         });
     };
-
-    function handleScroll() {
-
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            // If scrolled past the threshold, show the button
-            if(window.location.pathname!='/login' && window.location.pathname!='/admin') {
-                mybutton.style.display = "block";
-                mybutton.style.opacity = "1"; // Ensure full visibility 
-            }
-        } else {
-            // If at or above the threshold (near the top of the page), hide the button
-            mybutton.style.opacity = "0"; // Start fade out
-            // After the fade out transition completes, set display to none to remove it from flow
-            setTimeout(() => {
-                mybutton.style.display = "none";
-            }, 300); // This delay should match the CSS transition duration
-        }
-    }
 
     return (
         <button id="scrollToTopBtn"

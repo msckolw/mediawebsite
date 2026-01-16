@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import Swal from 'sweetalert2'
@@ -10,8 +10,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('token') ? true : false; 
-  const isAdmin = localStorage.getItem('user_role')=='admin' ? true : false;
-  const userName = localStorage.getItem('user_name');
+  const isAdmin = localStorage.getItem('user_role')==='admin' ? true : false;
 
 
   const categories = [
@@ -42,7 +41,7 @@ const Header = () => {
 
   const handleCategoryClick = (path) => {
 
-    if(window.location.pathname==path) { 
+    if(window.location.pathname===path) { 
       setIsMenuOpen(false);
       return;
     }
