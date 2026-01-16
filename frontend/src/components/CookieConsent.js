@@ -30,16 +30,15 @@ const CookieConsent = () => {
     <div className="cookie-consent-banner">
       <div className="cookie-consent-content">
         <div className="cookie-consent-text">
-          <h3>🍪 We use cookies</h3>
+          <span className="cookie-icon">🍪</span>
           <p>
-            We use cookies and similar technologies to enhance your browsing experience, 
-            analyze site traffic, and provide personalized content. By clicking "Accept All", 
-            you consent to our use of cookies.
+            We use cookies to enhance your experience. 
+            <a href="/privacy-policy" className="cookie-link">Learn more</a>
           </p>
         </div>
         <div className="cookie-consent-buttons">
           <button className="cookie-btn cookie-accept" onClick={acceptCookies}>
-            Accept All
+            Accept
           </button>
           <button className="cookie-btn cookie-decline" onClick={declineCookies}>
             Decline
