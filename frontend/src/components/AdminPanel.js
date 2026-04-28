@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminPanel.css';
 import { getImageUrl } from '../services/api';
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { API_URL } from '../config';
 
 const CATEGORIES = [
   'General',
