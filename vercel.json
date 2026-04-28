@@ -1,7 +1,4 @@
 {
-  "buildCommand": "npm install --prefix frontend && npm run build --prefix frontend",
-  "outputDirectory": "frontend/build",
-  "installCommand": "echo 'Skipping root install'",
   "rewrites": [
     {
       "source": "/(.*)",
