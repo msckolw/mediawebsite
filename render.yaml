@@ -1,0 +1,30 @@
+services:
+  # Backend API Service
+  - type: web
+    name: nobias-backend
+    runtime: node
+    region: oregon
+    plan: free  # or 'starter' for $7/month
+    branch: main
+    rootDir: backend
+    buildCommand: npm install --production
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5002
+      - key: MONGODB_URI
+        sync: false  # Set in Render dashboard for security
+      - key: JWT_SECRET
+        sync: false  # Set in Render dashboard for security
+      - key: JWT_REFRESH_SECRET
+        sync: false  # Set in Render dashboard for security
+    
+    # Auto-deploy on push to main
+    autoDeploy: true
+    
+    # Custom domain (optional)
+    # domains:
+    #   - api.thenobiasmedia.com

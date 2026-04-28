@@ -33,7 +33,7 @@ const ProfileScreen = () => {
         {/* Profile Header */}
         <View style={styles.profileHeader}>
           <Image 
-            source={require('../../assets/icon.png')}
+            source={require('../../../assets/icon.png')}
             style={styles.profileImage}
             resizeMode="contain"
           />

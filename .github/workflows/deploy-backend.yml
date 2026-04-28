@@ -1,4 +1,4 @@
-name: Deploy Backend to EC2
+name: Deploy Backend to Render
 
 on:
   push:
@@ -17,81 +17,66 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Verify API is responding
+      - name: Verify API is responding before deployment
         run: |
           echo "🧪 Testing API endpoint before deployment..."
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://api.thenobiasmedia.com/api/news?page=1)
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://nobiasmedia.onrender.com/api/news?page=1)
           echo "Current API status: HTTP $HTTP_CODE"
           
-      - name: Create SSH key file
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/github_actions_ec2
-          chmod 600 ~/.ssh/github_actions_ec2
-
-      - name: Deploy to EC2
-        continue-on-error: true
-        id: ssh_deploy
+      - name: Trigger Render Deploy Hook
         env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
-          ssh -o StrictHostKeyChecking=no \
-              -o ConnectTimeout=10 \
-              -i ~/.ssh/github_actions_ec2 \
-              ec2-user@${{ secrets.EC2_HOST }} << 'ENDSSH'
-          set -e
-          echo "🚀 Starting deployment..."
+          echo "🚀 Triggering Render deployment..."
           
-          # Navigate to project directory
-          cd ~/mediawebsite
-          
-          # Pull latest changes
-          echo "📥 Pulling latest code from GitHub..."
-          git pull origin main
-          
-          # Navigate to backend
-          cd backend
-          
-          # Install dependencies
-          echo "📦 Installing dependencies..."
-          npm install --production
-          
-          # Restart PM2 process
-          echo "🔄 Restarting backend service..."
-          pm2 restart nobias-backend
-          
-          # Check status
-          echo "✅ Deployment complete!"
-          pm2 status nobias-backend
-          ENDSSH
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "⚠️ RENDER_DEPLOY_HOOK secret not set"
+            echo "ℹ️ Render will auto-deploy from GitHub push"
+            echo "ℹ️ No manual trigger needed"
+          else
+            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$RENDER_DEPLOY_HOOK")
+            if [ "$RESPONSE" = "200" ] || [ "$RESPONSE" = "201" ]; then
+              echo "✅ Render deployment triggered successfully (HTTP $RESPONSE)"
+            else
+              echo "⚠️ Render deploy hook returned HTTP $RESPONSE"
+              echo "ℹ️ Render may still auto-deploy from GitHub"
+            fi
+          fi
+
+      - name: Wait for deployment
+        run: |
+          echo "⏳ Waiting for Render to deploy (60 seconds)..."
+          echo "ℹ️ Render typically takes 1-2 minutes to build and deploy"
+          sleep 60
 
       - name: Verify deployment
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          if [ "${{ steps.ssh_deploy.outcome }}" == "success" ]; then
-            echo "✅ SSH deployment succeeded!"
-          else
-            echo "⚠️ SSH deployment failed, but checking if API is still working..."
-          fi
+          echo "🌐 Backend URL: https://nobiasmedia.onrender.com"
           
-          echo "🌐 Backend URL: https://api.thenobiasmedia.com"
-          
-          # Wait for service to start
-          sleep 5
-          
-          # Test the endpoint
+          # Test the endpoint with retries
           echo "🧪 Testing API endpoint..."
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://api.thenobiasmedia.com/api/news?page=1)
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ API is responding correctly (HTTP $HTTP_CODE)"
-            echo "✅ Backend is operational"
-            exit 0
-          else
-            echo "❌ API returned HTTP $HTTP_CODE (expected 200)"
-            echo "⚠️ Backend may not be working correctly"
-            exit 1
-          fi
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://nobiasmedia.onrender.com/api/news?page=1)
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ API is responding correctly (HTTP $HTTP_CODE)"
+              echo "✅ Backend deployment successful!"
+              exit 0
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              echo "⏳ Attempt $RETRY_COUNT/$MAX_RETRIES: HTTP $HTTP_CODE (waiting 15s...)"
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                sleep 15
+              fi
+            fi
+          done
+          
+          echo "⚠️ API returned HTTP $HTTP_CODE after $MAX_RETRIES attempts"
+          echo "ℹ️ Render may still be deploying. Check: https://dashboard.render.com"
+          exit 1
           
       - name: Deployment Summary
         if: always()
@@ -99,12 +84,16 @@ jobs:
           echo "═══════════════════════════════════════"
           echo "📊 Deployment Summary"
           echo "═══════════════════════════════════════"
-          echo "SSH Deploy: ${{ steps.ssh_deploy.outcome }}"
+          echo "Platform: Render"
           echo "Repository: msckolw/mediawebsite"
           echo "Branch: main"
           echo "Commit: ${{ github.sha }}"
+          echo "Backend URL: https://nobiasmedia.onrender.com"
           echo "═══════════════════════════════════════"
           echo ""
-          echo "Note: If SSH failed but API is working,"
-          echo "your backend may be deployed through another method."
-          echo "Check: https://api.thenobiasmedia.com/api/news?page=1"
+          echo "🔍 Monitor deployment:"
+          echo "  Dashboard: https://dashboard.render.com"
+          echo "  API Test: https://nobiasmedia.onrender.com/api/news?page=1"
+          echo ""
+          echo "ℹ️ Render auto-deploys on push to main branch"
+          echo "ℹ️ Deployment typically takes 1-2 minutes"
