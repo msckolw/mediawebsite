@@ -3,6 +3,7 @@ import '../styles/Home.css';
 import { Link, useNavigate } from 'react-router-dom';
 import {getArticles} from '../services/api'
 import io from 'socket.io-client';
+import { BASE_URL } from '../config';
 
 
 const Home = () => {
@@ -21,8 +22,7 @@ const Home = () => {
     fetchArticles(1);
 
     if (!socketRef.current) { // Only create if it doesn't exist
-        //socketRef.current = io('http://localhost:5002');
-        socketRef.current = io('https://nobiasmedia.onrender.com');
+        socketRef.current = io(BASE_URL);
         console.log('Socket connection established');
     }
 
