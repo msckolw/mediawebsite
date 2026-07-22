@@ -2,6 +2,19 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/build",
   "installCommand": "echo 'Skipping root install'",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thenobiasmedia.com"
+        }
+      ],
+      "destination": "https://thenobiasmedia.com",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
