@@ -9,7 +9,7 @@ const initSocket = (httpServer) => {
 
     io = require('socket.io')(httpServer, {
         cors: {
-            origin: ['https://www.thenobiasmedia.com','http://localhost:3000'],
+            origin: ['https://thenobiasmedia.com','https://www.thenobiasmedia.com','http://localhost:3000'],
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
         }
     });
