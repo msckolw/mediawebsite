@@ -134,7 +134,33 @@ const PrivacyPolicy = () => {
             <li>Withdraw consent where processing is based on consent</li>
             <li>Data portability (receive your data in a structured format)</li>
           </ul>
-          <p>To exercise these rights, please contact us at contact@thenobiasmedia.com</p>
+          
+          <h3>9.1 Account Deletion</h3>
+          <p>
+            You have the right to request permanent deletion of your account and associated personal data at any time.
+            For detailed information about the account deletion process, timeline, and what data is deleted, please visit our
+            <a href="/delete-account" style={{ marginLeft: '5px' }}>Account Deletion page</a>.
+          </p>
+          <p>To request account deletion:</p>
+          <ul>
+            <li>Visit: <a href="https://thenobiasmedia.com/delete-account">https://thenobiasmedia.com/delete-account</a></li>
+            <li>Email: <a href="mailto:contact@thenobiasmedia.com?subject=Account Deletion Request">contact@thenobiasmedia.com</a> with subject "Account Deletion Request"</li>
+            <li>Mobile App: Go to Settings → Account → Delete Account (if using our mobile app)</li>
+          </ul>
+          <p>
+            Your account will be deactivated immediately and permanently deleted after a 30-day grace period.
+            During the grace period, you can cancel the deletion request if you change your mind.
+          </p>
+
+          <h3>9.2 Data Export</h3>
+          <p>
+            Before deleting your account, you can request an export of your personal data in a machine-readable
+            format (JSON or CSV). Email contact@thenobiasmedia.com with subject "Data Export Request" and
+            we will provide your data within 30 days.
+          </p>
+
+          <h3>9.3 Exercising Your Rights</h3>
+          <p>To exercise any of these rights, please contact us at contact@thenobiasmedia.com</p>
         </section>
 
         <section>
