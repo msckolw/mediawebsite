@@ -14,18 +14,18 @@ const ContactUs = () => {
         <div style={{ marginBottom: '1.5rem' }}>
           <h4>Address</h4>
           <p>
-            Rajib Gandhi Infotech Park,<br />
-            Hinjewadi Phase 1,<br />
-            Pune, Maharashtra, India<br />
-            PIN: 411057
+            <strong>The NoBias Media</strong><br />
+            75-76, West Guru Angad Nagar,<br />
+            Near Nirman Vihar Metro Station,<br />
+            Delhi - 110092, India
           </p>
         </div>
         
         <div style={{ marginBottom: '1.5rem' }}>
           <h4>Email</h4>
           <p>
-            <a href="mailto:manisankar@thenobiasmedia.com" style={{ color: '#1e3c72', textDecoration: 'none' }}>
-              manisankar@thenobiasmedia.com
+            <a href="mailto:contact@thenobiasmedia.com" style={{ color: '#1e3c72', textDecoration: 'none' }}>
+              contact@thenobiasmedia.com
             </a>
           </p>
         </div>

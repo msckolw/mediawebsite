@@ -137,6 +137,11 @@ const RefundPolicy = () => {
             For any questions or concerns regarding refunds, please contact us:
           </p>
           <p>
+            <strong>The NoBias Media</strong><br />
+            75-76, West Guru Angad Nagar<br />
+            Near Nirman Vihar Metro Station<br />
+            Delhi - 110092, India<br />
+            <br />
             Email: contact@thenobiasmedia.com<br />
             Subject Line: Refund Request - [Transaction ID]<br />
             Website: https://thenobiasmedia.com

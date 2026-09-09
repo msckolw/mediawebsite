@@ -171,6 +171,11 @@ const PrivacyPolicy = () => {
             please contact us at:
           </p>
           <p>
+            <strong>The NoBias Media</strong><br />
+            75-76, West Guru Angad Nagar<br />
+            Near Nirman Vihar Metro Station<br />
+            Delhi - 110092, India<br />
+            <br />
             Email: contact@thenobiasmedia.com<br />
             Website: https://thenobiasmedia.com
           </p>
