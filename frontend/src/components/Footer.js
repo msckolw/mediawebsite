@@ -9,11 +9,6 @@ const Footer = () => {
         <div className="footer-section">
           <h3>The NoBias Media</h3>
           <p>Delivering unbiased news and analysis from around the world.</p>
-          <p style={{ fontSize: '0.9rem', marginTop: '1rem', lineHeight: '1.6' }}>
-            75-76, West Guru Angad Nagar<br />
-            Near Nirman Vihar Metro Station<br />
-            Delhi - 110092, India
-          </p>
         </div>
         
         <div className="footer-section">
