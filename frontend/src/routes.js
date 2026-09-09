@@ -9,6 +9,7 @@ let PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'))
 let TermsConditions = React.lazy(() => import('./pages/TermsConditions'))
 let RefundPolicy = React.lazy(() => import('./pages/RefundPolicy'))
 let DeleteAccount = React.lazy(() => import('./pages/DeleteAccount'))
+let CopyrightClaims = React.lazy(() => import('./pages/CopyrightClaims'))
 let AboutUs = React.lazy(() => import('./pages/AboutUs'))
 let MediaBiasDetails = React.lazy(() => import('./pages/MediaBiasDetails'))
 let ContactUs = React.lazy(() => import('./pages/ContactUs'))
@@ -24,6 +25,7 @@ export const routes = [
     {path: "/terms-conditions", element: <TermsConditions />},
     {path: "/refund-policy", element: <RefundPolicy />},
     {path: "/delete-account", element: <DeleteAccount />},
+    {path: "/copyright-claims", element: <CopyrightClaims />},
     {path: "/about", element: <AboutUs />},
     {path: "/media-bias-details", element: <MediaBiasDetails />},
     {path: "/contact", element: <ContactUs />},

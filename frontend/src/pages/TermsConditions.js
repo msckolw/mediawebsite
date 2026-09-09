@@ -59,6 +59,97 @@ const TermsAndConditions = () => {
             News articles and content aggregated from external sources remain the property of their
             respective owners. We provide proper attribution and links to original sources.
           </p>
+
+          <h3>4.1 Copyright and Content Claims</h3>
+          <p>
+            We respect the intellectual property rights of others and expect our users to do the same.
+            If you believe that any content on our platform (including images, text, videos, or other
+            materials) infringes your copyright or other intellectual property rights, please contact
+            us immediately.
+          </p>
+
+          <h3>4.2 Copyright Infringement Notice (DMCA)</h3>
+          <p>
+            If you are a copyright owner or authorized agent and believe that content on our website
+            infringes your copyright, please send a written notice to our designated Copyright Agent
+            at <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a> with the
+            subject line "Copyright Claim" or "DMCA Notice".
+          </p>
+          <p>Your notice must include:</p>
+          <ul>
+            <li>Identification of the copyrighted work claimed to have been infringed, or if multiple
+                works are covered by a single notification, a representative list</li>
+            <li>Identification of the material that is claimed to be infringing, including URL or
+                specific location on our website</li>
+            <li>Your contact information (name, address, telephone number, and email address)</li>
+            <li>A statement that you have a good faith belief that the disputed use is not authorized
+                by the copyright owner, its agent, or the law</li>
+            <li>A statement, made under penalty of perjury, that the information in your notice is
+                accurate and that you are the copyright owner or authorized to act on behalf of the
+                copyright owner</li>
+            <li>Your physical or electronic signature</li>
+          </ul>
+
+          <h3>4.3 Image Rights and Attribution</h3>
+          <p>
+            As a news aggregation platform, we use images from various sources. We make reasonable
+            efforts to:
+          </p>
+          <ul>
+            <li>Use images from original news sources with proper attribution</li>
+            <li>Link to original articles where images were first published</li>
+            <li>Remove or replace images upon valid copyright claims</li>
+            <li>Respect fair use principles for news reporting and commentary</li>
+          </ul>
+          <p>
+            If you are a photographer, artist, or rights holder and believe we are using your image
+            without proper authorization or attribution, please contact us at
+            <a href="mailto:contact@thenobiasmedia.com"> contact@thenobiasmedia.com</a> with:
+          </p>
+          <ul>
+            <li>The specific URL where your image appears</li>
+            <li>Proof of ownership or rights to the image</li>
+            <li>Your preferred resolution (removal, attribution, licensing, etc.)</li>
+          </ul>
+          <p>
+            <strong>We commit to responding to all valid claims within 48 hours and removing or
+            properly attributing disputed content within 5 business days.</strong>
+          </p>
+
+          <h3>4.4 Good Faith Resolution</h3>
+          <p>
+            We believe in resolving intellectual property disputes amicably and in good faith. Before
+            pursuing legal action, we encourage rights holders to contact us directly so we can:
+          </p>
+          <ul>
+            <li>Remove the disputed content promptly</li>
+            <li>Provide proper attribution if permissible</li>
+            <li>Discuss licensing arrangements if applicable</li>
+            <li>Prevent future incidents</li>
+          </ul>
+          <p>
+            Our goal is to respect creators' rights while providing fair and balanced news coverage.
+          </p>
+
+          <h3>4.5 Counter-Notification</h3>
+          <p>
+            If you believe that content you posted was removed or disabled by mistake or
+            misidentification, you may send a counter-notification to our Copyright Agent containing:
+          </p>
+          <ul>
+            <li>Your physical or electronic signature</li>
+            <li>Identification of the material removed and its prior location</li>
+            <li>A statement under penalty of perjury that you have a good faith belief the content
+                was removed by mistake or misidentification</li>
+            <li>Your name, address, telephone number, and email address</li>
+            <li>A statement consenting to jurisdiction in your location</li>
+          </ul>
+
+          <h3>4.6 Repeat Infringer Policy</h3>
+          <p>
+            We maintain a policy of terminating accounts or removing content from users who
+            repeatedly infringe intellectual property rights.
+          </p>
         </section>
 
         <section>
