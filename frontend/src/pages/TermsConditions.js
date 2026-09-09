@@ -11,9 +11,19 @@ const TermsAndConditions = () => {
         <section>
           <h2>1. Acceptance of Terms</h2>
           <p>
-            By accessing and using The NoBias Media ("we," "our," or "us") website at thenobiasmedia.com,
-            you accept and agree to be bound by the terms and provisions of this agreement. If you do not
-            agree to these Terms and Conditions, please do not use our services.
+            By accessing and using The NoBias Media ("we," "our," or "us") website at thenobiasmedia.com
+            and our mobile applications, you accept and agree to be bound by the terms and provisions of
+            this agreement.
+          </p>
+          <p>
+            <strong>How You Accept These Terms:</strong> By logging in through Google OAuth or by continuing
+            to use our services, you acknowledge that you have read, understood, and agree to be bound by
+            these Terms and Conditions and our Privacy Policy. If you do not agree to these terms, please
+            do not use our services.
+          </p>
+          <p>
+            These Terms and Conditions are available at all times at https://thenobiasmedia.com/terms-conditions
+            and are incorporated by reference into your use of our services.
           </p>
         </section>
 
@@ -54,9 +64,36 @@ const TermsAndConditions = () => {
         <section>
           <h2>5. User Accounts and Admin Panel</h2>
           <p>
-            Certain features of our service, including the admin panel, require account registration.
-            You are responsible for maintaining the confidentiality of your account credentials and for
-            all activities that occur under your account.
+            Certain features of our service, including the admin panel and personalized content, require
+            account registration through Google OAuth.
+          </p>
+          
+          <h3>5.1 Account Creation</h3>
+          <p>
+            We use Google OAuth for authentication. When you sign in with Google:
+          </p>
+          <ul>
+            <li>You authorize us to access your Google account email and basic profile information</li>
+            <li>By logging in, you automatically accept these Terms and Conditions and our Privacy Policy</li>
+            <li>We do not store your Google password or have access to it</li>
+            <li>You can revoke our access at any time through your Google Account settings</li>
+          </ul>
+
+          <h3>5.2 No Separate Registration</h3>
+          <p>
+            We do not have a separate signup process or require explicit acceptance checkboxes. Your use
+            of Google OAuth to log in constitutes your acceptance of our terms and policies, which are
+            always accessible at:
+          </p>
+          <ul>
+            <li>Terms and Conditions: https://thenobiasmedia.com/terms-conditions</li>
+            <li>Privacy Policy: https://thenobiasmedia.com/privacy-policy</li>
+          </ul>
+
+          <h3>5.3 Account Responsibilities</h3>
+          <p>
+            You are responsible for maintaining the security of your Google account and for all activities
+            that occur through your account on our service.
           </p>
         </section>
 

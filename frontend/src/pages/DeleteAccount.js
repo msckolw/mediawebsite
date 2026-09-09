@@ -21,13 +21,18 @@ const DeleteAccount = () => {
           <h2>What Data Will Be Deleted</h2>
           <p>When you request account deletion, the following information will be permanently removed from our systems:</p>
           <ul>
-            <li><strong>Account Information:</strong> Your username, email address, and login credentials</li>
-            <li><strong>Profile Data:</strong> Any profile information you have provided</li>
+            <li><strong>Account Information:</strong> Your email address from Google OAuth and associated login credentials</li>
+            <li><strong>Profile Data:</strong> Profile information received from Google (name, profile picture)</li>
             <li><strong>User Preferences:</strong> Saved settings, bookmarks, and personalized content preferences</li>
             <li><strong>Activity History:</strong> Your reading history, article interactions, and usage patterns</li>
             <li><strong>Authentication Data:</strong> OAuth tokens and session information</li>
             <li><strong>Communication Records:</strong> Email correspondence related to your account (subject to legal retention requirements)</li>
           </ul>
+          <p>
+            <strong>Note:</strong> Since we use Google OAuth for authentication, deleting your account with us
+            does not delete or affect your Google account. Your Google account remains intact and can be used
+            with other services.
+          </p>
         </section>
 
         <section>
@@ -66,17 +71,19 @@ const DeleteAccount = () => {
           <h3>Required Information</h3>
           <p>To process your account deletion request, please include the following in your email:</p>
           <ol>
-            <li><strong>Email Address:</strong> The email address associated with your account</li>
-            <li><strong>Account Username:</strong> Your username (if applicable)</li>
+            <li><strong>Email Address:</strong> The Google email address you used to log in</li>
             <li><strong>Confirmation Statement:</strong> A clear statement that you want to delete your account</li>
             <li><strong>Identity Verification:</strong> For security purposes, we may ask you to verify your identity by:
               <ul>
-                <li>Logging into your account and sending the request from the registered email</li>
-                <li>Providing answers to security questions (if set up)</li>
+                <li>Logging into your account and sending the request from the registered Google email</li>
                 <li>Confirming recent account activity</li>
               </ul>
             </li>
           </ol>
+          <p>
+            <strong>Important:</strong> Make sure to send the deletion request from the same Google email
+            address you use to log in to The NoBias Media, or include it clearly in your request.
+          </p>
 
           <h3>Option 2: Mobile App (If Applicable)</h3>
           <p>
@@ -188,13 +195,24 @@ const DeleteAccount = () => {
 
           <h3>Third-Party Services</h3>
           <p>
-            If you logged in using Google OAuth or other third-party authentication:
+            Since we use Google OAuth for authentication:
           </p>
           <ul>
-            <li>The connection between your account and the third-party service will be severed</li>
-            <li>Your data with the third-party provider (Google, etc.) remains under their control</li>
-            <li>You may need to revoke permissions separately through Google Account Settings</li>
+            <li>Deleting your account with us removes all data we have stored about you</li>
+            <li>Your Google account remains active and unaffected</li>
+            <li>The OAuth connection between your Google account and The NoBias Media will be severed</li>
+            <li>You can also revoke our app's access to your Google account separately by visiting:
+              <br />
+              <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">
+                https://myaccount.google.com/permissions
+              </a>
+            </li>
           </ul>
+          <p>
+            <strong>Note:</strong> Revoking access through Google will disconnect our service from your
+            Google account, but to delete your data from our systems, you must follow the account
+            deletion process described on this page.
+          </p>
 
           <h3>Creating a New Account</h3>
           <p>

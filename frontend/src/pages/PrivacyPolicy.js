@@ -13,7 +13,17 @@ const PrivacyPolicy = () => {
           <p>
             The NoBias Media ("we," "our," or "us") is committed to protecting your privacy. This Privacy
             Policy explains how we collect, use, disclose, and safeguard your information when you visit
-            our website thenobiasmedia.com and use our services.
+            our website thenobiasmedia.com, use our mobile applications, and use our services.
+          </p>
+          <p>
+            <strong>Acceptance of This Policy:</strong> By using our services, including logging in through
+            Google OAuth, you agree to the collection and use of information in accordance with this Privacy
+            Policy. We do not require explicit checkbox acceptance during login; your continued use of our
+            services constitutes acceptance of this policy.
+          </p>
+          <p>
+            This Privacy Policy is always accessible at https://thenobiasmedia.com/privacy-policy and should
+            be read in conjunction with our Terms and Conditions.
           </p>
         </section>
 
@@ -41,8 +51,27 @@ const PrivacyPolicy = () => {
 
           <h3>2.3 Google OAuth Information</h3>
           <p>
-            If you log in using Google OAuth, we collect your name, email address, and profile information
-            as provided by Google. We only request the minimum permissions necessary for authentication.
+            We use Google OAuth as our sole authentication method. When you log in using Google OAuth,
+            we collect your name, email address, and profile information as provided by Google.
+          </p>
+          <p>
+            <strong>Important:</strong> We only request the minimum permissions necessary for authentication:
+          </p>
+          <ul>
+            <li>Email address (required for account identification)</li>
+            <li>Basic profile information (name and profile picture)</li>
+          </ul>
+          <p>
+            We do not have access to your Google password or any other Google account data. By logging in
+            with Google, you authorize us to access only the information mentioned above. You can revoke
+            this access at any time through your Google Account settings at
+            https://myaccount.google.com/permissions.
+          </p>
+          <p>
+            <strong>No Separate Signup Process:</strong> We do not have a traditional signup form or
+            require explicit acceptance checkboxes. Your act of logging in through Google OAuth constitutes
+            your agreement to our Terms and Conditions and this Privacy Policy, which are always accessible
+            on our website.
           </p>
         </section>
 
