@@ -59,12 +59,121 @@ const RefundPolicy = () => {
         </section>
 
         <section>
-          <h2>3. Future Subscription Services</h2>
+          <h2>3. Subscription Services</h2>
+          
+          <h3>3.1 Subscription Overview</h3>
           <p>
-            When we launch subscription-based services in the future, we will update this policy
-            to include specific refund terms for subscriptions. Subscription refund policies will
-            be clearly communicated at the time of purchase.
+            The NoBias Media may offer subscription-based services that provide access to premium content,
+            ad-free experience, exclusive features, or other benefits. Subscription terms and refund policies
+            will be clearly communicated at the time of purchase.
           </p>
+          
+          <h3>3.2 Subscription Billing</h3>
+          <p>
+            Subscriptions may be offered on the following billing cycles:
+          </p>
+          <ul>
+            <li><strong>Monthly:</strong> Billed every month on the date of subscription</li>
+            <li><strong>Quarterly:</strong> Billed every 3 months</li>
+            <li><strong>Annual:</strong> Billed once per year</li>
+          </ul>
+          <p>
+            All subscription charges will be processed through PhonePe Payment Gateway. You will receive
+            notification at least 3 days before each renewal charge as per RBI guidelines.
+          </p>
+          
+          <h3>3.3 Free Trial Period</h3>
+          <p>
+            If we offer a free trial period:
+          </p>
+          <ul>
+            <li>You will not be charged during the free trial period</li>
+            <li>You can cancel anytime during the trial without being charged</li>
+            <li>If not cancelled, your subscription will auto-renew at the end of the trial period</li>
+            <li>You will receive notification 24 hours before the trial ends (as per RBI mandate)</li>
+          </ul>
+          
+          <h3>3.4 Subscription Cancellation</h3>
+          <p>
+            You may cancel your subscription at any time by:
+          </p>
+          <ul>
+            <li>Logging into your account and going to Subscription Settings</li>
+            <li>Contacting us at contact@thenobiasmedia.com</li>
+            <li>Using the cancellation link in your subscription confirmation email</li>
+          </ul>
+          <p>
+            <strong>Important:</strong> Cancellation will stop future billing but will not automatically
+            issue a refund for the current billing period. Your access will continue until the end of
+            the current paid period.
+          </p>
+          
+          <h3>3.5 Subscription Refund Policy</h3>
+          <p>
+            <strong>7-Day Money-Back Guarantee (New Subscriptions Only):</strong>
+          </p>
+          <ul>
+            <li>If you are not satisfied with your subscription within the first 7 days of your initial purchase, you may request a full refund</li>
+            <li>This applies only to first-time subscribers</li>
+            <li>Does not apply to renewed subscriptions</li>
+            <li>To request a refund, email contact@thenobiasmedia.com with your subscription details</li>
+          </ul>
+          
+          <h3>3.6 Partial Refunds for Subscriptions</h3>
+          <p>
+            After the 7-day money-back period, subscription payments are generally non-refundable. However,
+            we may consider partial refunds on a case-by-case basis for:
+          </p>
+          <ul>
+            <li><strong>Service Outage:</strong> If our service was unavailable for extended periods (more than 48 hours)</li>
+            <li><strong>Billing Errors:</strong> If you were charged incorrectly due to our error</li>
+            <li><strong>Technical Issues:</strong> If you could not access services due to technical problems on our end</li>
+          </ul>
+          <p>
+            Partial refunds will be prorated based on the unused portion of your subscription period.
+          </p>
+          
+          <h3>3.7 Non-Refundable Situations for Subscriptions</h3>
+          <p>
+            Refunds will NOT be provided in the following cases:
+          </p>
+          <ul>
+            <li>Change of mind after the 7-day money-back period</li>
+            <li>Failure to cancel before the renewal date</li>
+            <li>Violation of our Terms and Conditions resulting in subscription termination</li>
+            <li>Issues with your internet connection or device compatibility</li>
+            <li>Partial usage of the subscription period (except as mentioned in 3.6)</li>
+          </ul>
+          
+          <h3>3.8 Automatic Renewal and RBI Compliance</h3>
+          <p>
+            In accordance with RBI guidelines on recurring transactions:
+          </p>
+          <ul>
+            <li><strong>Pre-notification:</strong> You will receive notification at least 24 hours before each auto-renewal charge</li>
+            <li><strong>Opt-out Option:</strong> Each notification will include an option to cancel the renewal</li>
+            <li><strong>Additional Factor Authentication (AFA):</strong> For subscriptions over ₹15,000, you will need to authenticate each transaction</li>
+            <li><strong>Transaction Records:</strong> All subscription charges will be recorded and available in your account history</li>
+          </ul>
+          
+          <h3>3.9 Subscription Upgrade/Downgrade</h3>
+          <p>
+            If you upgrade or downgrade your subscription plan:
+          </p>
+          <ul>
+            <li><strong>Upgrade:</strong> You will be charged the difference immediately, prorated for the current billing period</li>
+            <li><strong>Downgrade:</strong> The change will take effect at the end of your current billing period. No refund for the price difference</li>
+          </ul>
+          
+          <h3>3.10 Subscription Service Termination</h3>
+          <p>
+            We reserve the right to modify or discontinue subscription services. In such cases:
+          </p>
+          <ul>
+            <li>You will receive at least 30 days advance notice</li>
+            <li>You will receive a prorated refund for any unused portion of your subscription</li>
+            <li>All data and content access associated with your subscription will be available for download for 30 days</li>
+          </ul>
         </section>
 
         <section>
