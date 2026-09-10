@@ -5,35 +5,76 @@ const RefundPolicy = () => {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <h1>Refund Policy</h1>
+        <h1>Refund and Cancellation Policy</h1>
         <p className="last-updated">Last Updated: January 2026</p>
 
         <section>
-          <h2>1. Overview</h2>
           <p>
-            This Refund Policy outlines the terms and conditions for refunds related to donations and
-            payments made through The NoBias Media website at thenobiasmedia.com. We process all
-            payments securely through PhonePe Payment Gateway, an RBI-authorized payment aggregator.
+            This refund and cancellation policy outlines how you can cancel or seek a refund for a product / service
+            that you have purchased through the Platform operated by <strong>Teroment Solutions</strong> (The NoBias Media).
           </p>
+          
           <p>
-            <strong>Payment Gateway:</strong> PhonePe Private Limited<br />
+            <strong>Platform Owner:</strong> Teroment Solutions<br />
+            <strong>Operating As:</strong> The NoBias Media<br />
+            <strong>Website:</strong> https://thenobiasmedia.com/<br />
+            <strong>Payment Gateway:</strong> PhonePe Private Limited (RBI Authorized)<br />
             <strong>Payment Methods:</strong> UPI, Credit Cards, Debit Cards, Net Banking, Wallets<br />
-            <strong>Currency:</strong> Indian Rupees (INR)<br />
-            <strong>Compliance:</strong> RBI Payment Aggregator Guidelines
+            <strong>Currency:</strong> Indian Rupees (INR)
           </p>
+        </section>
+        
+        <section>
+          <h2>Under this policy:</h2>
+
+          <h2>Under this policy:</h2>
+          
+          <ol>
+            <li>
+              Cancellations will only be considered if the request is made within <strong>2 days</strong> of placing the order. However,
+              cancellation requests may not be entertained if the orders have been communicated to such sellers /
+              merchant(s) listed on the Platform and they have initiated the process of shipping them, or the
+              product is out for delivery. In such an event, you may choose to reject the product at the doorstep.
+            </li>
+            
+            <li>
+              <strong>Teroment Solutions</strong> (The NoBias Media) does not accept cancellation requests for perishable items like flowers, eatables, etc.
+              However, the refund / replacement can be made if the user establishes that the quality of the
+              product delivered is not good.
+            </li>
+            
+            <li>
+              In case of receipt of damaged or defective items, please report to our customer service team. The
+              request would be entertained once the seller/ merchant listed on the Platform, has checked and
+              determined the same at its own end. This should be reported within <strong>2 days</strong> of receipt of products.
+              In case you feel that the product received is not as shown on the site or as per your expectations,
+              you must bring it to the notice of our customer service within <strong>2 days</strong> of receiving the product. The
+              customer service team after looking into your complaint will take an appropriate decision.
+            </li>
+            
+            <li>
+              In case of complaints regarding the products that come with a warranty from the manufacturers,
+              please refer the issue to them.
+            </li>
+            
+            <li>
+              In case of any refunds approved by <strong>Teroment Solutions</strong>, it will take <strong>5-7 business days</strong> for the refund to be processed
+              to you through PhonePe Payment Gateway. The refund will be credited to your original payment method.
+            </li>
+          </ol>
         </section>
 
         <section>
-          <h2>2. Donations</h2>
+          <h2>Donations</h2>
           
-          <h3>2.1 General Policy</h3>
+          <h3>General Policy</h3>
           <p>
-            Donations made to The NoBias Media are generally non-refundable as they are voluntary
+            Donations made to The NoBias Media (Teroment Solutions) are generally non-refundable as they are voluntary
             contributions to support our content and operations. By making a donation, you acknowledge
             that it is a voluntary gesture of support.
           </p>
 
-          <h3>2.2 Exceptions</h3>
+          <h3>Exceptions</h3>
           <p>Refunds for donations may be considered only in the following circumstances:</p>
           <ul>
             <li><strong>Technical Errors:</strong> If you were charged multiple times due to a technical error on our end or PhonePe's system</li>
@@ -42,7 +83,7 @@ const RefundPolicy = () => {
             <li><strong>Failed Transaction but Amount Deducted:</strong> If payment failed but amount was deducted from your account</li>
           </ul>
           
-          <h3>2.3 Failed Transactions</h3>
+          <h3>Failed Transactions</h3>
           <p>
             <strong>Important:</strong> If your payment fails but the amount is deducted from your bank account, it will be
             automatically refunded by your bank or PhonePe within 5-7 business days as per RBI guidelines. You do not need
@@ -397,40 +438,32 @@ const RefundPolicy = () => {
         </section>
 
         <section>
-          <h2>13. Contact for Refund Queries</h2>
+          <h2>Contact Information</h2>
           <p>
-            For any questions or concerns regarding refunds, please contact us:
+            For any questions or concerns regarding refunds, cancellations, or payment issues, please contact us:
           </p>
           <p>
-            <strong>The NoBias Media</strong><br />
+            <strong>Teroment Solutions</strong><br />
+            (Operating as The NoBias Media)<br />
             75-76, West Guru Angad Nagar<br />
             Near Nirman Vihar Metro Station<br />
             Delhi - 110092, India<br />
             <br />
-            Email: contact@thenobiasmedia.com<br />
+            Email: <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a><br />
             Subject Line: Refund Request - [Transaction ID]<br />
-            Website: https://thenobiasmedia.com
+            Website: <a href="https://thenobiasmedia.com" target="_blank" rel="noopener noreferrer">https://thenobiasmedia.com</a>
           </p>
           <p>
-            Our customer support team is available during business hours and will respond to your
+            Our customer support team is available during business hours (Monday - Friday, 9:00 AM - 6:00 PM IST) and will respond to your
             inquiry within 24-48 hours.
           </p>
         </section>
 
         <section>
-          <h2>14. Changes to This Policy</h2>
-          <p>
-            We reserve the right to modify this Refund Policy at any time. Changes will be effective
-            immediately upon posting on this page with an updated "Last Updated" date. Your continued
-            use of our services after changes constitutes acceptance of the updated policy.
-          </p>
-        </section>
-
-        <section>
-          <h2>15. Governing Law</h2>
+          <h2>Governing Law</h2>
           <p>
             This Refund Policy is governed by the laws of India. Any disputes arising from refund
-            requests shall be subject to the exclusive jurisdiction of the courts in India.
+            requests shall be subject to the exclusive jurisdiction of the courts in Delhi, India.
           </p>
         </section>
       </div>

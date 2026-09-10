@@ -19,10 +19,18 @@ const Home = () => {
 
   useEffect(() => {
 
+    // Fetch articles first - this is the primary data source
     fetchArticles(1);
 
+    // Setup Socket.IO for real-time updates
     if (!socketRef.current) { // Only create if it doesn't exist
-        socketRef.current = io(BASE_URL);
+        socketRef.current = io(BASE_URL, {
+          transports: ['websocket', 'polling'], // Try websocket first, fallback to polling
+          reconnection: true,
+          reconnectionAttempts: 5,
+          reconnectionDelay: 1000,
+          timeout: 20000
+        });
         console.log('Socket connection established');
     }
 
@@ -86,21 +94,40 @@ const Home = () => {
 
   const fetchArticles = async (page=1) => {
     try {
-      
+      setLoading(page === 1); // Only show loading on first page
       const response = await getArticles(page);
-      if(response.articles.length) {
+      if(response.articles && response.articles.length) {
         setArticles(prev => page===1 ? response.articles : [...prev, ...response.articles]);
         setPageSettings({ 
           currentPage: response.currentPage,
           totalPages: response.totalPages
         });
-      } 
+      } else if (page === 1) {
+        // No articles on first page
+        setArticles([]);
+      }
     } catch (error) {
-      
       console.error('Error fetching articles:', error);
-      
+      // Retry once after 2 seconds if first page fails
+      if (page === 1) {
+        setTimeout(() => {
+          console.log('Retrying article fetch...');
+          getArticles(page).then(response => {
+            if(response.articles && response.articles.length) {
+              setArticles(response.articles);
+              setPageSettings({ 
+                currentPage: response.currentPage,
+                totalPages: response.totalPages
+              });
+            }
+          }).catch(err => console.error('Retry failed:', err))
+          .finally(() => setLoading(false));
+        }, 2000);
+      }
     } finally {
-      setLoading(false);
+      if (page > 1) {
+        setLoading(false);
+      }
     }
   };
 

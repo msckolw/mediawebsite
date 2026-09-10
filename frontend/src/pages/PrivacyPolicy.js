@@ -9,102 +9,96 @@ const PrivacyPolicy = () => {
         <p className="last-updated">Last Updated: January 2026</p>
 
         <section>
-          <h2>1. Introduction</h2>
+          <h2>Introduction</h2>
           <p>
-            The NoBias Media ("we," "our," or "us") is committed to protecting your privacy. This Privacy
-            Policy explains how we collect, use, disclose, and safeguard your information when you visit
-            our website thenobiasmedia.com, use our mobile applications, and use our services.
+            This Privacy Policy describes how <strong>Teroment Solutions</strong> and its subsidiary <strong>The NoBias Media</strong> (collectively
+            "Teroment Solutions, we, our, us") collect, use, share, protect or otherwise process your information/ personal data through our website
+            <strong> https://thenobiasmedia.com/</strong> (hereinafter referred to as <strong>Platform</strong>). Please note that you may be able to
+            browse certain sections of the Platform without registering with us. We do not offer any product/service
+            under this Platform outside India and your personal data will primarily be stored and processed in India.
           </p>
           <p>
-            <strong>Acceptance of This Policy:</strong> By using our services, including logging in through
-            Google OAuth, you agree to the collection and use of information in accordance with this Privacy
-            Policy. We do not require explicit checkbox acceptance during login; your continued use of our
-            services constitutes acceptance of this policy.
-          </p>
-          <p>
-            This Privacy Policy is always accessible at https://thenobiasmedia.com/privacy-policy and should
-            be read in conjunction with our Terms and Conditions.
-          </p>
-        </section>
-
-        <section>
-          <h2>2. Information We Collect</h2>
-          
-          <h3>2.1 Personal Information</h3>
-          <p>We may collect personal information that you voluntarily provide to us, including:</p>
-          <ul>
-            <li>Name and email address (when you create an account or contact us)</li>
-            <li>Payment information (processed securely through PhonePe Payment Gateway)</li>
-            <li>Login credentials for admin panel access</li>
-            <li>Communication preferences</li>
-          </ul>
-
-          <h3>2.2 Automatically Collected Information</h3>
-          <p>When you visit our website, we automatically collect certain information, including:</p>
-          <ul>
-            <li>IP address and browser type</li>
-            <li>Device information and operating system</li>
-            <li>Pages visited and time spent on our site</li>
-            <li>Referring website addresses</li>
-            <li>Cookies and similar tracking technologies</li>
-          </ul>
-
-          <h3>2.3 Google OAuth Information</h3>
-          <p>
-            We use Google OAuth as our sole authentication method. When you log in using Google OAuth,
-            we collect your name, email address, and profile information as provided by Google.
-          </p>
-          <p>
-            <strong>Important:</strong> We only request the minimum permissions necessary for authentication:
-          </p>
-          <ul>
-            <li>Email address (required for account identification)</li>
-            <li>Basic profile information (name and profile picture)</li>
-          </ul>
-          <p>
-            We do not have access to your Google password or any other Google account data. By logging in
-            with Google, you authorize us to access only the information mentioned above. You can revoke
-            this access at any time through your Google Account settings at
-            https://myaccount.google.com/permissions.
-          </p>
-          <p>
-            <strong>No Separate Signup Process:</strong> We do not have a traditional signup form or
-            require explicit acceptance checkboxes. Your act of logging in through Google OAuth constitutes
-            your agreement to our Terms and Conditions and this Privacy Policy, which are always accessible
-            on our website.
+            By visiting this Platform, providing your information or availing any product/service offered on the
+            Platform, you expressly agree to be bound by the terms and conditions of this Privacy Policy, the Terms
+            of Use and the applicable service/product terms and conditions, and agree to be governed by the laws of
+            India including but not limited to the laws applicable to data protection and privacy. If you do not agree
+            please do not use or access our Platform.
           </p>
         </section>
 
         <section>
-          <h2>3. How We Use Your Information</h2>
-          <p>We use the information we collect to:</p>
-          <ul>
-            <li>Provide, operate, and maintain our services</li>
-            <li>Process donations and payments through PhonePe</li>
-            <li>Authenticate users and manage admin panel access</li>
-            <li>Improve and personalize user experience</li>
-            <li>Analyze usage patterns and optimize our content</li>
-            <li>Send administrative information and updates</li>
-            <li>Respond to inquiries and provide customer support</li>
-            <li>Detect, prevent, and address technical issues and security threats</li>
-            <li>Comply with legal obligations</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>4. Cookies and Tracking Technologies</h2>
+          <h2>Collection</h2>
           <p>
-            We use cookies and similar tracking technologies to enhance your experience. Cookies are small
-            data files stored on your device that help us remember your preferences and understand how you
-            use our service.
+            We collect your personal data when you use our Platform, services or otherwise interact with
+            us during the course of our relationship, and related information provided from time to time. Some of the
+            information that we may collect includes but is not limited to personal data / information provided to us
+            during sign-up/registering or using our Platform such as name, date of birth, address, telephone/mobile
+            number, email ID and/or any such information shared as proof of identity or address.
           </p>
-          <p>You can control cookies through your browser settings. However, disabling cookies may limit your ability to use certain features of our service.</p>
+          <p>
+            Some of the sensitive personal data may be collected with your consent, such as your bank account or credit or debit
+            card or other payment instrument information or biometric information such as your facial features or
+            physiological information (in order to enable use of certain features when opted for, available on the
+            Platform) etc all of the above being in accordance with applicable law(s). You always have the option to
+            not provide information, by choosing not to use a particular service or feature on the Platform.
+          </p>
+          <p>
+            We may track your behaviour, preferences, and other information that you choose to provide on our Platform.
+            This information is compiled and analysed on an aggregated basis. We will also collect your information
+            related to your transactions on Platform and such third-party business partner platforms. When such a
+            third-party business partner collects your personal data directly from you, you will be governed by their
+            privacy policies. We shall not be responsible for the third-party business partner's privacy practices or
+            the content of their privacy policies, and we request you to read their privacy policies prior to disclosing
+            any information.
+          </p>
+          <p>
+            If you receive an email, a call from a person/association claiming to be <strong>Teroment Solutions</strong> or <strong>The NoBias Media</strong>
+            seeking any personal data like debit/credit card PIN, net-banking or mobile banking password, we
+            request you to never provide such information. If you have already revealed such information, report it
+            immediately to an appropriate law enforcement agency.
+          </p>
         </section>
 
         <section>
-          <h2>5. Third-Party Services</h2>
-          
-          <h3>5.1 PhonePe Payment Gateway</h3>
+          <h2>Usage</h2>
+          <p>
+            We use personal data to provide the services you request. To the extent we use your personal data
+            to market to you, we will provide you the ability to opt-out of such uses. We use your personal data to
+            assist sellers and business partners in handling and fulfilling orders; enhancing customer experience; to
+            resolve disputes; troubleshoot problems; inform you about online and offline offers, products, services,
+            and updates; customise your experience; detect and protect us against error, fraud and other criminal
+            activity; enforce our terms and conditions; conduct marketing research, analysis and surveys; and as
+            otherwise described to you at the time of collection of information. You understand that your access to
+            these products/services may be affected in the event permission is not provided to us.
+          </p>
+        </section>
+
+        <section>
+          <h2>Sharing</h2>
+          <p>
+            We may share your personal data internally within our group entities, our other corporate
+            entities, and affiliates to provide you access to the services and products offered by them. These entities
+            and affiliates may market to you as a result of such sharing unless you explicitly opt-out. We may
+            disclose personal data to third parties such as sellers, business partners, third party service providers
+            including logistics partners, prepaid payment instrument issuers, third-party reward programs and other
+            payment opted by you. These disclosure may be required for us to provide you access to our services and
+            products offered to you, to comply with our legal obligations, to enforce our user agreement, to facilitate
+            our marketing and advertising activities, to prevent, detect, mitigate, and investigate fraudulent or illegal
+            activities related to our services.
+          </p>
+          <p>
+            We may disclose personal and sensitive personal data to government
+            agencies or other authorised law enforcement agencies if required to do so by law or in the good faith
+            belief that such disclosure is reasonably necessary to respond to subpoenas, court orders, or other legal
+            process. We may disclose personal data to law enforcement offices, third party rights owners, or others in
+            the good faith belief that such disclosure is reasonably necessary to: enforce our Terms of Use or Privacy
+            Policy; respond to claims that an advertisement, posting or other content violates the rights of a third
+            party; or protect the rights, property or personal safety of our users or the general public.
+          </p>
+        </section>
+
+        <section>
+          <h2>PhonePe Payment Gateway</h2>
           <p>
             <strong>Payment Gateway Provider:</strong> PhonePe Private Limited<br />
             <strong>Authorized by:</strong> Reserve Bank of India (RBI)
@@ -120,7 +114,7 @@ const PrivacyPolicy = () => {
             <li><strong>Data Security:</strong> PhonePe maintains PCI DSS compliance and RBI-mandated security standards</li>
           </ul>
           
-          <h4>Data Shared with PhonePe:</h4>
+          <h3>Data Shared with PhonePe:</h3>
           <ul>
             <li>Transaction amount</li>
             <li>Your name and email address (for receipts and confirmations)</li>
@@ -128,158 +122,94 @@ const PrivacyPolicy = () => {
             <li>Device and browser information (for fraud prevention)</li>
           </ul>
           
-          <h4>PhonePe's Privacy Policy:</h4>
           <p>
             PhonePe's collection and use of payment data is governed by their privacy policy, available at:
             <a href="https://www.phonepe.com/privacy-policy/" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '5px' }}>
               https://www.phonepe.com/privacy-policy/
             </a>
           </p>
-          
-          <h4>Payment Security and Compliance:</h4>
-          <p>
-            All payment transactions are processed in compliance with:
-          </p>
-          <ul>
-            <li><strong>PCI DSS:</strong> Payment Card Industry Data Security Standard</li>
-            <li><strong>RBI Guidelines:</strong> Reserve Bank of India's Payment Aggregator regulations</li>
-            <li><strong>Encryption:</strong> Industry-standard SSL/TLS encryption for all transactions</li>
-            <li><strong>Two-Factor Authentication:</strong> As mandated by RBI for card transactions</li>
-          </ul>
-          
-          <h4>Transaction Records:</h4>
-          <p>
-            We maintain transaction records including transaction ID, amount, date, and status for:
-          </p>
-          <ul>
-            <li>Accounting and tax compliance purposes (7 years)</li>
-            <li>Dispute resolution and refund processing</li>
-            <li>Regulatory compliance with RBI and income tax requirements</li>
-          </ul>
+        </section>
 
-
-          <h3>5.2 Google OAuth</h3>
+        <section>
+          <h2>Security Precautions</h2>
           <p>
-            When you use Google OAuth to log in, Google's privacy policy applies to the information
-            collected during the authentication process.
-          </p>
-
-          <h3>5.3 MongoDB and Cloud Services</h3>
-          <p>
-            We use MongoDB for database services and Google Cloud for hosting. These services may have
-            access to your data as necessary to provide their services to us.
+            To protect your personal data from unauthorised access or disclosure, loss or
+            misuse we adopt reasonable security practices and procedures. Once your information is in our
+            possession or whenever you access your account information, we adhere to our security guidelines to
+            protect it against unauthorised access and offer the use of a secure server. However, the transmission of
+            information is not completely secure for reasons beyond our control. By using the Platform, the users
+            accept the security implications of data transmission over the internet and the World Wide Web which
+            cannot always be guaranteed as completely secure, and therefore, there would always remain certain
+            inherent risks regarding use of the Platform. Users are responsible for ensuring the protection of login
+            and password records for their account.
           </p>
         </section>
 
         <section>
-          <h2>6. Data Sharing and Disclosure</h2>
-          <p>We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:</p>
-          <ul>
-            <li><strong>With your consent:</strong> When you explicitly agree to share information</li>
-            <li><strong>Service providers:</strong> With trusted third parties who assist in operating our service (e.g., payment processors, hosting providers)</li>
-            <li><strong>Legal requirements:</strong> When required by law or to protect our rights</li>
-            <li><strong>Business transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>7. Data Security</h2>
+          <h2>Data Deletion and Retention</h2>
           <p>
-            We implement appropriate technical and organizational security measures to protect your
-            personal information against unauthorized access, alteration, disclosure, or destruction.
-            However, no method of transmission over the internet or electronic storage is 100% secure.
+            You have an option to delete your account by visiting your profile and
+            settings on our Platform, this action would result in you losing all information related to your account.
+            You may also write to us at the contact information provided below to assist you with these requests. We
+            may in event of any pending grievance, claims, pending shipments or any other services we may refuse
+            or delay deletion of the account. Once the account is deleted, you will lose access to the account. We
+            retain your personal data information for a period no longer than is required for the purpose for which it
+            was collected or as required under any applicable law. However, we may retain data related to you if we
+            believe it may be necessary to prevent fraud or future abuse or for other legitimate purposes. We may
+            continue to retain your data in anonymised form for analytical and research purposes.
           </p>
         </section>
 
         <section>
-          <h2>8. Data Retention</h2>
+          <h2>Your Rights</h2>
           <p>
-            We retain your personal information only for as long as necessary to fulfill the purposes
-            outlined in this Privacy Policy, unless a longer retention period is required by law.
+            You may access, rectify, and update your personal data directly through the functionalities
+            provided on the Platform.
           </p>
         </section>
 
         <section>
-          <h2>9. Your Rights</h2>
-          <p>You have the right to:</p>
-          <ul>
-            <li>Access the personal information we hold about you</li>
-            <li>Request correction of inaccurate or incomplete information</li>
-            <li>Request deletion of your personal information</li>
-            <li>Object to or restrict certain processing of your information</li>
-            <li>Withdraw consent where processing is based on consent</li>
-            <li>Data portability (receive your data in a structured format)</li>
-          </ul>
-          
-          <h3>9.1 Account Deletion</h3>
+          <h2>Consent</h2>
           <p>
-            You have the right to request permanent deletion of your account and associated personal data at any time.
-            For detailed information about the account deletion process, timeline, and what data is deleted, please visit our
-            <a href="/delete-account" style={{ marginLeft: '5px' }}>Account Deletion page</a>.
+            By visiting our Platform or by providing your information, you consent to the collection, use,
+            storage, disclosure and otherwise processing of your information on the Platform in accordance with this
+            Privacy Policy. If you disclose to us any personal data relating to other people, you represent that you
+            have the authority to do so and permit us to use the information in accordance with this Privacy Policy.
           </p>
-          <p>To request account deletion:</p>
-          <ul>
-            <li>Visit: <a href="https://thenobiasmedia.com/delete-account">https://thenobiasmedia.com/delete-account</a></li>
-            <li>Email: <a href="mailto:contact@thenobiasmedia.com?subject=Account Deletion Request">contact@thenobiasmedia.com</a> with subject "Account Deletion Request"</li>
-            <li>Mobile App: Go to Settings → Account → Delete Account (if using our mobile app)</li>
-          </ul>
           <p>
-            Your account will be deactivated immediately and permanently deleted after a 30-day grace period.
-            During the grace period, you can cancel the deletion request if you change your mind.
-          </p>
-
-          <h3>9.2 Data Export</h3>
-          <p>
-            Before deleting your account, you can request an export of your personal data in a machine-readable
-            format (JSON or CSV). Email contact@thenobiasmedia.com with subject "Data Export Request" and
-            we will provide your data within 30 days.
-          </p>
-
-          <h3>9.3 Exercising Your Rights</h3>
-          <p>To exercise any of these rights, please contact us at contact@thenobiasmedia.com</p>
-        </section>
-
-        <section>
-          <h2>10. Children's Privacy</h2>
-          <p>
-            Our service is not intended for children under 13 years of age. We do not knowingly collect
-            personal information from children under 13. If you are a parent or guardian and believe
-            your child has provided us with personal information, please contact us.
+            You, while providing your personal data over the Platform or any partner platforms or establishments,
+            consent to us (including our other corporate entities, affiliates, lending partners, technology partners,
+            marketing channels, business partners and other third parties) to contact you through SMS, instant
+            messaging apps, call and/or e-mail for the purposes specified in this Privacy Policy. You have an option
+            to withdraw your consent that you have already provided by writing to the Grievance Officer at the
+            contact information provided below. Please mention "Withdrawal of consent for processing personal
+            data" in your subject line of your communication. We may verify such requests before acting on our
+            request. However, please note that your withdrawal of consent will not be retrospective and will be in
+            accordance with the Terms of Use, this Privacy Policy, and applicable laws. In the event you withdraw
+            consent given to us under this Privacy Policy, we reserve the right to restrict or deny the provision of our
+            services for which we consider such information to be necessary.
           </p>
         </section>
 
         <section>
-          <h2>11. International Data Transfers</h2>
+          <h2>Changes to this Privacy Policy</h2>
           <p>
-            Your information may be transferred to and maintained on servers located outside your country
-            of residence, where data protection laws may differ. By using our service, you consent to
-            such transfers.
+            Please check our Privacy Policy periodically for changes. We may
+            update this Privacy Policy to reflect changes to our information practices. We may alert / notify you
+            about the significant changes to the Privacy Policy, in the manner as may be required under applicable
+            laws.
           </p>
         </section>
 
         <section>
-          <h2>12. Changes to This Privacy Policy</h2>
+          <h2>Grievance Officer</h2>
           <p>
-            We may update this Privacy Policy from time to time. We will notify you of any material
-            changes by posting the new Privacy Policy on this page with an updated "Last Updated" date.
-            We encourage you to review this Privacy Policy periodically.
-          </p>
-        </section>
-
-        <section>
-          <h2>13. Contact Us</h2>
-          <p>
-            If you have any questions or concerns about this Privacy Policy or our data practices,
-            please contact us at:
-          </p>
-          <p>
-            <strong>The NoBias Media</strong><br />
-            75-76, West Guru Angad Nagar<br />
-            Near Nirman Vihar Metro Station<br />
-            Delhi - 110092, India<br />
-            <br />
-            Email: contact@thenobiasmedia.com<br />
-            Website: https://thenobiasmedia.com
+            <strong>Name:</strong> Manisankar Chakrabarty<br />
+            <strong>Designation:</strong> Grievance Officer<br />
+            <strong>Company:</strong> Teroment Solutions (The NoBias Media)<br />
+            <strong>Address:</strong> 75-76, West Guru Angad Nagar, Near Nirman Vihar Metro Station, Delhi - 110092, India<br />
+            <strong>Email:</strong> <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a><br />
+            <strong>Time:</strong> Monday - Friday (9:00 - 18:00)
           </p>
         </section>
       </div>

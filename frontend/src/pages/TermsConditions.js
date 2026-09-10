@@ -5,197 +5,151 @@ const TermsAndConditions = () => {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <h1>Terms and Conditions</h1>
+        <h1>Terms & Conditions</h1>
         <p className="last-updated">Last Updated: January 2026</p>
 
         <section>
-          <h2>1. Acceptance of Terms</h2>
           <p>
-            By accessing and using The NoBias Media ("we," "our," or "us") website at thenobiasmedia.com
-            and our mobile applications, you accept and agree to be bound by the terms and provisions of
-            this agreement.
+            This document is an electronic record in terms of Information Technology Act, 2000 and rules
+            there under as applicable and the amended provisions pertaining to electronic records in various
+            statutes as amended by the Information Technology Act, 2000. This electronic record is generated
+            by a computer system and does not require any physical or digital signatures.
           </p>
           <p>
-            <strong>How You Accept These Terms:</strong> By logging in through Google OAuth or by continuing
-            to use our services, you acknowledge that you have read, understood, and agree to be bound by
-            these Terms and Conditions and our Privacy Policy. If you do not agree to these terms, please
-            do not use our services.
+            This document is published in accordance with the provisions of Rule 3 (1) of the Information
+            Technology (Intermediaries guidelines) Rules, 2011 that require publishing the rules and
+            regulations, privacy policy and Terms of Use for access or usage of domain name
+            <strong> https://thenobiasmedia.com/</strong> ('Website'), including the related mobile site and mobile application
+            (hereinafter referred to as 'Platform').
           </p>
           <p>
-            These Terms and Conditions are available at all times at https://thenobiasmedia.com/terms-conditions
-            and are incorporated by reference into your use of our services.
-          </p>
-        </section>
-
-        <section>
-          <h2>2. About Our Service</h2>
-          <p>
-            The NoBias Media is a news aggregation and content platform that provides unbiased news coverage
-            from multiple sources. We strive to present news objectively without editorial bias, allowing
-            readers to form their own informed opinions.
-          </p>
-        </section>
-
-        <section>
-          <h2>3. Use of Service</h2>
-          <p>You agree to use our service only for lawful purposes and in accordance with these Terms. You agree not to:</p>
-          <ul>
-            <li>Use the service in any way that violates any applicable national or international law or regulation</li>
-            <li>Transmit any material that is defamatory, offensive, or otherwise objectionable</li>
-            <li>Attempt to gain unauthorized access to any portion of the service</li>
-            <li>Interfere with or disrupt the service or servers or networks connected to the service</li>
-            <li>Use any automated means to access the service for any purpose without our express written permission</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>4. Intellectual Property Rights</h2>
-          <p>
-            The content provided on The NoBias Media, including but not limited to text, graphics, logos,
-            images, and software, is the property of The NoBias Media or its content suppliers and is
-            protected by copyright and other intellectual property laws.
+            The Platform is owned by <strong>Teroment Solutions</strong>, a company with its registered office at
+            <strong> 75-76, West Guru Angad Nagar, Near Nirman Vihar Metro Station, Delhi - 110092, India</strong>.
+            The Platform operates under the brand name <strong>The NoBias Media</strong>, a subsidiary of Teroment Solutions
+            (hereinafter referred to as 'Platform Owner', 'we', 'us', 'our').
           </p>
           <p>
-            News articles and content aggregated from external sources remain the property of their
-            respective owners. We provide proper attribution and links to original sources.
+            Your use of the Platform and services and tools are governed by the following terms and
+            conditions ("Terms of Use") as applicable to the Platform including the applicable policies which
+            are incorporated herein by way of reference. If You transact on the Platform, You shall be subject
+            to the policies that are applicable to the Platform for such transaction. By mere use of the Platform,
+            You shall be contracting with the Platform Owner and these terms and conditions including the
+            policies constitute Your binding obligations, with Platform Owner. These Terms of Use relate to
+            your use of our website, goods (as applicable) or services (as applicable) (collectively, 'Services').
           </p>
-
-          <h3>4.1 Copyright and Content Claims</h3>
           <p>
-            We respect the intellectual property rights of others and expect our users to do the same.
-            If you believe that any content on our platform (including images, text, videos, or other
-            materials) infringes your copyright or other intellectual property rights, please contact
-            us immediately.
+            Any terms and conditions proposed by You which are in addition to or which conflict with these
+            Terms of Use are expressly rejected by the Platform Owner and shall be of no force or effect.
+            These Terms of Use can be modified at any time without assigning any reason. It is your
+            responsibility to periodically review these Terms of Use to stay informed of updates.
           </p>
-
-          <h3>4.2 Copyright Infringement Notice (DMCA)</h3>
           <p>
-            If you are a copyright owner or authorized agent and believe that content on our website
-            infringes your copyright, please send a written notice to our designated Copyright Agent
-            at <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a> with the
-            subject line "Copyright Claim" or "DMCA Notice".
+            For the purpose of these Terms of Use, wherever the context so requires 'you', 'your' or 'user' shall
+            mean any natural or legal person who has agreed to become a user/buyer on the Platform.
           </p>
-          <p>Your notice must include:</p>
-          <ul>
-            <li>Identification of the copyrighted work claimed to have been infringed, or if multiple
-                works are covered by a single notification, a representative list</li>
-            <li>Identification of the material that is claimed to be infringing, including URL or
-                specific location on our website</li>
-            <li>Your contact information (name, address, telephone number, and email address)</li>
-            <li>A statement that you have a good faith belief that the disputed use is not authorized
-                by the copyright owner, its agent, or the law</li>
-            <li>A statement, made under penalty of perjury, that the information in your notice is
-                accurate and that you are the copyright owner or authorized to act on behalf of the
-                copyright owner</li>
-            <li>Your physical or electronic signature</li>
-          </ul>
-
-          <h3>4.3 Image Rights and Attribution</h3>
           <p>
-            As a news aggregation platform, we use images from various sources. We make reasonable
-            efforts to:
-          </p>
-          <ul>
-            <li>Use images from original news sources with proper attribution</li>
-            <li>Link to original articles where images were first published</li>
-            <li>Remove or replace images upon valid copyright claims</li>
-            <li>Respect fair use principles for news reporting and commentary</li>
-          </ul>
-          <p>
-            If you are a photographer, artist, or rights holder and believe we are using your image
-            without proper authorization or attribution, please contact us at
-            <a href="mailto:contact@thenobiasmedia.com"> contact@thenobiasmedia.com</a> with:
-          </p>
-          <ul>
-            <li>The specific URL where your image appears</li>
-            <li>Proof of ownership or rights to the image</li>
-            <li>Your preferred resolution (removal, attribution, licensing, etc.)</li>
-          </ul>
-          <p>
-            <strong>We commit to responding to all valid claims within 48 hours and removing or
-            properly attributing disputed content within 5 business days.</strong>
-          </p>
-
-          <h3>4.4 Good Faith Resolution</h3>
-          <p>
-            We believe in resolving intellectual property disputes amicably and in good faith. Before
-            pursuing legal action, we encourage rights holders to contact us directly so we can:
-          </p>
-          <ul>
-            <li>Remove the disputed content promptly</li>
-            <li>Provide proper attribution if permissible</li>
-            <li>Discuss licensing arrangements if applicable</li>
-            <li>Prevent future incidents</li>
-          </ul>
-          <p>
-            Our goal is to respect creators' rights while providing fair and balanced news coverage.
-          </p>
-
-          <h3>4.5 Counter-Notification</h3>
-          <p>
-            If you believe that content you posted was removed or disabled by mistake or
-            misidentification, you may send a counter-notification to our Copyright Agent containing:
-          </p>
-          <ul>
-            <li>Your physical or electronic signature</li>
-            <li>Identification of the material removed and its prior location</li>
-            <li>A statement under penalty of perjury that you have a good faith belief the content
-                was removed by mistake or misidentification</li>
-            <li>Your name, address, telephone number, and email address</li>
-            <li>A statement consenting to jurisdiction in your location</li>
-          </ul>
-
-          <h3>4.6 Repeat Infringer Policy</h3>
-          <p>
-            We maintain a policy of terminating accounts or removing content from users who
-            repeatedly infringe intellectual property rights.
+            <strong>ACCESSING, BROWSING OR OTHERWISE USING THE PLATFORM INDICATES YOUR
+            AGREEMENT TO ALL THE TERMS AND CONDITIONS UNDER THESE TERMS OF USE,
+            SO PLEASE READ THE TERMS OF USE CAREFULLY BEFORE PROCEEDING.</strong>
           </p>
         </section>
 
         <section>
-          <h2>5. User Accounts and Admin Panel</h2>
-          <p>
-            Certain features of our service, including the admin panel and personalized content, require
-            account registration through Google OAuth.
-          </p>
+          <h2>The use of Platform and/or availing of our Services is subject to the following Terms of Use:</h2>
           
-          <h3>5.1 Account Creation</h3>
-          <p>
-            We use Google OAuth for authentication. When you sign in with Google:
-          </p>
-          <ul>
-            <li>You authorize us to access your Google account email and basic profile information</li>
-            <li>By logging in, you automatically accept these Terms and Conditions and our Privacy Policy</li>
-            <li>We do not store your Google password or have access to it</li>
-            <li>You can revoke our access at any time through your Google Account settings</li>
-          </ul>
-
-          <h3>5.2 No Separate Registration</h3>
-          <p>
-            We do not have a separate signup process or require explicit acceptance checkboxes. Your use
-            of Google OAuth to log in constitutes your acceptance of our terms and policies, which are
-            always accessible at:
-          </p>
-          <ul>
-            <li>Terms and Conditions: https://thenobiasmedia.com/terms-conditions</li>
-            <li>Privacy Policy: https://thenobiasmedia.com/privacy-policy</li>
-          </ul>
-
-          <h3>5.3 Account Responsibilities</h3>
-          <p>
-            You are responsible for maintaining the security of your Google account and for all activities
-            that occur through your account on our service.
-          </p>
+          <ol>
+            <li>
+              To access and use the Services, you agree to provide true, accurate and complete information
+              to us during and after registration, and you shall be responsible for all acts done through the
+              use of your registered account on the Platform.
+            </li>
+            
+            <li>
+              Neither we nor any third parties provide any warranty or guarantee as to the accuracy,
+              timeliness, performance, completeness or suitability of the information and materials offered
+              on this website or through the Services, for any specific purpose. You acknowledge that such
+              information and materials may contain inaccuracies or errors and we expressly exclude
+              liability for any such inaccuracies or errors to the fullest extent permitted by law.
+            </li>
+            
+            <li>
+              Your use of our Services and the Platform is solely and entirely at your own risk and
+              discretion for which we shall not be liable to you in any manner. You are required to
+              independently assess and ensure that the Services meet your requirements.
+            </li>
+            
+            <li>
+              The contents of the Platform and the Services are proprietary to us and are licensed to us.
+              You will not have any authority to claim any intellectual property rights, title, or interest in
+              its contents. The contents includes and is not limited to the design, layout, look and graphics.
+            </li>
+            
+            <li>
+              You acknowledge that unauthorized use of the Platform and/or the Services may lead to
+              action against you as per these Terms of Use and/or applicable laws.
+            </li>
+            
+            <li>
+              You agree to pay us the charges associated with availing the Services.
+            </li>
+            
+            <li>
+              You agree not to use the Platform and/ or Services for any purpose that is unlawful, illegal or
+              forbidden by these Terms, or Indian or local laws that might apply to you.
+            </li>
+            
+            <li>
+              You agree and acknowledge that website and the Services may contain links to other third
+              party websites. On accessing these links, you will be governed by the terms of use, privacy
+              policy and such other policies of such third party websites. These links are provided for your
+              convenience for provide further information.
+            </li>
+            
+            <li>
+              You understand that upon initiating a transaction for availing the Services you are entering
+              into a legally binding and enforceable contract with the Platform Owner for the Services.
+            </li>
+            
+            <li>
+              You shall indemnify and hold harmless Platform Owner, its affiliates, group companies (as
+              applicable) and their respective officers, directors, agents, and employees, from any claim or
+              demand, or actions including reasonable attorney's fees, made by any third party or penalty
+              imposed due to or arising out of Your breach of this Terms of Use, privacy Policy and other
+              Policies, or Your violation of any law, rules or regulations or the rights (including
+              infringement of intellectual property rights) of a third party.
+            </li>
+            
+            <li>
+              Notwithstanding anything contained in these Terms of Use, the parties shall not be liable for
+              any failure to perform an obligation under these Terms if performance is prevented or
+              delayed by a force majeure event.
+            </li>
+            
+            <li>
+              These Terms and any dispute or claim relating to it, or its enforceability, shall be governed
+              by and construed in accordance with the laws of India.
+            </li>
+            
+            <li>
+              All disputes arising out of or in connection with these Terms shall be subject to the exclusive
+              jurisdiction of the courts in Delhi, India.
+            </li>
+            
+            <li>
+              All concerns or communications relating to these Terms must be communicated to us using
+              the contact information provided on this website at <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a>
+            </li>
+          </ol>
         </section>
 
         <section>
-          <h2>6. Donations and Payments</h2>
+          <h2>Donations and Payments</h2>
           <p>
             We accept voluntary donations to support our content and operations. All donations and payments
             are processed securely through PhonePe Payment Gateway, an RBI-authorized payment aggregator.
           </p>
 
-          <h3>6.1 Payment Processing</h3>
+          <h3>Payment Processing</h3>
           <p>
             <strong>Payment Gateway Provider:</strong> PhonePe Private Limited<br />
             <strong>Authorized by:</strong> Reserve Bank of India (RBI)<br />
@@ -207,127 +161,22 @@ const TermsAndConditions = () => {
             <li>You authorize us to charge the specified amount through PhonePe</li>
             <li>Payment information is processed securely by PhonePe and not stored on our servers</li>
             <li>You will be redirected to PhonePe's secure payment page for completing transactions</li>
-            <li>Donations are voluntary and non-refundable unless required by law (see Refund Policy)</li>
+            <li>Donations are voluntary and subject to our Refund Policy</li>
             <li>You agree to PhonePe's Terms of Service and Privacy Policy</li>
           </ul>
-
-          <h3>6.2 Transaction Security</h3>
-          <p>
-            All payment transactions are encrypted and processed through secure channels. We do not store
-            your card details, CVV, PIN, or banking credentials. PhonePe maintains PCI DSS compliance and
-            follows RBI guidelines for secure payment processing.
-          </p>
-
-          <h3>6.3 Transaction Confirmation</h3>
-          <p>
-            Upon successful payment, you will receive:
-          </p>
-          <ul>
-            <li>An on-screen confirmation message</li>
-            <li>Email confirmation to your registered email address</li>
-            <li>Transaction ID for reference</li>
-            <li>Receipt from PhonePe (if applicable)</li>
-          </ul>
-
-          <h3>6.4 Failed Transactions</h3>
-          <p>
-            In case of payment failure, any amount deducted will be refunded to your source account within
-            5-7 business days as per RBI guidelines. If you face issues, contact us at
-            contact@thenobiasmedia.com with your transaction ID.
-          </p>
-
-          <h3>6.5 Donation Purpose</h3>
-          <p>
-            Donations support our mission to provide unbiased news coverage. Currently, donations do not
-            grant any special access, privileges, or subscription benefits. We reserve the right to
-            introduce subscription-based services in the future, for which separate terms will apply.
-          </p>
-
-          <h3>6.6 No Automatic Renewals</h3>
-          <p>
-            All donations and payments are one-time transactions. We do not automatically renew or charge
-            your payment method without explicit authorization. If we introduce subscription services in
-            the future, you will be notified and asked for separate consent.
-          </p>
-
-          <h3>6.7 Payment Disputes</h3>
-          <p>
-            For any payment-related disputes, grievances, or chargebacks, please contact us first at
-            contact@thenobiasmedia.com. We will work with PhonePe to resolve the issue. For PhonePe-specific
-            issues, you may contact PhonePe customer support directly through their app or website.
-          </p>
         </section>
 
         <section>
-          <h2>7. Third-Party Services</h2>
+          <h2>Contact Information</h2>
           <p>
-            Our service may contain links to third-party websites or services that are not owned or
-            controlled by The NoBias Media. We have no control over and assume no responsibility for
-            the content, privacy policies, or practices of any third-party websites or services.
-          </p>
-        </section>
-
-        <section>
-          <h2>8. Disclaimer of Warranties</h2>
-          <p>
-            The service is provided on an "AS IS" and "AS AVAILABLE" basis. We make no representations
-            or warranties of any kind, express or implied, regarding the operation of the service or
-            the information, content, or materials included on the service.
-          </p>
-          <p>
-            While we strive for accuracy, we do not warrant that the content is accurate, complete,
-            reliable, current, or error-free.
-          </p>
-        </section>
-
-        <section>
-          <h2>9. Limitation of Liability</h2>
-          <p>
-            To the fullest extent permitted by applicable law, The NoBias Media shall not be liable
-            for any indirect, incidental, special, consequential, or punitive damages resulting from
-            your use of or inability to use the service.
-          </p>
-        </section>
-
-        <section>
-          <h2>10. Indemnification</h2>
-          <p>
-            You agree to indemnify, defend, and hold harmless The NoBias Media and its officers,
-            directors, employees, and agents from any claims, liabilities, damages, losses, and
-            expenses arising out of your use of the service or violation of these Terms.
-          </p>
-        </section>
-
-        <section>
-          <h2>11. Changes to Terms</h2>
-          <p>
-            We reserve the right to modify these Terms at any time. We will notify users of any
-            material changes by posting the new Terms on this page with an updated "Last Updated" date.
-            Your continued use of the service after such changes constitutes acceptance of the new Terms.
-          </p>
-        </section>
-
-        <section>
-          <h2>12. Governing Law</h2>
-          <p>
-            These Terms shall be governed by and construed in accordance with the laws of India,
-            without regard to its conflict of law provisions.
-          </p>
-        </section>
-
-        <section>
-          <h2>13. Contact Information</h2>
-          <p>
-            If you have any questions about these Terms and Conditions, please contact us at:
-          </p>
-          <p>
-            <strong>The NoBias Media</strong><br />
+            <strong>Teroment Solutions</strong><br />
+            (Operating as The NoBias Media)<br />
             75-76, West Guru Angad Nagar<br />
             Near Nirman Vihar Metro Station<br />
             Delhi - 110092, India<br />
             <br />
-            Email: contact@thenobiasmedia.com<br />
-            Website: https://thenobiasmedia.com
+            Email: <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a><br />
+            Website: <a href="https://thenobiasmedia.com" target="_blank" rel="noopener noreferrer">https://thenobiasmedia.com</a>
           </p>
         </section>
       </div>
