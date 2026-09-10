@@ -56,7 +56,7 @@ const RefundPolicy = () => {
             <li>Screenshot of bank statement showing deduction</li>
             <li>Date and time of transaction</li>
           </ul>
-
+        </section>
 
         <section>
           <h2>3. Future Subscription Services</h2>
