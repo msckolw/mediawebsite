@@ -191,16 +191,71 @@ const TermsAndConditions = () => {
         <section>
           <h2>6. Donations and Payments</h2>
           <p>
-            We accept voluntary donations to support our content and operations. All donations are
-            processed securely through PhonePe Payment Gateway. By making a donation, you agree to
-            the following:
+            We accept voluntary donations to support our content and operations. All donations and payments
+            are processed securely through PhonePe Payment Gateway, an RBI-authorized payment aggregator.
           </p>
+
+          <h3>6.1 Payment Processing</h3>
+          <p>
+            <strong>Payment Gateway Provider:</strong> PhonePe Private Limited<br />
+            <strong>Authorized by:</strong> Reserve Bank of India (RBI)<br />
+            <strong>Payment Methods Accepted:</strong> UPI, Credit Cards, Debit Cards, Net Banking, and Wallets
+          </p>
+          <p>By making a donation or payment, you agree to the following:</p>
           <ul>
-            <li>Donations are voluntary and non-refundable unless required by law</li>
+            <li>All payments are processed through PhonePe Payment Gateway</li>
             <li>You authorize us to charge the specified amount through PhonePe</li>
             <li>Payment information is processed securely by PhonePe and not stored on our servers</li>
-            <li>Donations do not grant any special access, privileges, or subscription benefits at this time</li>
+            <li>You will be redirected to PhonePe's secure payment page for completing transactions</li>
+            <li>Donations are voluntary and non-refundable unless required by law (see Refund Policy)</li>
+            <li>You agree to PhonePe's Terms of Service and Privacy Policy</li>
           </ul>
+
+          <h3>6.2 Transaction Security</h3>
+          <p>
+            All payment transactions are encrypted and processed through secure channels. We do not store
+            your card details, CVV, PIN, or banking credentials. PhonePe maintains PCI DSS compliance and
+            follows RBI guidelines for secure payment processing.
+          </p>
+
+          <h3>6.3 Transaction Confirmation</h3>
+          <p>
+            Upon successful payment, you will receive:
+          </p>
+          <ul>
+            <li>An on-screen confirmation message</li>
+            <li>Email confirmation to your registered email address</li>
+            <li>Transaction ID for reference</li>
+            <li>Receipt from PhonePe (if applicable)</li>
+          </ul>
+
+          <h3>6.4 Failed Transactions</h3>
+          <p>
+            In case of payment failure, any amount deducted will be refunded to your source account within
+            5-7 business days as per RBI guidelines. If you face issues, contact us at
+            contact@thenobiasmedia.com with your transaction ID.
+          </p>
+
+          <h3>6.5 Donation Purpose</h3>
+          <p>
+            Donations support our mission to provide unbiased news coverage. Currently, donations do not
+            grant any special access, privileges, or subscription benefits. We reserve the right to
+            introduce subscription-based services in the future, for which separate terms will apply.
+          </p>
+
+          <h3>6.6 No Automatic Renewals</h3>
+          <p>
+            All donations and payments are one-time transactions. We do not automatically renew or charge
+            your payment method without explicit authorization. If we introduce subscription services in
+            the future, you will be notified and asked for separate consent.
+          </p>
+
+          <h3>6.7 Payment Disputes</h3>
+          <p>
+            For any payment-related disputes, grievances, or chargebacks, please contact us first at
+            contact@thenobiasmedia.com. We will work with PhonePe to resolve the issue. For PhonePe-specific
+            issues, you may contact PhonePe customer support directly through their app or website.
+          </p>
         </section>
 
         <section>

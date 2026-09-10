@@ -106,10 +106,57 @@ const PrivacyPolicy = () => {
           
           <h3>5.1 PhonePe Payment Gateway</h3>
           <p>
-            We use PhonePe Payment Gateway to process donations and payments. PhonePe's privacy policy
-            governs the collection and use of payment information. We do not store your full payment
-            card details on our servers.
+            <strong>Payment Gateway Provider:</strong> PhonePe Private Limited<br />
+            <strong>Authorized by:</strong> Reserve Bank of India (RBI)
           </p>
+          <p>
+            We use PhonePe Payment Gateway to process donations and payments securely. When you make a payment:
+          </p>
+          <ul>
+            <li><strong>What PhonePe Collects:</strong> Payment details (card number, CVV, UPI ID, net banking credentials)</li>
+            <li><strong>What We Receive:</strong> Only transaction confirmation (success/failure) and transaction ID</li>
+            <li><strong>What We Do NOT Store:</strong> Your card numbers, CVV, PIN, or banking credentials</li>
+            <li><strong>Redirect Process:</strong> You are redirected to PhonePe's secure payment page</li>
+            <li><strong>Data Security:</strong> PhonePe maintains PCI DSS compliance and RBI-mandated security standards</li>
+          </ul>
+          
+          <h4>Data Shared with PhonePe:</h4>
+          <ul>
+            <li>Transaction amount</li>
+            <li>Your name and email address (for receipts and confirmations)</li>
+            <li>Unique transaction reference ID</li>
+            <li>Device and browser information (for fraud prevention)</li>
+          </ul>
+          
+          <h4>PhonePe's Privacy Policy:</h4>
+          <p>
+            PhonePe's collection and use of payment data is governed by their privacy policy, available at:
+            <a href="https://www.phonepe.com/privacy-policy/" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '5px' }}>
+              https://www.phonepe.com/privacy-policy/
+            </a>
+          </p>
+          
+          <h4>Payment Security and Compliance:</h4>
+          <p>
+            All payment transactions are processed in compliance with:
+          </p>
+          <ul>
+            <li><strong>PCI DSS:</strong> Payment Card Industry Data Security Standard</li>
+            <li><strong>RBI Guidelines:</strong> Reserve Bank of India's Payment Aggregator regulations</li>
+            <li><strong>Encryption:</strong> Industry-standard SSL/TLS encryption for all transactions</li>
+            <li><strong>Two-Factor Authentication:</strong> As mandated by RBI for card transactions</li>
+          </ul>
+          
+          <h4>Transaction Records:</h4>
+          <p>
+            We maintain transaction records including transaction ID, amount, date, and status for:
+          </p>
+          <ul>
+            <li>Accounting and tax compliance purposes (7 years)</li>
+            <li>Dispute resolution and refund processing</li>
+            <li>Regulatory compliance with RBI and income tax requirements</li>
+          </ul>
+
 
           <h3>5.2 Google OAuth</h3>
           <p>
