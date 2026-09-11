@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Important pages for verification
+Allow: /privacy-policy
+Allow: /privacy
+Allow: /terms-conditions
+Allow: /terms
+Allow: /refund-policy
+Allow: /refund
+Allow: /delete-account
+Allow: /copyright-claims
+
+Sitemap: https://thenobiasmedia.com/sitemap.xml

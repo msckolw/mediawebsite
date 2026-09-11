@@ -21,9 +21,21 @@ export const routes = [
     {path: "/article/:id", element: <ArticleDetail />},
     {path: "/category/:cat", element: <ABC />},
     {path: "/source/:id", element: <SourcePage />},
+    // Privacy Policy - multiple aliases for PhonePe compliance
     {path: "/privacy-policy", element: <PrivacyPolicy />},
+    {path: "/privacy", element: <PrivacyPolicy />},
+    {path: "/privacypolicy", element: <PrivacyPolicy />},
+    // Terms & Conditions - multiple aliases for PhonePe compliance
     {path: "/terms-conditions", element: <TermsConditions />},
+    {path: "/terms-and-conditions", element: <TermsConditions />},
+    {path: "/terms", element: <TermsConditions />},
+    {path: "/termsandconditions", element: <TermsConditions />},
+    {path: "/terms-of-use", element: <TermsConditions />},
+    // Refund Policy - multiple aliases for PhonePe compliance
     {path: "/refund-policy", element: <RefundPolicy />},
+    {path: "/refund", element: <RefundPolicy />},
+    {path: "/refundpolicy", element: <RefundPolicy />},
+    {path: "/cancellation-policy", element: <RefundPolicy />},
     {path: "/delete-account", element: <DeleteAccount />},
     {path: "/copyright-claims", element: <CopyrightClaims />},
     {path: "/about", element: <AboutUs />},

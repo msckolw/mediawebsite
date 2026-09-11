@@ -20,6 +20,10 @@ const Footer = () => {
             <li><Link to="/copyright-claims">Copyright Claims</Link></li>
             <li><Link to="/delete-account">Delete Account</Link></li>
           </ul>
+          <div style={{ marginTop: '1rem', fontSize: '0.85rem', opacity: '0.8' }}>
+            <p>Also available at:</p>
+            <p><a href="/terms" style={{ color: '#fff' }}>/terms</a> | <a href="/privacy" style={{ color: '#fff' }}>/privacy</a> | <a href="/refund" style={{ color: '#fff' }}>/refund</a></p>
+          </div>
         </div>
         
         <div className="footer-section">
