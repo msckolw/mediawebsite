@@ -25,8 +25,8 @@ const TermsAndConditions = () => {
             </li>
             
             <li>
-              The Platform is owned by <strong>Teroment Solutions</strong>, a company with its registered office at
-              <strong> 75-76, West Guru Angad Nagar, Near Nirman Vihar Metro Station, Delhi - 110092, India</strong> (hereinafter referred to as 'Platform Owner', 'we', 'us', 'our').
+              The Platform is owned by <strong>7001414991</strong>, a company incorporated under the Companies Act, 1956
+              with its registered office at <strong>75-76, West Guru Angad Nagar, Near Nirman Vihar Metro Station, Delhi - 110092, India</strong> (hereinafter referred to as 'Platform Owner', 'we', 'us', 'our').
             </li>
             
             <li>
