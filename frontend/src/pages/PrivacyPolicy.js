@@ -6,18 +6,15 @@ const PrivacyPolicy = () => {
     <div className="legal-page">
       <div className="legal-container">
         <h1>Privacy Policy</h1>
-        <p className="last-updated">Last Updated: January 2026</p>
 
         <section>
           <h2>Introduction</h2>
           <p>
-            This Privacy Policy describes how <strong>Teroment Solutions</strong> and its subsidiary <strong>The NoBias Media</strong> (collectively
-            "Teroment Solutions, we, our, us") collect, use, share, protect or otherwise process your information/ personal data through our website
+            This Privacy Policy describes how <strong>Teroment Solutions</strong> and its affiliates (collectively "Teroment Solutions, we, our, us")
+            collect, use, share, protect or otherwise process your information/ personal data through our website
             <strong> https://thenobiasmedia.com/</strong> (hereinafter referred to as <strong>Platform</strong>). Please note that you may be able to
             browse certain sections of the Platform without registering with us. We do not offer any product/service
             under this Platform outside India and your personal data will primarily be stored and processed in India.
-          </p>
-          <p>
             By visiting this Platform, providing your information or availing any product/service offered on the
             Platform, you expressly agree to be bound by the terms and conditions of this Privacy Policy, the Terms
             of Use and the applicable service/product terms and conditions, and agree to be governed by the laws of
@@ -30,29 +27,22 @@ const PrivacyPolicy = () => {
           <h2>Collection</h2>
           <p>
             We collect your personal data when you use our Platform, services or otherwise interact with
-            us during the course of our relationship, and related information provided from time to time. Some of the
+            us during the course of our relationship and related information provided from time to time. Some of the
             information that we may collect includes but is not limited to personal data / information provided to us
             during sign-up/registering or using our Platform such as name, date of birth, address, telephone/mobile
-            number, email ID and/or any such information shared as proof of identity or address.
-          </p>
-          <p>
-            Some of the sensitive personal data may be collected with your consent, such as your bank account or credit or debit
+            number, email ID and/or any such information shared as proof of identity or address. Some of the
+            sensitive personal data may be collected with your consent, such as your bank account or credit or debit
             card or other payment instrument information or biometric information such as your facial features or
             physiological information (in order to enable use of certain features when opted for, available on the
-            Platform) etc all of the above being in accordance with applicable law(s). You always have the option to
-            not provide information, by choosing not to use a particular service or feature on the Platform.
-          </p>
-          <p>
-            We may track your behaviour, preferences, and other information that you choose to provide on our Platform.
+            Platform) etc all of the above being in accordance with applicable law(s) You always have the option to
+            not provide information, by choosing not to use a particular service or feature on the Platform. We may
+            track your behaviour, preferences, and other information that you choose to provide on our Platform.
             This information is compiled and analysed on an aggregated basis. We will also collect your information
             related to your transactions on Platform and such third-party business partner platforms. When such a
             third-party business partner collects your personal data directly from you, you will be governed by their
             privacy policies. We shall not be responsible for the third-party business partner's privacy practices or
             the content of their privacy policies, and we request you to read their privacy policies prior to disclosing
-            any information.
-          </p>
-          <p>
-            If you receive an email, a call from a person/association claiming to be <strong>Teroment Solutions</strong> or <strong>The NoBias Media</strong>
+            any information. If you receive an email, a call from a person/association claiming to be <strong>Teroment Solutions</strong>
             seeking any personal data like debit/credit card PIN, net-banking or mobile banking password, we
             request you to never provide such information. If you have already revealed such information, report it
             immediately to an appropriate law enforcement agency.
@@ -84,49 +74,13 @@ const PrivacyPolicy = () => {
             payment opted by you. These disclosure may be required for us to provide you access to our services and
             products offered to you, to comply with our legal obligations, to enforce our user agreement, to facilitate
             our marketing and advertising activities, to prevent, detect, mitigate, and investigate fraudulent or illegal
-            activities related to our services.
-          </p>
-          <p>
-            We may disclose personal and sensitive personal data to government
+            activities related to our services. We may disclose personal and sensitive personal data to government
             agencies or other authorised law enforcement agencies if required to do so by law or in the good faith
             belief that such disclosure is reasonably necessary to respond to subpoenas, court orders, or other legal
             process. We may disclose personal data to law enforcement offices, third party rights owners, or others in
             the good faith belief that such disclosure is reasonably necessary to: enforce our Terms of Use or Privacy
             Policy; respond to claims that an advertisement, posting or other content violates the rights of a third
             party; or protect the rights, property or personal safety of our users or the general public.
-          </p>
-        </section>
-
-        <section>
-          <h2>PhonePe Payment Gateway</h2>
-          <p>
-            <strong>Payment Gateway Provider:</strong> PhonePe Private Limited<br />
-            <strong>Authorized by:</strong> Reserve Bank of India (RBI)
-          </p>
-          <p>
-            We use PhonePe Payment Gateway to process donations and payments securely. When you make a payment:
-          </p>
-          <ul>
-            <li><strong>What PhonePe Collects:</strong> Payment details (card number, CVV, UPI ID, net banking credentials)</li>
-            <li><strong>What We Receive:</strong> Only transaction confirmation (success/failure) and transaction ID</li>
-            <li><strong>What We Do NOT Store:</strong> Your card numbers, CVV, PIN, or banking credentials</li>
-            <li><strong>Redirect Process:</strong> You are redirected to PhonePe's secure payment page</li>
-            <li><strong>Data Security:</strong> PhonePe maintains PCI DSS compliance and RBI-mandated security standards</li>
-          </ul>
-          
-          <h3>Data Shared with PhonePe:</h3>
-          <ul>
-            <li>Transaction amount</li>
-            <li>Your name and email address (for receipts and confirmations)</li>
-            <li>Unique transaction reference ID</li>
-            <li>Device and browser information (for fraud prevention)</li>
-          </ul>
-          
-          <p>
-            PhonePe's collection and use of payment data is governed by their privacy policy, available at:
-            <a href="https://www.phonepe.com/privacy-policy/" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '5px' }}>
-              https://www.phonepe.com/privacy-policy/
-            </a>
           </p>
         </section>
 
@@ -175,8 +129,6 @@ const PrivacyPolicy = () => {
             storage, disclosure and otherwise processing of your information on the Platform in accordance with this
             Privacy Policy. If you disclose to us any personal data relating to other people, you represent that you
             have the authority to do so and permit us to use the information in accordance with this Privacy Policy.
-          </p>
-          <p>
             You, while providing your personal data over the Platform or any partner platforms or establishments,
             consent to us (including our other corporate entities, affiliates, lending partners, technology partners,
             marketing channels, business partners and other third parties) to contact you through SMS, instant
@@ -204,10 +156,20 @@ const PrivacyPolicy = () => {
         <section>
           <h2>Grievance Officer</h2>
           <p>
-            <strong>Name:</strong> Manisankar Chakrabarty<br />
+            <strong>Name of the Officer:</strong> Manisankar Chakrabarty<br />
             <strong>Designation:</strong> Grievance Officer<br />
-            <strong>Company:</strong> Teroment Solutions (The NoBias Media)<br />
-            <strong>Address:</strong> 75-76, West Guru Angad Nagar, Near Nirman Vihar Metro Station, Delhi - 110092, India<br />
+            <strong>Name and Address of the Company:</strong><br />
+            Teroment Solutions<br />
+            75-76, West Guru Angad Nagar<br />
+            Near Nirman Vihar Metro Station<br />
+            Delhi - 110092, India
+          </p>
+        </section>
+
+        <section>
+          <h2>Contact us</h2>
+          <p>
+            <strong>Phone:</strong> <a href="tel:+917001414991">+91-7001414991</a><br />
             <strong>Email:</strong> <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a><br />
             <strong>Time:</strong> Monday - Friday (9:00 - 18:00)
           </p>
