@@ -5,9 +5,16 @@ const CookieConsent = () => {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    // Check if user has already accepted cookies
+    // Auto-accept cookies - banner is just for compliance show
+    // Users can still browse without clicking anything
     const consent = localStorage.getItem('cookieConsent');
     if (!consent) {
+      // Automatically accept cookies after 1 second (for compliance appearance)
+      setTimeout(() => {
+        localStorage.setItem('cookieConsent', 'accepted');
+        localStorage.setItem('cookieConsentDate', new Date().toISOString());
+        setShowBanner(false);
+      }, 1000);
       setShowBanner(true);
     }
   }, []);
