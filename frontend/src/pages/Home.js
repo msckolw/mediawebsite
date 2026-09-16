@@ -102,9 +102,11 @@ const Home = () => {
           currentPage: response.currentPage,
           totalPages: response.totalPages
         });
+        setLoading(false); // Set loading to false after successful data load
       } else if (page === 1) {
         // No articles on first page
         setArticles([]);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -123,9 +125,7 @@ const Home = () => {
           }).catch(err => console.error('Retry failed:', err))
           .finally(() => setLoading(false));
         }, 2000);
-      }
-    } finally {
-      if (page > 1) {
+      } else {
         setLoading(false);
       }
     }
