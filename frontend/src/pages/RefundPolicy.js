@@ -22,7 +22,7 @@ const RefundPolicy = () => {
             </li>
             
             <li>
-              <strong>7001414991</strong> does not accept cancellation requests for perishable items like flowers, eatables, etc.
+              <strong>The NoBias Media</strong> does not accept cancellation requests for perishable items like flowers, eatables, etc.
               However, the refund / replacement can be made if the user establishes that the quality of the
               product delivered is not good.
             </li>
@@ -42,7 +42,7 @@ const RefundPolicy = () => {
             </li>
             
             <li>
-              In case of any refunds approved by <strong>7001414991</strong>, it will take <strong>2 days</strong> for the refund to be processed
+              In case of any refunds approved by <strong>The NoBias Media</strong>, it will take <strong>2 days</strong> for the refund to be processed
               to you.
             </li>
           </ol>
