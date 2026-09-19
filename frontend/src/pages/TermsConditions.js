@@ -26,7 +26,7 @@ const TermsAndConditions = () => {
             
             <li>
               The Platform is owned by <strong>The NoBias Media (7001414991)</strong>, a company incorporated under the Companies Act, 1956
-              with its registered office at <strong>T-263, Duria, West Midnapore, West Bengal, Pin- 721467</strong> and office address at <strong>75-76, West Guru Angad Nagar, Near Nirman Vihar Metro Station, Delhi - 110092, India</strong> (hereinafter referred to as 'Platform Owner', 'we', 'us', 'our').
+              with its registered office at <strong>T-263, Duria, West Midnapore, West Bengal, Pin- 721467</strong> and office address at <strong>75-76, West Guru Angad Nagar, Laxmi Nagar, Near Nirman Vihar Metro Station, Delhi - 110092, India</strong> (hereinafter referred to as 'Platform Owner', 'we', 'us', 'our').
             </li>
             
             <li>

@@ -166,7 +166,7 @@ const PrivacyPolicy = () => {
             West Bengal, Pin- 721467<br />
             <br />
             <strong>Office Address:</strong><br />
-            75-76, West Guru Angad Nagar<br />
+            75-76, West Guru Angad Nagar, Laxmi Nagar<br />
             Near Nirman Vihar Metro Station<br />
             Delhi - 110092, India
           </p>
@@ -182,7 +182,7 @@ const PrivacyPolicy = () => {
             West Bengal, Pin- 721467<br />
             <br />
             <strong>Office Address:</strong><br />
-            75-76, West Guru Angad Nagar<br />
+            75-76, West Guru Angad Nagar, Laxmi Nagar<br />
             Near Nirman Vihar Metro Station<br />
             Delhi - 110092, India<br />
             <br />

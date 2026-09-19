@@ -13,7 +13,7 @@ const Footer = () => {
             <p><strong>Registered Office:</strong></p>
             <p>T-263, Duria, West Midnapore<br />West Bengal, Pin- 721467</p>
             <p style={{ marginTop: '0.5rem' }}><strong>Office Address:</strong></p>
-            <p>75-76, West Guru Angad Nagar<br />Near Nirman Vihar Metro Station<br />Delhi - 110092, India</p>
+            <p>75-76, West Guru Angad Nagar, Laxmi Nagar<br />Near Nirman Vihar Metro Station<br />Delhi - 110092, India</p>
           </div>
         </div>
         
