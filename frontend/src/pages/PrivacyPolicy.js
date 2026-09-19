@@ -160,6 +160,12 @@ const PrivacyPolicy = () => {
             <strong>Designation:</strong> Grievance Officer<br />
             <strong>Name and Address of the Company:</strong><br />
             The NoBias Media (7001414991)<br />
+            <br />
+            <strong>Registered Office:</strong><br />
+            T-263, Duria, West Midnapore<br />
+            West Bengal, Pin- 721467<br />
+            <br />
+            <strong>Office Address:</strong><br />
             75-76, West Guru Angad Nagar<br />
             Near Nirman Vihar Metro Station<br />
             Delhi - 110092, India
@@ -169,6 +175,17 @@ const PrivacyPolicy = () => {
         <section>
           <h2>Contact us</h2>
           <p>
+            <strong>The NoBias Media (7001414991)</strong><br />
+            <br />
+            <strong>Registered Office:</strong><br />
+            T-263, Duria, West Midnapore<br />
+            West Bengal, Pin- 721467<br />
+            <br />
+            <strong>Office Address:</strong><br />
+            75-76, West Guru Angad Nagar<br />
+            Near Nirman Vihar Metro Station<br />
+            Delhi - 110092, India<br />
+            <br />
             <strong>Phone:</strong> <a href="tel:+917001414991">+91-7001414991</a><br />
             <strong>Email:</strong> <a href="mailto:contact@thenobiasmedia.com">contact@thenobiasmedia.com</a><br />
             <strong>Time:</strong> Monday - Friday (9:00 - 18:00)

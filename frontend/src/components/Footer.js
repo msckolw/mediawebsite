@@ -9,6 +9,12 @@ const Footer = () => {
         <div className="footer-section">
           <h3>The NoBias Media</h3>
           <p>Delivering unbiased news and analysis from around the world.</p>
+          <div style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: '1.5' }}>
+            <p><strong>Registered Office:</strong></p>
+            <p>T-263, Duria, West Midnapore<br />West Bengal, Pin- 721467</p>
+            <p style={{ marginTop: '0.5rem' }}><strong>Office Address:</strong></p>
+            <p>75-76, West Guru Angad Nagar<br />Near Nirman Vihar Metro Station<br />Delhi - 110092, India</p>
+          </div>
         </div>
         
         <div className="footer-section">
