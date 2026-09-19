@@ -12,12 +12,35 @@ const ContactUs = () => {
         <h3>Contact Information</h3>
         
         <div style={{ marginBottom: '1.5rem' }}>
-          <h4>Address</h4>
+          <h4>Company Details</h4>
           <p>
-            <strong>The NoBias Media</strong><br />
-            75-76, West Guru Angad Nagar,<br />
+            <strong>The NoBias Media (7001414991)</strong>
+          </p>
+        </div>
+        
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h4>Registered Office</h4>
+          <p>
+            T-263, Duria, West Midnapore,<br />
+            West Bengal, Pin- 721467
+          </p>
+        </div>
+        
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h4>Office Address</h4>
+          <p>
+            75-76, West Guru Angad Nagar, Laxmi Nagar,<br />
             Near Nirman Vihar Metro Station,<br />
             Delhi - 110092, India
+          </p>
+        </div>
+        
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h4>Phone</h4>
+          <p>
+            <a href="tel:+917001414991" style={{ color: '#1e3c72', textDecoration: 'none' }}>
+              +91-7001414991
+            </a>
           </p>
         </div>
         
