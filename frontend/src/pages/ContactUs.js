@@ -19,14 +19,6 @@ const ContactUs = () => {
         </div>
         
         <div style={{ marginBottom: '1.5rem' }}>
-          <h4>Registered Office</h4>
-          <p>
-            T-263, Duria, West Midnapore,<br />
-            West Bengal, Pin- 721467
-          </p>
-        </div>
-        
-        <div style={{ marginBottom: '1.5rem' }}>
           <h4>Office Address</h4>
           <p>
             75-76, West Guru Angad Nagar, Laxmi Nagar,<br />
