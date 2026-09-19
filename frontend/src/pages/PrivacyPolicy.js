@@ -10,7 +10,7 @@ const PrivacyPolicy = () => {
         <section>
           <h2>Introduction</h2>
           <p>
-            This Privacy Policy describes how <strong>The NoBias Media</strong> and its affiliates (collectively "The NoBias Media, we, our, us")
+            This Privacy Policy describes how <strong>The NoBias Media (7001414991)</strong> and its affiliates (collectively "The NoBias Media (7001414991), we, our, us")
             collect, use, share, protect or otherwise process your information/ personal data through our website
             <strong> https://thenobiasmedia.com/</strong> (hereinafter referred to as <strong>Platform</strong>). Please note that you may be able to
             browse certain sections of the Platform without registering with us. We do not offer any product/service
@@ -42,7 +42,7 @@ const PrivacyPolicy = () => {
             third-party business partner collects your personal data directly from you, you will be governed by their
             privacy policies. We shall not be responsible for the third-party business partner's privacy practices or
             the content of their privacy policies, and we request you to read their privacy policies prior to disclosing
-            any information. If you receive an email, a call from a person/association claiming to be <strong>The NoBias Media</strong>
+            any information. If you receive an email, a call from a person/association claiming to be <strong>The NoBias Media (7001414991)</strong>
             seeking any personal data like debit/credit card PIN, net-banking or mobile banking password, we
             request you to never provide such information. If you have already revealed such information, report it
             immediately to an appropriate law enforcement agency.
@@ -159,7 +159,7 @@ const PrivacyPolicy = () => {
             <strong>Name of the Officer:</strong> Manisankar Chakrabarty<br />
             <strong>Designation:</strong> Grievance Officer<br />
             <strong>Name and Address of the Company:</strong><br />
-            The NoBias Media<br />
+            The NoBias Media (7001414991)<br />
             75-76, West Guru Angad Nagar<br />
             Near Nirman Vihar Metro Station<br />
             Delhi - 110092, India
