@@ -14,6 +14,8 @@ let AboutUs = React.lazy(() => import('./pages/AboutUs'))
 let MediaBiasDetails = React.lazy(() => import('./pages/MediaBiasDetails'))
 let ContactUs = React.lazy(() => import('./pages/ContactUs'))
 let Bookmarks = React.lazy(() => import('./pages/Bookmarks'))
+let Donate = React.lazy(() => import('./pages/Donate'))
+let DonateStatus = React.lazy(() => import('./pages/DonateStatus'))
 
 export const routes = [
     {path: "/login", element: <Login />},
@@ -41,5 +43,8 @@ export const routes = [
     {path: "/about", element: <AboutUs />},
     {path: "/media-bias-details", element: <MediaBiasDetails />},
     {path: "/contact", element: <ContactUs />},
-    {path: "/bookmarks", element: <Bookmarks />}
+    {path: "/bookmarks", element: <Bookmarks />},
+    // Donate / Payment
+    {path: "/donate", element: <Donate />},
+    {path: "/donate/status", element: <DonateStatus />}
 ]

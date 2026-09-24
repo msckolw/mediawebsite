@@ -136,4 +136,32 @@ export const uploadImage = async (file) => {
 
 
 
-export default api; 
+// Payment API
+export const createPayment = async (data) => {
+  try {
+    const response = await api.post('/payments/create', data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Could not start payment.');
+  }
+};
+
+export const getPaymentStatus = async (txnid) => {
+  try {
+    const response = await api.get(`/payments/${txnid}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Could not fetch payment status.');
+  }
+};
+
+export const verifyPayment = async (txnid) => {
+  try {
+    const response = await api.post(`/payments/${txnid}/verify`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Could not verify payment.');
+  }
+};
+
+export default api;

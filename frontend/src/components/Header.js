@@ -19,6 +19,7 @@ const Header = () => {
     { name: 'World News', path: '/category/world news' },
     { name: 'Legal', path: '/category/legal' },
     { name: 'Miscellaneous', path: '/category/miscellaneous' },
+    { name: '❤️ Donate', path: '/donate' },
     { name: 'Bookmarks', path: '/bookmarks' },
     { name: 'Profile', path: '/admin' }
   ];

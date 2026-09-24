@@ -9,9 +9,6 @@ const http = require('http'); // Required for socket.io with Express
 const socketIo = require('socket.io');
 const { initSocket } = require("./socket");
 
-
-//let MONGODB_URI=`mongodb+srv://manisankar:77HFY1n0QsN6d76L@cluster0.kkwdaye.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-
 // Load environment variables
 dotenv.config();
 
@@ -49,8 +46,10 @@ mongoose.connect(process.env.MONGODB_URI, {
     const newsRoutes = require('./routes/newsRoutes');
     const authRoutes = require('./routes/authRoutes');
     
+    const paymentRoutes = require('./routes/paymentRoutes');
     app.use('/api', newsRoutes);
     app.use('/api/auth', authRoutes);
+    app.use('/api', paymentRoutes);
         
     // Error handling middleware
     app.use((err, req, res, next) => {

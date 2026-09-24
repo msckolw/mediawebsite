@@ -36,6 +36,11 @@ const Footer = () => {
             <li><Link to="/about">About Us</Link></li>
             <li><Link to="/contact">Contact Us</Link></li>
             <li><Link to="/media-bias-details">Media Bias Details</Link></li>
+            <li>
+              <Link to="/donate" style={{ color: '#ffcc00', fontWeight: 'bold' }}>
+                ❤️ Donate
+              </Link>
+            </li>
           </ul>
         </div>
 
