@@ -17,17 +17,21 @@ const STATUS_CONFIG = {
   failed: {
     icon: '❌',
     title: 'Payment Failed',
-    message: 'Your payment could not be processed. No amount has been deducted. Please try again or use a different payment method.'
+    message: 'Your payment could not be processed. Please check your bank or payment account before trying again if you may have been charged.'
   }
+};
+
+const UNVERIFIED_CONFIG = {
+  icon: 'ℹ️',
+  title: 'Unable to Verify Payment',
+  message: 'We could not confirm your payment status. Please contact us for assistance before making another payment.'
 };
 
 const DonateStatus = () => {
   const [searchParams] = useSearchParams();
   const txnid = searchParams.get('txnid');
-  const urlStatus = searchParams.get('status') || 'failed';
-
   const [payment, setPayment] = useState(null);
-  const [status, setStatus] = useState(urlStatus);
+  const [status, setStatus] = useState(null);
   const [verifying, setVerifying] = useState(true);
 
   useEffect(() => {
@@ -49,14 +53,12 @@ const DonateStatus = () => {
             setPayment(data);
             setStatus(data.status);
           })
-          .catch(() => {
-            setStatus(urlStatus);
-          });
+          .catch(() => undefined);
       })
       .finally(() => setVerifying(false));
-  }, [txnid, urlStatus]);
+  }, [txnid]);
 
-  const config = STATUS_CONFIG[status] || STATUS_CONFIG.failed;
+  const config = STATUS_CONFIG[status] || UNVERIFIED_CONFIG;
 
   if (verifying) {
     return (
@@ -108,19 +110,25 @@ const DonateStatus = () => {
                 <span>{payment.productinfo}</span>
               </div>
             )}
-            <div className="status-detail-row">
-              <span>Status</span>
-              <span className={`status-badge ${status}`}>{status}</span>
-            </div>
+            {status && (
+              <div className="status-detail-row">
+                <span>Status</span>
+                <span className={`status-badge ${status}`}>{status}</span>
+              </div>
+            )}
           </div>
         )}
 
         {/* Actions */}
         <div className="status-actions">
-          {status === 'failed' || status === 'pending' ? (
+          {!status || status === 'pending' ? (
+            <Link to="/" className="status-btn-secondary">
+              Go Home
+            </Link>
+          ) : status === 'failed' ? (
             <>
               <Link to="/donate" className="status-btn-primary">
-                {status === 'failed' ? 'Try Again' : 'Make Another Donation'}
+                Try Again
               </Link>
               <Link to="/" className="status-btn-secondary">
                 Go Home

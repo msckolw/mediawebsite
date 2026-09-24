@@ -35,6 +35,11 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to Nobiasmedia API" });
 });
 
+app.get("/api/health", (req, res) => {
+  const connected = mongoose.connection.readyState === 1;
+  res.status(connected ? 200 : 503).json({ status: connected ? "ok" : "unavailable" });
+});
+
 // Database connection
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,

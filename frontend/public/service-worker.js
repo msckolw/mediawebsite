@@ -1,5 +1,5 @@
 // Service Worker for caching
-const CACHE_NAME = 'nobias-media-cache-v3';
+const CACHE_NAME = 'nobias-media-cache-v4';
 // IMPORTANT:
 // Do NOT hardcode CRA build asset paths like `/static/js/main.js` or `/static/css/main.css`
 // because production filenames are hashed (e.g. main.abc123.js) and these URLs 404,
@@ -37,6 +37,13 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   // Skip caching for chrome-extension and other non-http(s) schemes
   if (!event.request.url.startsWith('http')) {
+    return;
+  }
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/index.html'))
+    );
     return;
   }
 

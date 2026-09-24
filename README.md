@@ -1,5 +1,7 @@
 # NoBias Media - Master Documentation
 
+> **Current deployment:** The backend currently runs on Google Cloud Run. On pushes to `main`, [`.github/workflows/deploy-backend.yml`](.github/workflows/deploy-backend.yml) deploys it; the Cloud Run URL is already configured in [`frontend/.env.production`](frontend/.env.production). The Render/EC2 deployment sections below are historical. See [CLOUD-RUN-DEPLOYMENT.md](CLOUD-RUN-DEPLOYMENT.md) for the current deployment details.
+
 A news platform delivering unbiased news coverage. 
 *This document serves as the single source of truth for the project's architecture, local development, and deployment as of April 2026.*
 

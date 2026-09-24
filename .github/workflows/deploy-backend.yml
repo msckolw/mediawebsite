@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'backend/**'
+      - 'Dockerfile'
+      - '.dockerignore'
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
@@ -35,7 +37,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} ./backend
+          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} .
 
       - name: Push Docker image to GCR
         run: |
@@ -51,15 +53,22 @@ jobs:
 
       - name: Verify deployment
         run: |
-          echo "⏳ Waiting for deployment to be ready..."
-          sleep 30
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://thenbm-329287861933.asia-south1.run.app/api/news?page=1")
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ Backend is live and responding (HTTP $HTTP_CODE)"
-          else
-            echo "⚠️ Backend returned HTTP $HTTP_CODE"
-            exit 1
-          fi
+          SERVICE_URL=$(gcloud run services describe "${{ env.SERVICE_NAME }}" \
+            --region "${{ env.REGION }}" \
+            --platform managed \
+            --format='value(status.url)')
+          echo "⏳ Checking backend health at ${SERVICE_URL}/api/health..."
+          for attempt in $(seq 1 12); do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${SERVICE_URL}/api/health" || true)
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Backend is healthy (HTTP $HTTP_CODE)"
+              exit 0
+            fi
+            echo "Attempt ${attempt}/12 returned HTTP ${HTTP_CODE:-no response}"
+            if [ "$attempt" -lt 12 ]; then sleep 10; fi
+          done
+          echo "⚠️ Backend health check did not succeed after 12 attempts"
+          exit 1
 
       - name: Deployment Summary
         if: always()
@@ -71,5 +80,5 @@ jobs:
           echo "Service: ${{ env.SERVICE_NAME }}"
           echo "Region: ${{ env.REGION }}"
           echo "Commit: ${{ github.sha }}"
-          echo "Backend URL: https://thenbm-329287861933.asia-south1.run.app"
+          echo "Backend URL: $(gcloud run services describe '${{ env.SERVICE_NAME }}' --region '${{ env.REGION }}' --platform managed --format='value(status.url)' 2>/dev/null || echo 'unavailable')"
           echo "═══════════════════════════════════════"
