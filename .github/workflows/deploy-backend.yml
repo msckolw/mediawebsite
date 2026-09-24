@@ -1,4 +1,4 @@
-name: Deploy Backend to Render
+name: Deploy Backend to Google Cloud Run
 
 on:
   push:
@@ -9,91 +9,67 @@ on:
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
+env:
+  PROJECT_ID: project-d19d2737-e186-40d9-879
+  SERVICE_NAME: thenbm
+  REGION: asia-south1
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Verify API is responding before deployment
-        run: |
-          echo "🧪 Testing API endpoint before deployment..."
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://nobiasmedia.onrender.com/api/news?page=1)
-          echo "Current API status: HTTP $HTTP_CODE"
-          
-      - name: Trigger Render Deploy Hook
-        env:
-          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
-        run: |
-          echo "🚀 Triggering Render deployment..."
-          
-          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
-            echo "⚠️ RENDER_DEPLOY_HOOK secret not set"
-            echo "ℹ️ Render will auto-deploy from GitHub push"
-            echo "ℹ️ No manual trigger needed"
-          else
-            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$RENDER_DEPLOY_HOOK")
-            if [ "$RESPONSE" = "200" ] || [ "$RESPONSE" = "201" ]; then
-              echo "✅ Render deployment triggered successfully (HTTP $RESPONSE)"
-            else
-              echo "⚠️ Render deploy hook returned HTTP $RESPONSE"
-              echo "ℹ️ Render may still auto-deploy from GitHub"
-            fi
-          fi
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Wait for deployment
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Build Docker image
         run: |
-          echo "⏳ Waiting for Render to deploy (60 seconds)..."
-          echo "ℹ️ Render typically takes 1-2 minutes to build and deploy"
-          sleep 60
+          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} ./backend
+
+      - name: Push Docker image to GCR
+        run: |
+          docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --quiet
 
       - name: Verify deployment
         run: |
-          echo "🌐 Backend URL: https://nobiasmedia.onrender.com"
-          
-          # Test the endpoint with retries
-          echo "🧪 Testing API endpoint..."
-          MAX_RETRIES=5
-          RETRY_COUNT=0
-          
-          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://nobiasmedia.onrender.com/api/news?page=1)
-            
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ API is responding correctly (HTTP $HTTP_CODE)"
-              echo "✅ Backend deployment successful!"
-              exit 0
-            else
-              RETRY_COUNT=$((RETRY_COUNT + 1))
-              echo "⏳ Attempt $RETRY_COUNT/$MAX_RETRIES: HTTP $HTTP_CODE (waiting 15s...)"
-              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                sleep 15
-              fi
-            fi
-          done
-          
-          echo "⚠️ API returned HTTP $HTTP_CODE after $MAX_RETRIES attempts"
-          echo "ℹ️ Render may still be deploying. Check: https://dashboard.render.com"
-          exit 1
-          
+          echo "⏳ Waiting for deployment to be ready..."
+          sleep 30
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://thenbm-329287861933.asia-south1.run.app/api/news?page=1")
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Backend is live and responding (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️ Backend returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+
       - name: Deployment Summary
         if: always()
         run: |
           echo "═══════════════════════════════════════"
           echo "📊 Deployment Summary"
           echo "═══════════════════════════════════════"
-          echo "Platform: Render"
-          echo "Repository: msckolw/mediawebsite"
-          echo "Branch: main"
+          echo "Platform: Google Cloud Run"
+          echo "Service: ${{ env.SERVICE_NAME }}"
+          echo "Region: ${{ env.REGION }}"
           echo "Commit: ${{ github.sha }}"
-          echo "Backend URL: https://nobiasmedia.onrender.com"
+          echo "Backend URL: https://thenbm-329287861933.asia-south1.run.app"
           echo "═══════════════════════════════════════"
-          echo ""
-          echo "🔍 Monitor deployment:"
-          echo "  Dashboard: https://dashboard.render.com"
-          echo "  API Test: https://nobiasmedia.onrender.com/api/news?page=1"
-          echo ""
-          echo "ℹ️ Render auto-deploys on push to main branch"
-          echo "ℹ️ Deployment typically takes 1-2 minutes"
