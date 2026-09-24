@@ -4,8 +4,8 @@
 
 - **Frontend:** Vercel. The repository's `vercel.json` builds the Create React App frontend with `cd frontend && npm install && npm run build` and publishes `frontend/build`. The production API setting is in `frontend/.env.production` as `REACT_APP_API_URL`, pointing at the Cloud Run service and ending in `/api`.
 - **Backend:** Google Cloud Run. The root `Dockerfile` builds the backend image; build from the repository root so its `backend/` paths resolve.
-- **Automation:** [`.github/workflows/deploy-backend.yml`](.github/workflows/deploy-backend.yml) runs on pushes to `main` when `backend/**`, `Dockerfile`, `.dockerignore`, or the workflow itself changes; it also supports manual dispatch. It builds and deploys the root Docker image, then checks `/api/health`.
-- **GitHub Actions secret:** Configure `GCP_SA_KEY` with the service-account credential required for Google Cloud authentication. Never put its value in documentation, source, or logs.
+- **Deployment:** Google Cloud Build builds and deploys the backend to Cloud Run when changes are pushed to GitHub, according to the Cloud Build trigger configuration.
+- **Validation:** [`.github/workflows/deploy-backend.yml`](.github/workflows/deploy-backend.yml) runs on pushes and pull requests to `main` when `backend/**`, `frontend/**`, `Dockerfile`, `.dockerignore`, or the workflow itself changes; it also supports manual dispatch. GitHub Actions validates backend JavaScript syntax, builds the root Docker image, runs focused frontend tests, and builds the frontend for production. It does not authenticate to Google Cloud or deploy; no Google Cloud service-account secret is required by this workflow.
 
 ## Backend runtime environment
 
@@ -26,6 +26,6 @@ Keep credentials private and configure only the values appropriate for the deplo
 
 ## Health check and verification limits
 
-The backend health endpoint is `GET /api/health`; it returns HTTP 200 when MongoDB is connected and HTTP 503 otherwise. The workflow checks that endpoint after deployment.
+The backend health endpoint is `GET /api/health`; it returns HTTP 200 when MongoDB is connected and HTTP 503 otherwise. Cloud Build handles deployment; the GitHub Actions validation workflow does not check the live endpoint.
 
-Live GitHub Actions run history and Cloud Run environment settings require access to the relevant accounts and have not been verified here. Local fixes or documentation changes are not deployed until committed and pushed; deployments are triggered only when the workflow's branch and path conditions are met (or by manual dispatch). This document does not assert that the payment flow has been tested.
+The latest pushed commit, `df1990d`, has a successful `google-cloud-build` GitHub check, and its `/api/health` endpoint returned HTTP 200. Cloud Run runtime environment settings were not inspected. The live payment flow has not been tested.

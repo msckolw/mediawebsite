@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import '../styles/ArticleCard.css';
 
 const ArticleCard = ({ article }) => {
@@ -21,4 +20,4 @@ const ArticleCard = ({ article }) => {
   );
 };
 
-export default ArticleCard; 
+export default ArticleCard;
