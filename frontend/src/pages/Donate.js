@@ -103,6 +103,20 @@ const Donate = () => {
       if (checkout?.type === 'payu_qr') {
         setQrCheckout({ ...checkout, donationId: donation.id, amount: form.amount });
         setLoading(false);
+      } else if (checkout?.type === 'payu_form') {
+        // Auto-submit form to PayU (traditional redirect)
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = checkout.url;
+        Object.entries(checkout.fields).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          form.appendChild(input);
+        });
+        document.body.appendChild(form);
+        form.submit();
       } else if (checkout?.type === 'phonepe') {
         try {
           const sdk = await loadPhonePeCheckout();

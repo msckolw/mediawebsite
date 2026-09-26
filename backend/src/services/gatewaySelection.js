@@ -3,18 +3,21 @@ const crypto = require('crypto');
 const GATEWAYS = ['payu', 'phonepe'];
 
 function configuredGateways(method, platform) {
-  const enabled = String(process.env.PAYMENT_ENABLED_GATEWAYS || 'phonepe')
+  const enabled = String(process.env.PAYMENT_ENABLED_GATEWAYS || 'payu')
     .split(',').map(value => value.trim().toLowerCase());
   return GATEWAYS.filter(gateway => {
     if (!enabled.includes(gateway)) return false;
     if (gateway === 'payu') {
       if (!process.env.PAYU_MERCHANT_KEY || !process.env.PAYU_MERCHANT_SALT) return false;
-      // Merchant-hosted cards require PCI certification. DBQR is UPI only.
-      if (platform === 'web' && (method !== 'upi' || process.env.PAYU_DBQR_ENABLED !== 'true')) return false;
+      // Allow PayU for web platform (QR for UPI if enabled, redirect for all methods)
       if (platform === 'app') return false;
       return true;
     }
-    return Boolean(process.env.PHONEPE_CLIENT_ID && process.env.PHONEPE_CLIENT_SECRET && process.env.PHONEPE_CLIENT_VERSION);
+    // PhonePe requires credentials to be configured
+    if (gateway === 'phonepe') {
+      return Boolean(process.env.PHONEPE_CLIENT_ID && process.env.PHONEPE_CLIENT_SECRET && process.env.PHONEPE_CLIENT_VERSION);
+    }
+    return false;
   });
 }
 

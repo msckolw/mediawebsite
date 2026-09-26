@@ -111,7 +111,9 @@ router.post('/donations/:id/checkout', async (req, res) => {
     }
 
     const checkout = gateway === 'payu'
-      ? await payu.createQrPayment(payment, req)
+      ? (process.env.PAYU_DBQR_ENABLED === 'true' && payment.method === 'upi'
+          ? await payu.createQrPayment(payment, req)
+          : payu.createPayment(payment))
       : await phonepe.createPayment(payment, `${frontendUrl}/donate/status?donationId=${donation._id}`);
     if (gateway === 'phonepe') payment.gatewayOrderId = checkout.providerOrderId;
     payment.checkout = checkout;
