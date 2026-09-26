@@ -164,4 +164,20 @@ export const verifyPayment = async (txnid) => {
   }
 };
 
+// Gateway-independent donation API. Keep the request ID stable for retries.
+export const createDonation = async (data) => {
+  const response = await api.post('/donations', data);
+  return response.data;
+};
+
+export const startDonationCheckout = async (donationId) => {
+  const response = await api.post(`/donations/${encodeURIComponent(donationId)}/checkout`);
+  return response.data;
+};
+
+export const getDonationStatus = async (donationId) => {
+  const response = await api.get(`/donations/${encodeURIComponent(donationId)}/status`);
+  return response.data;
+};
+
 export default api;

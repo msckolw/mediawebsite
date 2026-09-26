@@ -1,29 +1,53 @@
-import React, { useState } from 'react';
-import { createPayment } from '../services/api';
+import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createDonation, startDonationCheckout } from '../services/api';
 import '../styles/Donate.css';
 
 const PRESET_AMOUNTS = [50, 100, 200, 500, 1000];
 
+function requestId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return Array.from(window.crypto.getRandomValues(new Uint8Array(24)), value => value.toString(16).padStart(2, '0')).join('');
+}
+
+function loadPhonePeCheckout() {
+  if (window.PhonePeCheckout) return Promise.resolve(window.PhonePeCheckout);
+  return new Promise((resolve, reject) => {
+    const existing = document.getElementById('phonepe-checkout-sdk');
+    const script = existing || document.createElement('script');
+    script.id = 'phonepe-checkout-sdk';
+    script.src = 'https://mercury.phonepe.com/web/bundle/checkout.js';
+    script.onload = () => window.PhonePeCheckout ? resolve(window.PhonePeCheckout) : reject(new Error('PhonePe checkout could not load.'));
+    script.onerror = () => reject(new Error('PhonePe checkout could not load.'));
+    if (!existing) document.body.appendChild(script);
+  });
+}
+
 const Donate = () => {
+  const navigate = useNavigate();
+  const idempotencyKey = useRef(requestId());
   const [form, setForm] = useState({
     firstname: '',
     email: '',
     phone: '',
     amount: '',
-    method: 'all'
+    method: 'upi'
   });
   const [customAmount, setCustomAmount] = useState('');
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [qrCheckout, setQrCheckout] = useState(null);
 
   function handlePreset(amt) {
+    idempotencyKey.current = requestId();
     setSelectedPreset(amt);
     setCustomAmount('');
     setForm(prev => ({ ...prev, amount: String(amt) }));
   }
 
   function handleCustomAmount(e) {
+    idempotencyKey.current = requestId();
     const val = e.target.value;
     setCustomAmount(val);
     setSelectedPreset(null);
@@ -31,6 +55,7 @@ const Donate = () => {
   }
 
   function handleChange(e) {
+    idempotencyKey.current = requestId();
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   }
@@ -62,31 +87,43 @@ const Donate = () => {
     }
 
     setLoading(true);
+    let donation;
     try {
-      const data = await createPayment({
+      donation = await createDonation({
         firstname: form.firstname.trim(),
         email: form.email.trim().toLowerCase(),
         phone: form.phone.replace(/\s+/g, ''),
         amount: form.amount,
-        method: form.method
+        method: form.method,
+        platform: 'web',
+        idempotencyKey: idempotencyKey.current
       });
-
-      // PayU requires a real HTML form POST — not axios
-      const payuForm = document.createElement('form');
-      payuForm.method = 'POST';
-      payuForm.action = data.action;
-
-      Object.entries(data.fields).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        payuForm.appendChild(input);
-      });
-
-      document.body.appendChild(payuForm);
-      payuForm.submit();
+      const data = await startDonationCheckout(donation.id);
+      const checkout = data.checkout;
+      if (checkout?.type === 'payu_qr') {
+        setQrCheckout({ ...checkout, donationId: donation.id, amount: form.amount });
+        setLoading(false);
+      } else if (checkout?.type === 'phonepe') {
+        try {
+          const sdk = await loadPhonePeCheckout();
+          sdk.transact({
+            tokenUrl: checkout.url,
+            type: 'IFRAME',
+            callback: () => navigate(`/donate/status?donationId=${donation.id}`)
+          });
+          setLoading(false);
+        } catch (sdkError) {
+          // If the iframe cannot run in this browser, preserve the payment attempt.
+          window.location.assign(checkout.url);
+        }
+      } else {
+        throw new Error('The payment provider did not return a checkout session.');
+      }
     } catch (err) {
+      if (donation?.id) {
+        navigate(`/donate/status?donationId=${donation.id}`);
+        return;
+      }
       setError(err.message || 'Something went wrong. Please try again.');
       setLoading(false);
     }
@@ -134,9 +171,8 @@ const Donate = () => {
           </ul>
 
           <div className="donate-trust">
-            <p>🔒 All payments are secured by <strong>PayU</strong> — India's leading payment gateway.</p>
-            <p>✅ UPI, Debit/Credit Cards accepted</p>
-            <p>🏦 Compliant with RBI guidelines</p>
+            <p>🔒 Payments are processed securely by PayU or PhonePe.</p>
+            <p>✅ UPI, cards and net banking accepted</p>
           </div>
         </div>
 
@@ -145,13 +181,25 @@ const Donate = () => {
             <h2>Make a Donation</h2>
             <p className="donate-subtitle">Every rupee counts towards better journalism.</p>
 
+            {qrCheckout && (
+              <div className="donate-qr" role="region" aria-label="UPI payment QR">
+                <h3>Scan to pay ₹{Number(qrCheckout.amount).toLocaleString('en-IN')}</h3>
+                <img src={qrCheckout.qrImage} alt="Scan this QR with your UPI app" />
+                <p>Approve the payment in your UPI app, then check its status here.</p>
+                <a className="donate-submit-btn" href={qrCheckout.uri}>Open UPI app</a>
+                <button type="button" className="donate-submit-btn" onClick={() => navigate(`/donate/status?donationId=${qrCheckout.donationId}`)}>
+                  Check payment status
+                </button>
+              </div>
+            )}
+
             {error && (
               <div className="donate-error">
                 <span>⚠️ {error}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} noValidate>
+            {!qrCheckout && <form onSubmit={handleSubmit} noValidate>
 
               {/* Amount Selection */}
               <div className="form-group">
@@ -183,16 +231,6 @@ const Donate = () => {
               <div className="form-group">
                 <label>Payment Method</label>
                 <div className="method-options">
-                  <label className={`method-option ${form.method === 'all' ? 'active' : ''}`}>
-                    <input
-                      type="radio"
-                      name="method"
-                      value="all"
-                      checked={form.method === 'all'}
-                      onChange={handleChange}
-                    />
-                    <span>💳 All Methods</span>
-                  </label>
                   <label className={`method-option ${form.method === 'upi' ? 'active' : ''}`}>
                     <input
                       type="radio"
@@ -212,6 +250,16 @@ const Donate = () => {
                       onChange={handleChange}
                     />
                     <span>💳 Card</span>
+                  </label>
+                  <label className={`method-option ${form.method === 'netbanking' ? 'active' : ''}`}>
+                    <input
+                      type="radio"
+                      name="method"
+                      value="netbanking"
+                      checked={form.method === 'netbanking'}
+                      onChange={handleChange}
+                    />
+                    <span>🏦 Net Banking</span>
                   </label>
                 </div>
               </div>
@@ -267,7 +315,7 @@ const Donate = () => {
                 {form.amount && Number(form.amount) >= 10 && (
                   <p>You are donating <strong>₹{Number(form.amount).toLocaleString('en-IN')}</strong> via {
                     form.method === 'upi' ? 'UPI' :
-                    form.method === 'card' ? 'Card' : 'UPI / Card'
+                    form.method === 'card' ? 'Card' : 'Net Banking'
                   }</p>
                 )}
               </div>
@@ -280,7 +328,7 @@ const Donate = () => {
                 {loading ? (
                   <span className="btn-loading">
                     <span className="btn-spinner"></span>
-                    Redirecting to PayU...
+                    Opening secure checkout...
                   </span>
                 ) : (
                   `Donate ${form.amount && Number(form.amount) >= 10 ? '₹' + Number(form.amount).toLocaleString('en-IN') : 'Now'} →`
@@ -292,9 +340,9 @@ const Donate = () => {
                 <a href="/terms-conditions" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
                 {' '}and{' '}
                 <a href="/refund-policy" target="_blank" rel="noopener noreferrer">Refund Policy</a>.
-                You will be redirected to PayU's secure payment page.
+                Your payment is securely processed by PayU or PhonePe. Some methods open your bank or UPI app for approval.
               </p>
-            </form>
+            </form>}
           </div>
         </div>
       </div>

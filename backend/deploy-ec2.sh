@@ -38,29 +38,32 @@ print_status "Script directory: $SCRIPT_DIR"
 cd "$SCRIPT_DIR"
 print_status "Current directory: $(pwd)"
 
+if [ -z "${MONGODB_URI:-}" ]; then
+    print_error "MONGODB_URI must be set in the caller environment"
+    exit 1
+fi
+
 # Create .env file with correct MongoDB URI
 print_status "Creating .env file..."
-cat > .env << 'EOF'
-# MongoDB Connection
-MONGODB_URI=mongodb+srv://manisankar:77HFY1n0QsN6d76L@cluster0.kkwdaye.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-
-# Server Port
-PORT=5002
-
-# JWT Secret (change this to a secure random string)
-JWT_SECRET=nobias_media_jwt_secret_key_2024_secure
-
-# Node Environment
-NODE_ENV=production
-EOF
+printf '%s\n' \
+    '# MongoDB Connection' \
+    "MONGODB_URI=$MONGODB_URI" \
+    '' \
+    '# Server Port' \
+    'PORT=5002' \
+    '' \
+    '# JWT Secret (change this to a secure random string)' \
+    'JWT_SECRET=nobias_media_jwt_secret_key_2024_secure' \
+    '' \
+    '# Node Environment' \
+    'NODE_ENV=production' > .env
 
 print_status ".env file created successfully"
 
 # Verify .env file
 if [ -f ".env" ]; then
     print_status "✅ .env file exists"
-    print_status "Environment variables:"
-    cat .env | grep -v "^#" | grep -v "^$"
+    print_status "Environment variables configured"
 else
     print_error "❌ Failed to create .env file"
     exit 1

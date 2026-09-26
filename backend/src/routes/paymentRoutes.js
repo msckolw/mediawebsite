@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const Payment = require('../models/Payment');
+const Donation = require('../models/Donation');
 const {
   paymentHash,
   commandHash,
@@ -104,6 +105,9 @@ async function applyPayuCallback(params, { requireHash = true } = {}) {
   if (!payment) {
     return { ok: false, reason: 'unknown_txnid' };
   }
+  if (payment.gateway !== 'payu') {
+    return { ok: false, reason: 'wrong_gateway' };
+  }
 
   if (params.key && params.key !== key) {
     return { ok: false, reason: 'invalid_key', payment };
@@ -151,6 +155,9 @@ async function applyPayuCallback(params, { requireHash = true } = {}) {
       payment: await Payment.findById(payment._id),
       ignored: true
     };
+  }
+  if (updated.donation && updated.status === 'success') {
+    await Donation.findByIdAndUpdate(updated.donation, { $set: { status: 'success' } });
   }
   return { ok: true, payment: updated };
 }
@@ -261,6 +268,9 @@ router.get('/payments/:txnid', async (req, res) => {
     if (!payment) {
       return res.status(404).json({ message: 'Payment not found.' });
     }
+    if (payment.gateway !== 'payu') {
+      return res.status(400).json({ message: 'This payment does not use PayU.' });
+    }
     res.json(publicPayment(payment));
   } catch (error) {
     res.status(500).json({ message: 'Could not load payment.' });
@@ -312,7 +322,7 @@ router.post('/payments/payu/webhook', async (req, res) => {
 
 router.post('/payments/:txnid/verify', throttleVerification, async (req, res) => {
   try {
-    const { key, salt, mode, baseUrl } = payuConfig();
+    const { key, salt, mode } = payuConfig();
     if (!key || !salt || !['test', 'live'].includes(mode)) {
       return res.status(503).json({ message: 'PayU is not configured.' });
     }
@@ -320,6 +330,10 @@ router.post('/payments/:txnid/verify', throttleVerification, async (req, res) =>
     const payment = await Payment.findOne({ txnid: req.params.txnid });
     if (!payment) {
       return res.status(404).json({ message: 'Payment not found.' });
+    }
+
+    if (payment.gateway !== 'payu') {
+      return res.status(400).json({ message: 'This payment does not use PayU.' });
     }
 
     const command = 'verify_payment';
@@ -334,7 +348,7 @@ router.post('/payments/:txnid/verify', throttleVerification, async (req, res) =>
     const timeout = setTimeout(() => controller.abort(), 10000);
     let response;
     try {
-      response = await fetch(`${baseUrl}/merchant/postservice.php?form=2`, {
+      response = await fetch(`${mode === 'live' ? 'https://info.payu.in' : 'https://test.payu.in'}/merchant/postservice.php?form=2`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body,

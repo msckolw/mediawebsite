@@ -99,31 +99,60 @@ router.post('/verifyAccessToken', (req, res) => {
 
 });
 
-router.post('/googleSignIn', async (req,res) => {
-
-  const { email, name } = req.body;
-  const newUserData = {
-      user_details: req.body
-  };
-
+router.post('/googleSignIn', async (req, res) => {
   try {
-      const userDoc = await OauthUsers.findOneAndUpdate(
+      const accessToken = String(req.body.access_token || '');
+      if (!accessToken || accessToken.length > 4096) {
+        return res.status(401).json({ message: 'Missing or invalid Google access token.' });
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      let googleResponse;
+      try {
+        googleResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      if (!googleResponse.ok) {
+        return res.status(401).json({ message: 'Invalid Google access token.' });
+      }
+
+      const googleUser = await googleResponse.json();
+      const email = String(googleUser.email || '').trim().toLowerCase();
+      const name = String(googleUser.name || '').trim().slice(0, 100);
+      if (!email || email.length > 254 || googleUser.email_verified !== true) {
+        return res.status(401).json({ message: 'Google account email is not verified.' });
+      }
+
+      const userDetails = {
+        sub: String(googleUser.sub || '').slice(0, 255),
+        email,
+        name,
+        picture: String(googleUser.picture || '').slice(0, 2048)
+      };
+
+      await OauthUsers.findOneAndUpdate(
         { email },
-        { 
-            $push: { name: name, user_data: newUserData }, 
-            $set: { updatedAt: Date.now() } 
+        {
+            $set: {
+              name: name || email,
+              user_data: [{ user_details: userDetails }],
+              updatedAt: Date.now()
+            }
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
 
-      //console.log(await OauthUsers.find())
-
       const token = jwt.sign(
-        { 
-          email: email,
+        {
+          email,
           role: 'user'
         },
-        //env.JWT_SECRET,
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
@@ -140,18 +169,16 @@ router.post('/googleSignIn', async (req,res) => {
         token: 'Active',
         //refresh: refresh,
         user: {
-          email: email,
+          email,
           role: 'user',
-          name: name
+          name: name || email
         }
       });
-
-      
   } catch (error) {
-      res.status(400).json({error: error});
+      console.error('Google sign-in error:', error);
+      res.status(500).json({ message: 'Could not complete Google sign-in.' });
   }
-
-})
+});
 
 
 module.exports = router; 

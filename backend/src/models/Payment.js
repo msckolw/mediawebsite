@@ -2,12 +2,17 @@ const mongoose = require('mongoose');
 
 const paymentSchema = new mongoose.Schema({
   txnid: { type: String, required: true, unique: true, index: true },
+  donation: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation', index: true },
+  gateway: { type: String, enum: ['payu', 'phonepe'], default: 'payu', index: true },
+  gatewayOrderId: { type: String },
+  checkout: { type: Object },
+  lastVerifiedAt: { type: Date },
   amount: { type: String, required: true },
   productinfo: { type: String, default: 'NBM Donation' },
   firstname: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },
-  method: { type: String, enum: ['upi', 'card', 'all'], default: 'all' },
+  method: { type: String, enum: ['upi', 'card', 'netbanking', 'all'], default: 'all' },
   status: {
     type: String,
     enum: ['pending', 'success', 'failed'],

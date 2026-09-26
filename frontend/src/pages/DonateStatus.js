@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { getPaymentStatus, verifyPayment } from '../services/api';
+import { getDonationStatus, getPaymentStatus, verifyPayment } from '../services/api';
 import '../styles/Donate.css';
 
 const STATUS_CONFIG = {
   success: {
     icon: '✅',
     title: 'Thank You!',
-    message: "Your donation was successful. We truly appreciate your support in keeping journalism free and unbiased. A confirmation will be sent to your email."
+    message: "Your donation was successful. We truly appreciate your support in keeping journalism free and unbiased."
   },
   pending: {
     icon: '⏳',
@@ -30,11 +30,28 @@ const UNVERIFIED_CONFIG = {
 const DonateStatus = () => {
   const [searchParams] = useSearchParams();
   const txnid = searchParams.get('txnid');
+  const donationId = searchParams.get('donationId');
   const [payment, setPayment] = useState(null);
   const [status, setStatus] = useState(null);
   const [verifying, setVerifying] = useState(true);
 
   useEffect(() => {
+    if (donationId) {
+      let stopped = false;
+      let pollCount = 0;
+      const load = () => getDonationStatus(donationId)
+        .then(data => {
+          if (stopped) return;
+          setPayment(data);
+          setStatus(data.status);
+          setVerifying(false);
+          if (data.status !== 'pending' || ++pollCount >= 12) clearInterval(interval);
+        })
+        .catch(() => { if (!stopped) setVerifying(false); });
+      const interval = setInterval(load, 10000);
+      load();
+      return () => { stopped = true; clearInterval(interval); };
+    }
     if (!txnid) {
       setVerifying(false);
       return;
@@ -56,7 +73,7 @@ const DonateStatus = () => {
           .catch(() => undefined);
       })
       .finally(() => setVerifying(false));
-  }, [txnid]);
+  }, [donationId, txnid]);
 
   const config = STATUS_CONFIG[status] || UNVERIFIED_CONFIG;
 
@@ -66,7 +83,7 @@ const DonateStatus = () => {
         <div className="donate-status-card">
           <div className="status-verifying">
             <div className="verify-spinner"></div>
-            <p>Verifying your payment with PayU...</p>
+            <p>Verifying your payment...</p>
           </div>
         </div>
       </div>
@@ -86,10 +103,10 @@ const DonateStatus = () => {
         {/* Transaction Details */}
         {(txnid || payment) && (
           <div className="status-details">
-            {txnid && (
+            {(payment?.transactionId || txnid) && (
               <div className="status-detail-row">
                 <span>Transaction ID</span>
-                <span style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>{txnid}</span>
+                <span style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>{payment?.transactionId || txnid}</span>
               </div>
             )}
             {payment?.amount && (
@@ -98,10 +115,16 @@ const DonateStatus = () => {
                 <span>₹{Number(payment.amount).toLocaleString('en-IN')}</span>
               </div>
             )}
-            {payment?.mode && (
+            {(payment?.method || payment?.mode) && (
               <div className="status-detail-row">
                 <span>Payment Mode</span>
-                <span>{payment.mode.toUpperCase()}</span>
+                <span>{(payment.method || payment.mode).toUpperCase()}</span>
+              </div>
+            )}
+            {payment?.gateway && (
+              <div className="status-detail-row">
+                <span>Gateway</span>
+                <span>{payment.gateway === 'phonepe' ? 'PhonePe' : 'PayU'}</span>
               </div>
             )}
             {payment?.productinfo && (

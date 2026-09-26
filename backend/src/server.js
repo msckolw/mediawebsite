@@ -52,9 +52,11 @@ mongoose.connect(process.env.MONGODB_URI, {
     const authRoutes = require('./routes/authRoutes');
     
     const paymentRoutes = require('./routes/paymentRoutes');
+    const donationRoutes = require('./routes/donationRoutes');
     app.use('/api', newsRoutes);
     app.use('/api/auth', authRoutes);
     app.use('/api', paymentRoutes);
+    app.use('/api', donationRoutes);
         
     // Error handling middleware
     app.use((err, req, res, next) => {

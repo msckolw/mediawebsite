@@ -524,3 +524,23 @@
     padding: 2rem 1.25rem;
   }
 }
+.donate-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.donate-qr img {
+  width: min(260px, 100%);
+  height: auto;
+}
+
+.donate-qr .donate-submit-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
