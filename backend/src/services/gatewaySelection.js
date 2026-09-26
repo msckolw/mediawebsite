@@ -9,8 +9,9 @@ function configuredGateways(method, platform) {
     if (!enabled.includes(gateway)) return false;
     if (gateway === 'payu') {
       if (!process.env.PAYU_MERCHANT_KEY || !process.env.PAYU_MERCHANT_SALT) return false;
-      // Allow PayU for web platform (QR for UPI if enabled, redirect for all methods)
-      if (platform === 'app') return false;
+      // PayU works for both web and app platforms
+      // For web: QR code if PAYU_DBQR_ENABLED=true, else redirect
+      // For app: Native SDK gets form fields
       return true;
     }
     // PhonePe requires credentials to be configured
