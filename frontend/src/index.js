@@ -5,12 +5,13 @@ import './index.css';
 import App from './App';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+const googleClientId = process.env.REACT_APP_OAUTH_CLIENT_ID || '329287861933-ai9hakhdhlrokkn5k58qrmttkeoiflj7.apps.googleusercontent.com';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <GoogleOAuthProvider
-      clientId={process.env.REACT_APP_OAUTH_CLIENT_ID} >
+      <GoogleOAuthProvider clientId={googleClientId}>
             <App />
       </GoogleOAuthProvider>
     </BrowserRouter>

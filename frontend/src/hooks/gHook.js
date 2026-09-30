@@ -38,7 +38,14 @@ import { useNavigate } from 'react-router-dom';
             navigate(path);
       }
       catch(error) {
-        //console.log('Error',error);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: 'Google sign-in could not be completed. Please try again.',
+          showConfirmButton: false,
+          timer: 5000,
+        });
       }
     },
     onError: async (error) => {
@@ -46,9 +53,9 @@ import { useNavigate } from 'react-router-dom';
         toast: true,
         position: "top-end",
         icon: "error",
-        title: "Login Failed!",
+        title: "Google sign-in could not be completed. Please try again.",
         showConfirmButton: false,
-        timer: 4000,
+        timer: 6000,
       });
     }
   })

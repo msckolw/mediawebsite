@@ -44,13 +44,23 @@ Click **"Add New"** again
 Fill in:
 ```
 Key (Name):     REACT_APP_OAUTH_CLIENT_ID
-Value:          230747935272-gansuql6fvrfocn57vtpe6gm44aoosab.apps.googleusercontent.com
+Value:          329287861933-ai9hakhdhlrokkn5k58qrmttkeoiflj7.apps.googleusercontent.com
 Environment:    ✅ Production
                 ✅ Preview
                 ✅ Development
 ```
 
 Click **"Save"**
+
+The frontend uses `useGoogleLogin`'s popup access-token flow, not a redirect flow. In Google Cloud Console, open the OAuth client whose ID is exactly the value above and ensure its application type is **Web application**. Under **Authorized JavaScript origins**, add the exact canonical production origin:
+
+```
+https://thenobiasmedia.com
+```
+
+An origin contains only scheme, host, and optional port: do not add a path or trailing slash. The Vercel config redirects `www.thenobiasmedia.com` to the canonical non-www host, so the origin to authorize for the production login flow is `https://thenobiasmedia.com`. Add `http://localhost:3000` as an origin only if local development should use this same client. No redirect URI is used by the current popup flow. Google Cloud Console changes are separate from this code change and are required to clear `origin_mismatch`.
+
+`REACT_APP_OAUTH_CLIENT_ID` is embedded into the frontend bundle at build time and is public by design; never put a client secret in a `REACT_APP_*` variable. A Vercel value overrides the source fallback, so update the Production environment value to this client ID and redeploy for it to take effect.
 
 ---
 
