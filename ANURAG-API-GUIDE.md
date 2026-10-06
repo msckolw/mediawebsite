@@ -55,11 +55,27 @@ POST https://thenbm-329287861933.asia-south1.run.app/api/payments/payu/hash
 }
 ```
 
-### For Quick Pay Event (❌ Was Failing)
+### For Quick Pay Event (✅ Fixed)
 ```json
 {
   "hashName": "quickPayEvent",
   "hashString": "0BPUp0|quickPayEvent|default|"
+}
+```
+
+### For Eligible Bins for EMI (✅ New)
+```json
+{
+  "hashName": "eligibleBinsForEMI",
+  "hashString": "0BPUp0|eligibleBinsForEMI|default|"
+}
+```
+
+### For Payment Source (✅ New)
+```json
+{
+  "hashName": "payment_source",
+  "hashString": "0BPUp0|payment_source|default|"
 }
 ```
 
