@@ -101,7 +101,8 @@ router.post('/verifyAccessToken', (req, res) => {
 
 router.post('/googleSignIn', async (req, res) => {
   try {
-      const accessToken = String(req.body.access_token || '');
+      // Support both web (access_token) and mobile (accessToken or token) formats
+      const accessToken = String(req.body.access_token || req.body.accessToken || req.body.token || '');
       if (!accessToken || accessToken.length > 4096) {
         return res.status(401).json({ message: 'Missing or invalid Google access token.' });
       }

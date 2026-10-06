@@ -14,7 +14,10 @@ const AUXILIARY_COMMANDS = new Map([
   ['getBinInfo', 'getBinInfo'],
   ['validateVPA', 'validateVPA'],
   ['get_checkout_details', 'get_checkout_details'],
-  ['get_eligible_payment_options', 'get_eligible_payment_options']
+  ['get_eligible_payment_options', 'get_eligible_payment_options'],
+  ['get_sdk_configuration', 'get_sdk_configuration'],
+  ['get_all_offer_details', 'get_all_offer_details'],
+  ['quickPayEvent', 'quickPayEvent']
 ]);
 
 function isRateLimited(clientId, now) {
