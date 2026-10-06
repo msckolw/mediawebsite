@@ -3,7 +3,6 @@
   "outputDirectory": "frontend/build",
   "installCommand": "echo 'Skipping root install'",
   "framework": "create-react-app",
-  "nodejs": "24.x",
   "redirects": [
     {
       "source": "/",
