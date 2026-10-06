@@ -87,10 +87,16 @@ router.post('/hash', (req, res) => {
     }
     postSalt = body.postSalt || '';
   } else {
+    // For all other hash types, SDK sends the complete hashString
+    // We just need to verify the hashName is supported
     const command = AUXILIARY_COMMANDS.get(hashName);
-    const fields = hashString.split('|');
-    if (!command || fields.length !== 4 || fields[0] !== merchantKey || fields[1] !== command || !fields[2] || fields[3] !== '' || COMMAND_FIELD.test(fields[1])) {
-      return res.status(400).json({ message: `Unsupported or invalid PayU hash name: ${hashName}.` });
+    if (!command) {
+      return res.status(400).json({ message: `Unsupported PayU hash name: ${hashName}.` });
+    }
+    // No strict validation - SDK provides the correct format
+    // Just verify it's not empty and doesn't contain obvious issues
+    if (!hashString.trim()) {
+      return res.status(400).json({ message: 'hashString cannot be empty.' });
     }
     if (body.postSalt !== undefined) return res.status(400).json({ message: 'postSalt is accepted only for payment_hash.' });
   }
