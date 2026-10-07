@@ -160,6 +160,45 @@ router.get('/donations/:id/status', async (req, res) => {
   }
 });
 
+// Mobile app uses txnid from PayU SDK callback — look up donation by txnid
+router.get('/donations/by-txnid/:txnid', async (req, res) => {
+  const txnid = String(req.params.txnid || '');
+  if (!/^nbm\d{13}[0-9a-f]{6}$/.test(txnid)) {
+    return res.status(400).json({ message: 'Invalid transaction ID.' });
+  }
+  try {
+    const payment = await Payment.findOne({ txnid });
+    if (!payment) return res.status(404).json({ message: 'Payment not found.' });
+
+    // Auto-verify if still pending
+    if (payment.status === 'pending' &&
+        (!payment.lastVerifiedAt || Date.now() - payment.lastVerifiedAt.getTime() >= 10000)) {
+      payment.lastVerifiedAt = new Date();
+      await payment.save();
+      try { await verifyPayment(payment); } catch (e) { console.error('Verify error:', e); }
+    }
+
+    const updatedPayment = await Payment.findOne({ txnid });
+    const donation = updatedPayment.donation
+      ? await Donation.findById(updatedPayment.donation)
+      : null;
+
+    res.json({
+      txnid: updatedPayment.txnid,
+      donationId: donation ? String(donation._id) : null,
+      amount: updatedPayment.amount,
+      status: updatedPayment.status,
+      gateway: updatedPayment.gateway,
+      method: updatedPayment.method,
+      createdAt: updatedPayment.createdAt,
+      updatedAt: updatedPayment.updatedAt
+    });
+  } catch (error) {
+    console.error('Txnid status lookup failed:', error);
+    res.status(500).json({ message: 'Could not load payment status.' });
+  }
+});
+
 router.post('/payments/phonepe/webhook', async (req, res) => {
   if (!phonepe.verifyWebhookAuthorization(req.headers.authorization)) {
     return res.status(401).json({ received: false });
