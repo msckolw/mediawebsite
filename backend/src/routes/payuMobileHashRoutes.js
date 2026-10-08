@@ -19,7 +19,8 @@ const AUXILIARY_COMMANDS = new Map([
   ['get_all_offer_details', 'get_all_offer_details'],
   ['quickPayEvent', 'quickPayEvent'],
   ['eligibleBinsForEMI', 'eligibleBinsForEMI'],
-  ['payment_source', 'payment_source']
+  ['payment_source', 'payment_source'],
+  ['binBaseDetails', 'binBaseDetails']
 ]);
 
 function isRateLimited(clientId, now) {
