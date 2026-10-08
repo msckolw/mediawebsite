@@ -199,6 +199,37 @@ router.get('/donations/by-txnid/:txnid', async (req, res) => {
   }
 });
 
+// Mobile app calls this when PayU SDK fires onPaymentCancel or onPaymentFailure
+// so the next retry gets a fresh txnid instead of reusing the cancelled one
+router.post('/donations/:id/cancel', async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid donation ID.' });
+  }
+  try {
+    const donation = await Donation.findById(req.params.id);
+    if (!donation) return res.status(404).json({ message: 'Donation not found.' });
+    if (donation.status === 'success') {
+      return res.status(409).json({ message: 'This donation has already been paid.' });
+    }
+
+    const payment = donation.activePayment
+      ? await Payment.findById(donation.activePayment)
+      : null;
+
+    // Only mark as failed if it's still pending — don't overwrite a success
+    if (payment && payment.status === 'pending') {
+      await Payment.findByIdAndUpdate(payment._id, {
+        $set: { status: 'failed', updatedAt: new Date() }
+      });
+    }
+
+    res.json({ message: 'Payment cancelled. You can retry.' });
+  } catch (error) {
+    console.error('Donation cancel failed:', error);
+    res.status(500).json({ message: 'Could not cancel payment.' });
+  }
+});
+
 router.post('/payments/phonepe/webhook', async (req, res) => {
   if (!phonepe.verifyWebhookAuthorization(req.headers.authorization)) {
     return res.status(401).json({ received: false });
