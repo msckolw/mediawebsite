@@ -83,6 +83,11 @@ router.post('/donations/:id/checkout', async (req, res) => {
     if (donation.status === 'success') return res.status(409).json({ message: 'This donation has already been paid.' });
     const previous = donation.activePayment ? await Payment.findById(donation.activePayment) : null;
     if (previous && previous.status !== 'failed') {
+      // If already success — block completely, don't return old checkout fields
+      if (previous.status === 'success') {
+        return res.status(409).json({ message: 'This donation has already been paid.' });
+      }
+      // Still pending — return existing checkout so app can resume (same txnid is fine, payment not captured yet)
       return res.status(previous.checkout ? 200 : 409).json(previous.checkout
         ? publicDonation(donation, previous, true)
         : { message: 'The previous payment is still being verified. Please check its status before retrying.' });
