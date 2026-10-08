@@ -39,7 +39,7 @@ function validateDonation(body) {
   if (firstname.length < 2 || firstname.length > 100) throw new Error('Enter your name.');
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.');
   if (!/^[6-9]\d{9}$/.test(phone)) throw new Error('Enter a valid Indian mobile number.');
-  if (!['upi', 'card', 'netbanking'].includes(method)) throw new Error('Select a payment method.');
+  if (!['upi', 'card', 'netbanking', 'all'].includes(method)) throw new Error('Select a payment method.');
   if (!['web', 'app'].includes(platform)) throw new Error('Select a valid platform.');
   if (!/^[a-zA-Z0-9_-]{16,128}$/.test(idempotencyKey)) throw new Error('Invalid payment request ID.');
   return { amount: amount.toFixed(2), firstname, email, phone, method, platform, idempotencyKey };

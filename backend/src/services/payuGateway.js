@@ -22,6 +22,7 @@ function createPayment(payment) {
   };
   if (payment.method === 'upi') fields.pg = 'UPI';
   if (payment.method === 'card') fields.pg = 'CC';
+  // method === 'all' or 'netbanking': no pg field — PayU shows all payment options
   return { type: 'payu_form', url: `${baseUrl}/_payment`, fields };
 }
 
