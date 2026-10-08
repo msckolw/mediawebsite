@@ -5,18 +5,18 @@ const { configuredGateways } = require('../src/services/gatewaySelection');
 const phonepe = require('../src/services/phonepeGateway');
 const payu = require('../src/services/payuGateway');
 
-test('routes only eligible web payment methods', () => {
+test('routes configured PayU web redirects and QR alongside PhonePe', () => {
   Object.assign(process.env, {
     PAYMENT_ENABLED_GATEWAYS: 'phonepe,payu',
     PHONEPE_CLIENT_ID: 'client', PHONEPE_CLIENT_SECRET: 'secret', PHONEPE_CLIENT_VERSION: '1',
     PAYU_MERCHANT_KEY: 'key', PAYU_MERCHANT_SALT: 'salt'
   });
   delete process.env.PAYU_DBQR_ENABLED;
-  assert.deepEqual(configuredGateways('upi', 'web'), ['phonepe']);
+  assert.deepEqual(configuredGateways('upi', 'web'), ['payu', 'phonepe']);
   process.env.PAYU_DBQR_ENABLED = 'true';
   assert.deepEqual(configuredGateways('upi', 'web'), ['payu', 'phonepe']);
-  assert.deepEqual(configuredGateways('card', 'web'), ['phonepe']);
-  assert.deepEqual(configuredGateways('netbanking', 'web'), ['phonepe']);
+  assert.deepEqual(configuredGateways('card', 'web'), ['payu', 'phonepe']);
+  assert.deepEqual(configuredGateways('netbanking', 'web'), ['payu', 'phonepe']);
 });
 
 test('PhonePe webhook checks SHA256 credentials', () => {
@@ -57,4 +57,28 @@ test('PayU QR accepts a matching amount and rejects a different one', async () =
   } finally {
     global.fetch = originalFetch;
   }
+});
+
+
+test('native app selects PayU even when PhonePe is also configured', () => {
+  assert.deepEqual(configuredGateways('upi', 'app'), ['payu']);
+});
+
+
+test('PayU verification accepts amt and rejects missing or mismatched success amounts', async () => {
+  Object.assign(process.env, { PAYU_MODE: 'test', PAYU_MERCHANT_KEY: 'key', PAYU_MERCHANT_SALT: 'salt' });
+  const originalFetch = global.fetch;
+  const payment = { txnid: 'nbm1234567890123abcdef', amount: '19.99' };
+  try {
+    for (const [transaction, valid] of [
+      [{ status: 'success', amt: '19.99' }, true],
+      [{ status: 'success', amount: '19.99' }, true],
+      [{ status: 'success' }, false],
+      [{ status: 'success', amt: '20.00' }, false]
+    ]) {
+      global.fetch = async () => ({ ok: true, json: async () => ({ transaction_details: { [payment.txnid]: transaction } }) });
+      if (valid) assert.equal((await payu.getPaymentStatus(payment)).status, 'success');
+      else await assert.rejects(payu.getPaymentStatus(payment), /different payment amount/);
+    }
+  } finally { global.fetch = originalFetch; }
 });

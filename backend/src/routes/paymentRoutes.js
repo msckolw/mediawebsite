@@ -366,6 +366,7 @@ router.post('/payments/:txnid/verify', throttleVerification, async (req, res) =>
       await applyPayuCallback(
         {
           ...txn,
+          amount: txn.amount ?? txn.amt,
           txnid: payment.txnid,
           key,
           hash: txn.hash

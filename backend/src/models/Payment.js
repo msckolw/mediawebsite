@@ -6,6 +6,7 @@ const paymentSchema = new mongoose.Schema({
   gateway: { type: String, enum: ['payu', 'phonepe'], default: 'payu', index: true },
   gatewayOrderId: { type: String },
   checkout: { type: Object },
+  initiationState: { type: String, enum: ['creating', 'ready', 'not_started', 'unknown'] },
   lastVerifiedAt: { type: Date },
   amount: { type: String, required: true },
   productinfo: { type: String, default: 'NBM Donation' },

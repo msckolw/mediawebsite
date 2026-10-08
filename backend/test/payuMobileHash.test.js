@@ -3,6 +3,11 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const http = require('node:http');
 const express = require('express');
+const Payment = require('../src/models/Payment');
+let sessionStatus = 'pending';
+Payment.findOne = async ({ txnid }) => txnid === 'nbm1234567890123abcdef' ? {
+  status: sessionStatus, amount: '1.00', productinfo: 'product', firstname: 'first', email: 'a@b.test'
+} : null;
 const mobileHashRoutes = require('../src/routes/payuMobileHashRoutes');
 const { paymentHash } = require('../src/utils/payu');
 
@@ -25,7 +30,7 @@ test('mobile payment hash signs only the exact documented V1 payment string', as
   await withServer(async (baseUrl) => {
     const send = (data) => fetch(`${baseUrl}/api/payments/payu/hash`, { method: 'POST',
       headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) });
-    const payment = 'merchant_key_123|txn|1.00|product|first|a@b.test|||||||||||';
+    const payment = 'merchant_key_123|nbm1234567890123abcdef|1.00|product|first|a@b.test|||||||||||';
     const paymentResponse = await send({ hashName: 'payment_hash', hashString: payment });
     assert.equal(paymentResponse.status, 200);
     assert.deepEqual(await paymentResponse.json(), { payment_hash: crypto.createHash('sha512').update(`${payment}fake-salt`).digest('hex') });
@@ -94,6 +99,27 @@ test('mobile hash route validates callback names, input length, and salt overrid
     assert.equal((await send({ hashName: 'validateVPA', hashString: 'x', merchantSalt: 'override' })).status, 400);
     assert.equal((await send({ hashName: 'adminCommand', hashString: 'x' })).status, 400);
     assert.equal((await send({ hashName: 'lookup api hash', hashString: 'x' })).status, 400);
+  });
+});
+
+test('payment hashes reject settled sessions and changed checkout fields', async () => {
+  process.env.PAYU_MERCHANT_KEY = 'merchant_key_123';
+  process.env.PAYU_MERCHANT_SALT = 'fake-salt';
+  await withServer(async baseUrl => {
+    const send = hashString => fetch(`${baseUrl}/api/payments/payu/hash`, {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ hashName: 'payment_hash', hashString })
+    });
+    const payment = 'merchant_key_123|nbm1234567890123abcdef|1.00|product|first|a@b.test|||||||||||';
+    try {
+      sessionStatus = 'success';
+      assert.equal((await send(payment)).status, 409);
+      sessionStatus = 'failed';
+      assert.equal((await send(payment)).status, 409);
+      sessionStatus = 'pending';
+      assert.equal((await send(payment.replace('|1.00|', '|2.00|'))).status, 400);
+      assert.equal((await send(payment.replace('abcdef', 'abcdee'))).status, 404);
+    } finally { sessionStatus = 'pending'; }
   });
 });
 

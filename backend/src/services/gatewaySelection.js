@@ -7,6 +7,8 @@ function configuredGateways(method, platform) {
     .split(',').map(value => value.trim().toLowerCase());
   return GATEWAYS.filter(gateway => {
     if (!enabled.includes(gateway)) return false;
+    // The native app integration opens the PayU SDK, not PhonePe's web checkout.
+    if (platform === 'app' && gateway !== 'payu') return false;
     if (gateway === 'payu') {
       if (!process.env.PAYU_MERCHANT_KEY || !process.env.PAYU_MERCHANT_SALT) return false;
       // PayU works for both web and app platforms

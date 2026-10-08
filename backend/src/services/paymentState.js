@@ -6,7 +6,7 @@ async function applyVerifiedStatus(payment, status, details = {}) {
   // A late failure must never overwrite a confirmed success.
   const query = status === 'success' ? { _id: payment._id } :
     status === 'failed' ? { _id: payment._id, status: { $ne: 'success' } } :
-      { _id: payment._id, status: 'pending' };
+      { _id: payment._id, status: { $ne: 'success' } };
   const updated = await Payment.findOneAndUpdate(query, {
     $set: { status, updatedAt: new Date(), ...details }
   }, { new: true });

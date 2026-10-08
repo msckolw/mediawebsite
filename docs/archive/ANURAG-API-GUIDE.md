@@ -1,9 +1,12 @@
+> Historical document. Superseded by the [three active guides](../01-PROJECT-AND-DEPLOYMENT.md).
+> Hosting, completion claims and API examples below may be outdated.
+
 # API Guide for Anurag (Mobile Developer)
 
 ## ✅ Backend Configuration Status
 The backend is **already configured correctly** on Google Cloud Run with:
 - Merchant Key: `0BPUp0`
-- Merchant Salt: `aIyXxsbfL5V44obhvoh6GCJ80gZgKxuJ`
+- Merchant Salt: `[REDACTED — rotate the merchant salt]`
 - Mode: `live` (production)
 
 ---

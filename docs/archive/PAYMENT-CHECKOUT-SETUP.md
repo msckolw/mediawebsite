@@ -1,3 +1,6 @@
+> Historical document. Superseded by the [three active guides](../01-PROJECT-AND-DEPLOYMENT.md).
+> Hosting, completion claims and API examples below may be outdated.
+
 # Donation checkout setup
 
 The website creates one donation and one active payment attempt. The server selects PayU or PhonePe for UPI and uses PhonePe for cards and net banking. The web page never collects card numbers. PhonePe card and bank payments run in PhonePe's embedded checkout. PayU UPI payments appear as a dynamic QR on the donation page.

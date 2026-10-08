@@ -2,8 +2,11 @@ const { paymentHash, commandHash, payuConfig, mapPayuStatus } = require('../util
 const QRCode = require('qrcode');
 
 function createPayment(payment) {
-  const { key, salt, baseUrl, publicApiUrl } = payuConfig();
-  if (!key || !salt || !publicApiUrl) throw new Error('PayU is not configured.');
+  const { key, salt, baseUrl, publicApiUrl, frontendUrl, mode, isProduction } = payuConfig();
+  if (!key || !salt || !['test', 'live'].includes(mode) || !publicApiUrl || !frontendUrl ||
+      (isProduction && (!publicApiUrl.startsWith('https://') || !frontendUrl.startsWith('https://')))) {
+    throw new Error('PayU is not configured.');
+  }
   const fields = {
     key,
     txnid: payment.txnid,
@@ -90,7 +93,9 @@ async function getPaymentStatus(payment) {
     const data = await response.json();
     const transaction = data?.transaction_details?.[payment.txnid];
     if (!transaction) return null;
-    if (transaction.amount && Number(transaction.amount).toFixed(2) !== payment.amount) {
+    const providerAmount = transaction.amount ?? transaction.amt;
+    if ((mapPayuStatus(transaction.status) === 'success' && !providerAmount) ||
+        (providerAmount && Number(providerAmount).toFixed(2) !== payment.amount)) {
       throw new Error('PayU returned a different payment amount.');
     }
     return { status: mapPayuStatus(transaction.status), raw: transaction };

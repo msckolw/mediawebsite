@@ -1,3 +1,6 @@
+> Historical document. Superseded by the [three active guides](../01-PROJECT-AND-DEPLOYMENT.md).
+> Hosting, completion claims and API examples below may be outdated.
+
 # Quick Reference Card - NoBias Media Payment System
 
 **Last Updated**: July 22, 2026  

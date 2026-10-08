@@ -1,3 +1,6 @@
+> Historical document. Superseded by the [three active guides](../01-PROJECT-AND-DEPLOYMENT.md).
+> Hosting, completion claims and API examples below may be outdated.
+
 # Domain Setup Guide for thenobiasmedia.com
 
 ## Problem
