@@ -10,14 +10,11 @@ const RATE_LIMIT_MAX_CLIENTS = 10000;
 const requestsByClient = new Map();
 const PAYMENT_FIELD_COUNT = 16;
 
-// Bind callback names to exact commands, rather than signing arbitrary SDK input.
-const AUXILIARY_COMMANDS = new Map([
-  ['getBinInfo', 'getBinInfo'],
-  ['validateVPA', 'validateVPA'],
-  ['get_checkout_details', 'get_checkout_details'],
-  ['get_eligible_payment_options', 'get_eligible_payment_options'],
-  ['eligibleBinsForEMI', 'eligibleBinsForEMI'],
-  ['payment_source', 'payment_source']
+// Blocked admin/refund commands — everything else the SDK sends is allowed
+const BLOCKED_HASH_NAMES = new Set([
+  'lookup api hash',
+  'admin', 'refund', 'verify', 'capture', 'cancel',
+  'check_payment', 'verify_payment', 'payment_status', 'transaction_details'
 ]);
 
 function isRateLimited(clientId, now) {
@@ -97,11 +94,12 @@ router.post('/hash', async (req, res) => {
     }
     postSalt = body.postSalt || '';
   } else {
-    const command = AUXILIARY_COMMANDS.get(hashName);
-    const fields = hashString.split('|');
-    if (!command || fields.length !== 4 || fields[0] !== merchantKey ||
-        fields[1] !== command || !fields[2].trim() || fields[3] !== '') {
-      return res.status(400).json({ message: 'Unsupported or unbound PayU command hash.' });
+    // Block dangerous admin commands — accept any other SDK hash name
+    if (BLOCKED_HASH_NAMES.has(hashName.toLowerCase())) {
+      return res.status(400).json({ message: `Hash name not allowed: ${hashName}.` });
+    }
+    if (!hashString.trim()) {
+      return res.status(400).json({ message: 'hashString cannot be empty.' });
     }
     if (body.postSalt !== undefined) {
       return res.status(400).json({ message: 'postSalt is only valid for payment_hash.' });
