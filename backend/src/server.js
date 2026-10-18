@@ -14,7 +14,7 @@ dotenv.config();
 
 const app = express();
 
-const server = http.createServer(app); // Create an HTTP server instance
+const server = http.createServer(app);
 initSocket(server)
 
 // Middleware
@@ -22,10 +22,8 @@ const allowedOrigins = ['https://thenobiasmedia.com','https://www.thenobiasmedia
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
-    // Unknown browser origins — reject silently without throwing
     return callback(null, false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -46,31 +44,33 @@ app.get("/api/health", (req, res) => {
   res.status(connected ? 200 : 503).json({ status: connected ? "ok" : "unavailable" });
 });
 
-// Database connection
+// Register ALL routes immediately — not inside mongoose .then()
+// This ensures routes are available as soon as the server starts
+const newsRoutes = require('./routes/newsRoutes');
+const authRoutes = require('./routes/authRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const payuMobileHashRoutes = require('./routes/payuMobileHashRoutes');
+const donationRoutes = require('./routes/donationRoutes');
+
+app.use('/api', newsRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api', paymentRoutes);
+app.use('/api/payments/payu', payuMobileHashRoutes);
+app.use('/api', donationRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something broke!', error: err.message });
+});
+
+// Database connection — separate from route registration
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
 .then(() => {
     console.log("Connected to Mongo");
-    // Routes
-    const newsRoutes = require('./routes/newsRoutes');
-    const authRoutes = require('./routes/authRoutes');
-    
-    const paymentRoutes = require('./routes/paymentRoutes');
-    const payuMobileHashRoutes = require('./routes/payuMobileHashRoutes');
-    const donationRoutes = require('./routes/donationRoutes');
-    app.use('/api', newsRoutes);
-    app.use('/api/auth', authRoutes);
-    app.use('/api', paymentRoutes);
-    app.use('/api/payments/payu', payuMobileHashRoutes);
-    app.use('/api', donationRoutes);
-        
-    // Error handling middleware
-    app.use((err, req, res, next) => {
-        console.error(err.stack);
-        res.status(500).json({ message: 'Something broke!', error: err.message });
-    });
 })
 .catch(err => {
     console.error("MongoDB connection error:", err);
