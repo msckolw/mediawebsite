@@ -64,23 +64,24 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something broke!', error: err.message });
 });
 
-// Database connection — separate from route registration
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => {
-    console.log("Connected to Mongo");
-})
-.catch(err => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-});
-
-// Start server
 const PORT = process.env.PORT || 5002;
 
-//changed app to server for socket
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+async function startServer() {
+    // Do not accept traffic until queries can run. On a cold start, listening
+    // earlier lets the first news request time out in Mongoose's query buffer.
+    // Cloud Run's default TCP startup probe also uses this port for readiness.
+    await mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+    console.log("Connected to Mongo");
+
+    server.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+
+startServer().catch(err => {
+    console.error("Backend startup failed:", err);
+    process.exit(1);
 });

@@ -54,8 +54,11 @@ rtk npm start
 ```
 
 Defaults: frontend `http://localhost:3000`; backend `http://localhost:5002`;
-frontend API base `http://localhost:5002/api`. Backend routes are registered after
-MongoDB connects. GET `/api/health` returns 200 when connected and 503 otherwise.
+frontend API base `http://localhost:5002/api`. Backend routes are registered during
+initialization, but the HTTP server listens only after MongoDB connects. This keeps
+cold-start requests out of Mongoose's query buffer and prevents Cloud Run's default
+TCP startup probe from reporting readiness before the database is available.
+GET `/api/health` returns 200 when connected and 503 after a disconnect.
 
 ## Backend configuration
 
