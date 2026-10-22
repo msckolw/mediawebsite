@@ -16,7 +16,7 @@
   gap: 2rem;
 }
 
-button {
+.admin-panel button {
   width: 100%;
   padding: 0.75rem;
   font-weight: 700;
@@ -641,3 +641,4 @@ button {
     margin-left: auto;
   }
 }
+.admin-panel .image-quality-help{font-size:12px;line-height:1.7;color:#52616b;margin:0 0 12px}.admin-panel .image-quality-status{font-size:13px;line-height:1.6;margin-bottom:16px}.admin-panel .image-quality-status.invalid{color:#a12626}.admin-panel .image-quality-status.valid{color:#17634c}.admin-panel button:disabled{opacity:.55;cursor:not-allowed}

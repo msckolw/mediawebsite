@@ -90,8 +90,7 @@ export const addArticle = async (data) => {
     const response = await api.post('/news', data);
     return response.data;
   } catch (error) {
-    let status = error.response.status;
-    throw new Error(status)
+    throw new Error(error.response?.data?.message || 'Failed to add article');
   }
 };
 

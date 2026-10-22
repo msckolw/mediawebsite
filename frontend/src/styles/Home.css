@@ -9,7 +9,7 @@
 .nb-story-copy{padding:22px 24px;display:flex;flex-direction:column;flex:1}
 .nb-story-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;line-height:1.5;color:var(--nb-muted);margin:0 0 12px}.nb-story-meta>span{color:var(--nb-accent);font-weight:650;text-transform:capitalize}
 .nb-story h2{font:600 23px/1.35 Arial,Helvetica,sans-serif;letter-spacing:-.025em;margin:0 0 12px;overflow-wrap:anywhere}
-.nb-story-summary{font-size:14px;line-height:1.75;color:#52616b;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;margin:0 0 24px}
+.nb-story-summary{font-size:14px;line-height:1.75;color:#52616b;white-space:pre-line;overflow-wrap:anywhere;margin:0 0 24px}
 .nb-story-paths{display:flex;gap:12px;align-items:center;margin-top:auto;font-size:12px;font-weight:600;border-top:1px solid var(--nb-rule);padding-top:17px}
 .nb-story-paths a{display:inline-flex;gap:16px;align-items:center;min-height:36px}.nb-story-paths a+a{margin-left:auto;color:var(--nb-accent)}
 .nb-pagination{text-align:center;padding:32px 0 0;color:var(--nb-muted);font-size:12px}.nb-pagination:empty{padding:0}.nb-pagination button,.nb-feedback button{background:var(--nb-ink);border:1px solid var(--nb-ink);color:white;padding:13px 28px;border-radius:5px;font:600 12px Arial,sans-serif}.nb-pagination button:disabled{opacity:.6;cursor:wait}

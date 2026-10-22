@@ -20,6 +20,7 @@ const newsSchema = new mongoose.Schema({
     type: String,
     default: 'https://placehold.co/300x200?text=Nobiased+Media'
   },
+  imageMetadata: { width: Number, height: Number, checkedAt: Date },
   source: [{
     source_type: {
       type: String,

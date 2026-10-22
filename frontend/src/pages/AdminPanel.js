@@ -2,6 +2,7 @@ import { useSession } from '../context/SessionContext';
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/AdminPanel.css';
 import { useNavigate } from 'react-router-dom';
+import { inspectImage, checkImageDimensions } from '../services/imageQuality';
 import SourceModal from './SourceModal'; // Import the new component
 import Swal from 'sweetalert2'
 import { addArticle, deleteArticle, getArticles, getSourceType } from '../services/api';
@@ -16,7 +17,8 @@ const categories = [
 
 const AdminPanel = () => {
   let nav = useNavigate();
-  let articlePosted=useRef(true);
+  const [posting, setPosting] = useState(false);
+  const [imageCheck, setImageCheck] = useState({ status: 'empty', message: '' });
   let imgAsBase = useRef(false);
   const [articles, setArticles] = useState([]);
   const [sourceType, setSourceType] = useState([]);
@@ -34,7 +36,7 @@ const AdminPanel = () => {
   const [pageSetings, setPageSettings] = useState({
     currentPage: 1, totalPages: 1
   });
-  
+
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -68,7 +70,7 @@ const AdminPanel = () => {
       behavior: "smooth", // Adds a nice scroll animation
     });
 
-    
+
   }, [nav, user, sessionLoading]);
 
 
@@ -77,7 +79,7 @@ const AdminPanel = () => {
       const response = await getArticles(page);
       if(response.articles.length) {
         setArticles(prev => page===1 ? response.articles : [...prev, ...response.articles]);
-        setPageSettings({ 
+        setPageSettings({
           currentPage: response.currentPage,
           totalPages: response.totalPages
         });
@@ -111,55 +113,54 @@ const AdminPanel = () => {
     }));
   };
 
-  const compressImage = (file) => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          // Set canvas dimensions to max 800px while maintaining aspect ratio
-          let width = img.width;
-          let height = img.height;
-          const maxWidth = 800;
-          
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          
-          // Draw and compress image
-          ctx.drawImage(img, 0, 0, width, height);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-          resolve(compressedDataUrl);
-        };
-      };
-    });
-  };
+  useEffect(() => {
+    let active = true;
+    if (!formData.imageUrl) { setImageCheck({ status: 'empty', message: '' }); return; }
+    setImageCheck({ status: 'checking', message: 'Checking image resolution…' });
+    const timer = setTimeout(() => {
+      inspectImage(formData.imageUrl).then(({ width, height }) => {
+        if (active) { setImageCheck({ status: 'valid', message: `${width} × ${height} pixels — resolution check passed.` }); setPreviewUrl(formData.imageUrl); }
+      }).catch(error => { if (active) { setImageCheck({ status: 'invalid', message: error.message }); setPreviewUrl(''); } });
+    }, 400);
+    return () => { active = false; clearTimeout(timer); };
+  }, [formData.imageUrl]);
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const compressedImage = await compressImage(file);
-        setPreviewUrl(compressedImage);
-        setFormData(prevState => ({
-          ...prevState,
-          imageUrl: compressedImage
-        }));
-        imgAsBase.current=true;
-      } catch (error) {
-        console.error('Error compressing image:', error);
-        setError('Failed to process image. Please try again.');
-      }
+  const compressImage = file => new Promise((resolve, reject) => {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      reject(new Error('Upload a JPEG, PNG, or WebP image no larger than 10 MB.')); return;
     }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read the image file.'));
+    reader.onload = event => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Could not decode the image file.'));
+      img.onload = () => {
+        try {
+          checkImageDimensions(img.naturalWidth, img.naturalHeight);
+          const scale = Math.min(1, 1920 / img.naturalWidth);
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.naturalWidth * scale);
+          canvas.height = Math.round(img.naturalHeight * scale);
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.88));
+        } catch (error) { reject(error); }
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const handleImageChange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const compressedImage = await compressImage(file);
+      setFormData(previous => ({ ...previous, imageUrl: compressedImage }));
+      imgAsBase.current = true;
+      setError(null);
+    } catch (error) { setError(error.message); e.target.value = ''; }
   };
 
   // Modal Functions
@@ -183,8 +184,9 @@ const AdminPanel = () => {
     e.preventDefault();
     setError(null);
 
-    articlePosted.current=false;
-    
+    if (posting) return;
+    setPosting(true);
+
     try {
       // Validate required fields
       if (!formData.title || !formData.summary || !formData.content || !formData.category) {
@@ -192,7 +194,8 @@ const AdminPanel = () => {
         return;
       }
 
-      
+      await inspectImage(formData.imageUrl);
+
       document.getElementById("mainDiv").scrollIntoView({behavior: "smooth"});
 
       // Format the article data according to the News model
@@ -201,7 +204,7 @@ const AdminPanel = () => {
         summary: formData.summary.trim(),
         content: formData.content.trim(),
         category: formData.category,
-        imageUrl: formData.imageUrl || 'https://via.placeholder.com/300x200',
+        imageUrl: formData.imageUrl,
         source: formData.sources.filter(source => source._id && source.url),
         createdAt: new Date().toISOString()
       };
@@ -210,7 +213,7 @@ const AdminPanel = () => {
       // Send the request with proper headers
       const response = await addArticle(articleData);
 
-      
+
       if (response) {
         // Reset form
         setFormData({
@@ -223,6 +226,7 @@ const AdminPanel = () => {
         });
         setPreviewUrl('');
         document.getElementById('imgUrl').value='';
+        imgAsBase.current = false;
 
 
         Swal.fire({
@@ -233,10 +237,10 @@ const AdminPanel = () => {
           showConfirmButton: false,
           timer: 4000,
         });
-        
+
         // Refresh articles list
         await fetchArticles();
-        
+
         // Show success message
         //alert('Article added successfully!');
       }
@@ -254,11 +258,11 @@ const AdminPanel = () => {
         nav('/login');
       }
       else {
-        setError('Failed to add article. Please try again.');
+        setError(error.message || 'Failed to add article. Please try again.');
       }
     }
     finally {
-      articlePosted.current=true;
+      setPosting(false);
     }
   };
 
@@ -304,9 +308,9 @@ const AdminPanel = () => {
   return (
     <div className="admin-panel" id="mainDiv">
       <h1>Admin Panel</h1>
-      
+
       {error && <div className="error-message">{error}</div>}
-      
+
       <div className="admin-content">
         <div className="form-section">
           <h2>Add New Article</h2>
@@ -321,7 +325,7 @@ const AdminPanel = () => {
                 required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Summary</label>
               <textarea
@@ -331,7 +335,7 @@ const AdminPanel = () => {
                 required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Content</label>
               <textarea
@@ -341,7 +345,7 @@ const AdminPanel = () => {
                 required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Category</label>
               <select
@@ -360,22 +364,26 @@ const AdminPanel = () => {
               </select>
             </div>
 
+            <p id="image-quality-help" className="image-quality-help">Use an original landscape JPEG, PNG, or WebP: at least 1200 × 675 pixels, up to 24 megapixels and 10 MB. Resolution checks cannot detect blur, upscaling, or watermarks.</p>
+            <p id="image-quality-status" className={`image-quality-status ${imageCheck.status}`} role="status">{imageCheck.message}</p>
             {!imgAsBase.current && (
               <div className="form-group">
-              <label>Image URL</label>
+              <label htmlFor="article-image-url">Image URL</label>
               <textarea
+                id="article-image-url"
+                aria-describedby="image-quality-help image-quality-status"
                 name="imageUrl"
                 value={formData.imageUrl}
                 onChange={handleInputChange}
               ></textarea>
               </div>
             )}
-            
+
             <div className="form-group">
               <label>Image</label>
               <input id="imgUrl"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={handleImageChange}
               />
               {previewUrl && (
@@ -385,8 +393,8 @@ const AdminPanel = () => {
                     <img src={previewUrl} alt="Preview" />
                   </span>
                   <span style={{width: '50%', textAlign: 'center'}}>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="clear-image-btn"
                       onClick={removeImage}
                     >
@@ -396,7 +404,7 @@ const AdminPanel = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="form-group sources-section">
               <label>Sources</label>
               <div className="sources-summary">
@@ -407,24 +415,24 @@ const AdminPanel = () => {
                 ) : (
                   <div className="no-sources">No sources added yet</div>
                 )}
-                <button 
-                  type="button" 
-                  className="source-btn" 
+                <button
+                  type="button"
+                  className="source-btn"
                   onClick={openModal}
                 >
                   {formData.sources && formData.sources.length > 0 && formData.sources[0].url ? 'Edit Sources' : 'Add Sources'}
                 </button>
               </div>
             </div>
-            
+
             <div className="form-actions">
-              <button type="submit" className="submit-btn" disabled={articlePosted.current ? false : true}
-              >Add Article</button>
+              <button type="submit" className="submit-btn" disabled={posting || imageCheck.status !== 'valid'}
+              >{posting ? 'Checking and publishing…' : 'Add Article'}</button>
             </div>
           </form>
-          
+
           {/* Use the new Source Modal Component */}
-          <SourceModal 
+          <SourceModal
             isOpen={modalOpen}
             onClose={closeModal}
             initialSources={formData.sources}
@@ -433,7 +441,7 @@ const AdminPanel = () => {
             typeList={sourceType}
           />
         </div>
-        
+
         <div className="articles-section">
           <h2>Manage Articles</h2>
           <div className="articles-list">
@@ -459,7 +467,7 @@ const AdminPanel = () => {
                         </ul>
                       </div>
                     )}
-                    <button 
+                    <button
                       onClick={() => handleDelete(article._id)}
                       className="delete-btn"
                     >

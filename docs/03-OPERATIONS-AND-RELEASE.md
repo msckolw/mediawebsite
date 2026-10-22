@@ -193,3 +193,10 @@ cache, and service-worker cache v5 removes cached assets from the older release.
 
 Run `npm test --prefix backend`, then all frontend Jest tests and the frontend
 production build. CI runs these regression suites automatically.
+
+
+### Image quality checks
+
+New articles require an image; new and replacement images are checked on the server using their actual bytes. Supported formats: JPEG, PNG, WebP, up to 10 MB, at least 1200 × 675 pixels, at most 24 megapixels, with a landscape aspect ratio from 1.2 to 2.2. Remote URLs must use HTTPS and resolve to public addresses; redirects are checked individually and connections use the validated address. Existing images are not retroactively rejected when editing article text. Clients creating articles must provide a qualifying image. These are resolution/format checks, not blur, watermark, authenticity, or copyright checks. No license verification or permission record is required.
+
+The admin form previews URL images and shows their decoded dimensions. Uploads preserve up to 1920 pixels of width rather than reducing every image to 800 pixels. Homepage summaries display their complete text without a line limit.

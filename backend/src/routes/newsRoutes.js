@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const News = require('../models/News');
 const SourceType = require('../models/SourceType');
+const { validateArticleImage } = require('../services/imagePolicy');
 
 const { validateJWT } = require('../utils/validateToken');
 
@@ -78,7 +79,7 @@ router.get('/news/:id', async (req, res) => {
     let source_page = req.query.source=='true' ? true : false;
 
     // Always allow access to articles with sources - no authentication required
-    const article = await News.find({_id: req.params.id},{source: source_page}).lean();
+    const article = await News.find({_id: req.params.id}, {source: source_page}).lean();
     if (!article || article.length === 0) {
       return res.status(404).json({ message: 'Article not found' });
     }
@@ -118,11 +119,13 @@ router.post('/news', async (req, res) => {
       });
     }
 
+    const imageFields = await validateArticleImage(req.body.imageUrl);
     const article = new News({
       title: req.body.title,
       content: req.body.content,
       summary: req.body.summary,
-      imageUrl: req.body.imageUrl || 'https://placehold.co/300x200?text='+req.body.title.split(' ').join('+'),
+      imageUrl: req.body.imageUrl,
+      ...imageFields,
       category: req.body.category.toLowerCase(),
       createdAt: new Date().toISOString(),
       source: req.body.source
@@ -180,6 +183,9 @@ router.put('/news', async (req, res) => {
       return res.status(400).json({ message: 'Article Id Required' });
 
     const foundArticle = await News.find({_id: req.body._id});
+    if (!foundArticle.length) return res.status(404).json({ message: 'Article not found' });
+    const imageChanged = Object.prototype.hasOwnProperty.call(req.body, 'imageUrl') && req.body.imageUrl !== foundArticle[0].imageUrl;
+    const imageFields = imageChanged ? await validateArticleImage(req.body.imageUrl) : {};
     let ogArticle = 
     {
       title: foundArticle[0].title,
@@ -196,7 +202,8 @@ router.put('/news', async (req, res) => {
         title: req.body.title || ogArticle.title,
         content: req.body.content || ogArticle.content,
         summary: req.body.summary || ogArticle.summary,
-        imageUrl: req.body.imageUrl || ogArticle.imageUrl,
+        imageUrl: imageChanged ? req.body.imageUrl : ogArticle.imageUrl,
+        ...imageFields,
         category: ogArticle.category,
         updatedAt: new Date().toISOString(),
         source: req.body.source || ogArticle.source
