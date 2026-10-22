@@ -1,3 +1,4 @@
+import { useSession } from '../context/SessionContext';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getBookmarks, removeBookmark } from '../utils/bookmarkUtils';
@@ -7,11 +8,12 @@ const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user, loading: sessionLoading } = useSession();
 
   useEffect(() => {
     // Check if user is logged in
-    const isLoggedIn = localStorage.getItem('token');
-    if (!isLoggedIn) {
+    if (sessionLoading) return;
+    if (!user) {
       navigate('/');
       return;
     }
@@ -20,7 +22,7 @@ const Bookmarks = () => {
     const savedBookmarks = getBookmarks();
     setBookmarks(savedBookmarks);
     setLoading(false);
-  }, [navigate]);
+  }, [navigate, user, sessionLoading]);
 
   const handleRemoveBookmark = (articleId) => {
     if (removeBookmark(articleId)) {

@@ -6,6 +6,7 @@ import './styles/Login.css';
 import './styles/Home.css';
 import './styles/ArticleDetail.css';
 import './components/ScrollTopButton.css';
+import './styles/ReaderTheme.css';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -28,7 +29,7 @@ function App() {
     <div className="app">
       <ScrollToTop />
       <Header />
-      <main className="main-content">
+      <main className="main-content" id="main-content" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<Home />} />
           {/* <Route path="/login" element={<Login />} />

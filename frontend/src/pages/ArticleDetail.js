@@ -1,11 +1,14 @@
+import { useSession } from '../context/SessionContext';
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/ArticleDetail.css';
 import {getArticle} from '../services/api'
 import Swal from 'sweetalert2'
+import { StoryImage, storyDate } from '../components/ArticleFeed';
 
 const ArticleDetail = () => {
   const { id } = useParams();
+  const { user } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
   const [article, setArticle] = useState(null);
@@ -13,55 +16,25 @@ const ArticleDetail = () => {
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
 
-  // Check if user came from sources page
-  const cameFromSources = location.state?.from === 'sources';
-
-  const handleBackNavigation = () => {
-    if (cameFromSources) {
-      // If came from sources, go back to homepage
-      navigate('/');
-    } else {
-      // If came from homepage or direct link, go to homepage
-      navigate('/');
-    }
-  };
-  
+  const returnTo = location.state?.returnTo?.startsWith('/category/') ? location.state.returnTo : '/';
   useEffect(() => {
-    const fetchArticle = async () => {
-      try {
-        setLoading(true);
-        //const response = await axios.get(`${url}/news/${id}`);
-        const response = await getArticle(id);
-        if (response) {
-          setArticle(response);
-          
-          // Check if article is already bookmarked
-          const existingBookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]');
-          const isBookmarked = existingBookmarks.some(bookmark => bookmark.id === response._id);
-          setIsSaved(isBookmarked);
-        } else {
-          setError('Article not found');
-        }
-      } catch (error) {
-        setError('Failed to load article. Please try again later.');
-        console.error('Error fetching article:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchArticle();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth", // Adds a nice scroll animation
-    });
-
+    let active = true;
+    setLoading(true);
+    setError(null);
+    getArticle(id).then(response => {
+      if (!active) return;
+      if (!response) { setError('Article not found'); return; }
+      setArticle(response);
+      let bookmarks = [];
+      try { bookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]'); } catch { /* Ignore damaged local bookmarks. */ }
+      setIsSaved(Array.isArray(bookmarks) && bookmarks.some(bookmark => bookmark.id === response._id));
+    }).catch(() => { if (active) setError('Failed to load article. Please try again later.'); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, [id]);
 
   const handleSave = async () => {
-    const isLoggedIn = localStorage.getItem('token');
-    if (!isLoggedIn) {
+    if (!user) {
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -72,10 +45,10 @@ const ArticleDetail = () => {
       });
       return;
     }
-    
+
     // Get existing bookmarks from localStorage
     const existingBookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]');
-    
+
     if (!isSaved) {
       // Add to bookmarks
       const bookmarkData = {
@@ -87,11 +60,11 @@ const ArticleDetail = () => {
         createdAt: article.createdAt,
         bookmarkedAt: new Date().toISOString()
       };
-      
+
       existingBookmarks.push(bookmarkData);
       localStorage.setItem('bookmarkedArticles', JSON.stringify(existingBookmarks));
       setIsSaved(true);
-      
+
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -105,7 +78,7 @@ const ArticleDetail = () => {
       const updatedBookmarks = existingBookmarks.filter(bookmark => bookmark.id !== article._id);
       localStorage.setItem('bookmarkedArticles', JSON.stringify(updatedBookmarks));
       setIsSaved(false);
-      
+
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -125,7 +98,7 @@ const ArticleDetail = () => {
           text: article.summary,
           url: window.location.href
         };
-        
+
         if (navigator.canShare(shareData)) {
           await navigator.share(shareData);
         } else {
@@ -135,6 +108,7 @@ const ArticleDetail = () => {
         throw new Error('Web Share API not supported');
       }
     } catch (error) {
+      if (error.name === 'AbortError') return;
       // Fallback: copy to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
@@ -154,7 +128,7 @@ const ArticleDetail = () => {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        
+
         Swal.fire({
           toast: true,
           position: "top-end",
@@ -167,8 +141,8 @@ const ArticleDetail = () => {
     }
   };
 
-  
-  
+
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -177,7 +151,7 @@ const ArticleDetail = () => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="error-container">
@@ -188,7 +162,7 @@ const ArticleDetail = () => {
       </div>
     );
   }
-  
+
   if (!article) {
     return (
       <div className="error-container">
@@ -199,79 +173,12 @@ const ArticleDetail = () => {
       </div>
     );
   }
-  
-  return (
-    <div className="article-detail">
-      <button className="back-button" onClick={handleBackNavigation}>
-        ← Back to Articles
-      </button>
-      
-      <div className="article-header" id="mainDiv">
-        <div className="article-title-section">
-          <h1 style={{overflowWrap: 'break-word'}}>{article.title}</h1>
-          <div className="article-actions">
-            <button 
-              className={`action-btn save-btn ${isSaved ? 'saved' : ''}`}
-              onClick={handleSave}
-              title={isSaved ? 'Remove from saved' : 'Save article'}
-            >
-              <i className={`fas ${isSaved ? 'fa-bookmark' : 'fa-bookmark'}`} style={{color: isSaved ? '#fff' : '#666'}}></i>
-            </button>
-            <button 
-              className="action-btn share-btn"
-              onClick={handleShare}
-              title="Share article"
-            >
-              <i className="fas fa-share-alt"></i>
-            </button>
-          </div>
-        </div>
-        <div className="article-meta">
-          <span className="category">{article.category}</span>
-          <span className="date">
-            {new Date(article.createdAt).toLocaleDateString()}
-          </span>
-        </div>
-      </div>
-      
-      <div className="article-image">
-        <img style={{objectFit: 'contain'}}
-          src={article.imageUrl}
-          alt={article.title}
-          loading="lazy"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = 'https://via.placeholder.com/800x400';
-          }}
-        />
-      </div>
-      
-      <div className="article-content">
-        <div className="article-summary">
-          <h2>Summary</h2>
-          <p style={{overflowWrap: 'break-word'}}>{article.summary}</p>
-        </div>
-        
-        <div className="article-body">
-          <h2>Full Article</h2>
-          <p style={{overflowWrap: 'break-word'}}>{article.content}</p>
-        </div>
 
-        
-        
-        <div className="news-sources-container">
-          
-          <button 
-            className="news-sources-button"
-            onClick={() => navigate('/source/'+id)}
-          >
-            News Sources
-          </button>
-
-        </div>
-      </div>
-    </div>
-  );
+  return <article className="nb-reader" id="mainDiv">
+    <Link className="nb-back-link" to={returnTo}>← Back to stories</Link>
+    <header className="nb-reader-heading"><div className="nb-reader-kicker"><Link to={`/category/${article.category}`}>{article.category}</Link><time dateTime={article.createdAt}>{storyDate(article.createdAt)}</time></div><h1>{article.title}</h1><p className="nb-reader-deck">{article.summary}</p><div className="nb-reader-toolbar"><span>THE NOBIAS MEDIA</span><div><button aria-pressed={isSaved} onClick={handleSave}>{isSaved ? 'Saved ✓' : 'Save story +'}</button><button onClick={handleShare}>Share ↗</button></div></div></header>
+    <StoryImage article={article} priority />
+    <div className="nb-reading-layout"><div className="nb-reader-body"><h2>Full Article</h2>{String(article.content || '').split(/\n\s*\n|\r?\n/).filter(Boolean).map((paragraph, i) => <p key={i}>{paragraph}</p>)}<div className="nb-reader-end"><Link to={`/source/${id}`} state={{ returnTo }}>News Sources ↗</Link></div></div></div>
+  </article>;
 };
-
 export default ArticleDetail;

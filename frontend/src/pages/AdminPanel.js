@@ -1,3 +1,4 @@
+import { useSession } from '../context/SessionContext';
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/AdminPanel.css';
 import { useNavigate } from 'react-router-dom';
@@ -47,11 +48,14 @@ const AdminPanel = () => {
     imgAsBase.current=false;
   }
 
+  const { user, loading: sessionLoading } = useSession();
+
   useEffect(() => {
-    if(!localStorage.getItem('token')) {
+    if (sessionLoading) return;
+    if (!user) {
       nav('/login');
     }
-    else if(localStorage.getItem('token') && localStorage.getItem('user_role')==='admin') {
+    else if (user.role === 'admin') {
       fetchArticles();
       fetchSourceType();
     }
@@ -65,7 +69,7 @@ const AdminPanel = () => {
     });
 
     
-  }, [nav]);
+  }, [nav, user, sessionLoading]);
 
 
   const fetchArticles = async (page=1) => {

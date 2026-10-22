@@ -164,3 +164,32 @@ an index. `docs/archive/` preserves superseded material for history, with sensit
 values redacted; do not use it to override the source code or current deployment.
 Update guides with behavior changes and distinguish code-supported behavior,
 local test results and production observations.
+
+
+## Session, consent, and live-feed release checks
+
+Deploy the backend and frontend together. The frontend now uses `GET /api/auth/session`
+to verify its HttpOnly cookie and `POST /api/auth/logout` to expire it. Existing
+`verifyAccessToken` clients remain supported. Logout clears the browser cookie; it
+does not implement a server-side JWT revocation registry.
+
+The mobile PayU V1 auxiliary hash allowlist is `getBinInfo`, `validateVPA`,
+`get_checkout_details`, and `get_eligible_payment_options`. Each request must use
+`merchantKey|matchingCommand|nonemptyValue|`. Unrecognized operations, mismatched
+commands, and salt overrides are rejected. Add newly required SDK operations only
+with verified formats and regression tests. Payment hashes remain bound to pending
+checkout records. Smoke-test the production mobile SDK in the provider sandbox
+before rollout; local tests use fake credentials.
+
+Analytics stays disabled until a reader explicitly accepts through the new
+`cookieConsentV2` preference. Legacy choices are requested again because older
+banners auto-accepted. Readers can withdraw consent through Cookie settings.
+
+News mutations emit `article:created`, `article:updated`, and `article:deleted`.
+Home and category feeds reload page one after changes or reconnects, resetting
+offset pagination and discarding older requests. The legacy `newArticle` event
+remains available for existing clients. Article/list responses revalidate their
+cache, and service-worker cache v5 removes cached assets from the older release.
+
+Run `npm test --prefix backend`, then all frontend Jest tests and the frontend
+production build. CI runs these regression suites automatically.

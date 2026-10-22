@@ -1,4 +1,5 @@
 
+import { useSession } from '../context/SessionContext';
 import Swal from 'sweetalert2'
 import {useGoogleLogin} from '@react-oauth/google'
 import { loginOAuth } from '../services/api';
@@ -6,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
   export const useGoogleHook = (path,raw) => {
     let navigate = useNavigate();
+    const { refreshSession } = useSession();
     return useGoogleLogin({
     onSuccess: async (tok) => {
       try {
@@ -21,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
         //console.log('User ->',data);
         data['access_token']=tok.access_token;
         const response = await loginOAuth(data);
+        if (!await refreshSession()) throw new Error("Session cookie unavailable");
         Swal.fire({
           toast: true,
           position: "top-end",

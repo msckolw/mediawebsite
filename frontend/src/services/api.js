@@ -32,7 +32,6 @@ export const getImageUrl = (imagePath) => {
 export const getArticles = async (page=1) => {
   try {
     const response = await api.get('/news?page='+page);
-    console.log(response)
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch articles');
@@ -181,3 +180,6 @@ export const getDonationStatus = async (donationId) => {
 };
 
 export default api;
+
+export const getSession = async () => (await api.get('/auth/session')).data;
+export const logoutSession = async () => api.post('/auth/logout');

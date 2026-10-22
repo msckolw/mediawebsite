@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App';
+import { SessionProvider } from './context/SessionContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const googleClientId = process.env.REACT_APP_OAUTH_CLIENT_ID || '329287861933-ai9hakhdhlrokkn5k58qrmttkeoiflj7.apps.googleusercontent.com';
@@ -12,7 +13,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <GoogleOAuthProvider clientId={googleClientId}>
-            <App />
+            <SessionProvider><App /></SessionProvider>
       </GoogleOAuthProvider>
     </BrowserRouter>
   </React.StrictMode>

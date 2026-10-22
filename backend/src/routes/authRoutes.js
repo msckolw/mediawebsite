@@ -3,6 +3,25 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const OauthUsers = require('../models/OAuth');
 
+const cookieOptions = { httpOnly: true, sameSite: 'none', secure: true, path: '/' };
+router.use((req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+
+router.get('/session', (req, res) => {
+  try {
+    const user = jwt.verify(req.cookies.access_token, process.env.JWT_SECRET);
+    if (!user.email || !['admin', 'user'].includes(user.role)) throw new Error('Invalid session');
+    res.json({ user: { email: user.email, role: user.role, name: user.name || user.email } });
+  } catch {
+    res.status(401).json({ message: 'Please sign in again.' });
+  }
+});
+
+router.post('/logout', (req, res) => {
+  res.clearCookie('access_token', cookieOptions);
+  res.status(204).end();
+});
+
+
 
 // verify creds & generate access token
 router.post('/login', async (req, res) => {
@@ -36,11 +55,7 @@ router.post('/login', async (req, res) => {
 
     // Return success response with token
 
-    res.cookie('access_token',token,{
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true
-    })
+    res.cookie('access_token', token, cookieOptions);
     
     res.json({
       success: true,
@@ -152,17 +167,14 @@ router.post('/googleSignIn', async (req, res) => {
       const token = jwt.sign(
         {
           email,
-          role: 'user'
+          role: 'user',
+          name: name || email
         },
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
 
-      res.cookie('access_token',token,{
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true
-      })
+      res.cookie('access_token', token, cookieOptions);
 
       res.status(200).json({
         success: true,

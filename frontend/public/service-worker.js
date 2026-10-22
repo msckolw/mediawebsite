@@ -1,5 +1,5 @@
 // Service Worker for caching
-const CACHE_NAME = 'nobias-media-cache-v4';
+const CACHE_NAME = 'nobias-media-cache-v6';
 // IMPORTANT:
 // Do NOT hardcode CRA build asset paths like `/static/js/main.js` or `/static/css/main.css`
 // because production filenames are hashed (e.g. main.abc123.js) and these URLs 404,

@@ -1,3 +1,4 @@
+import { useSession } from '../context/SessionContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../styles/Login.css';
@@ -6,6 +7,7 @@ import {login} from '../services/api'
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user, loading: sessionLoading, refreshSession } = useSession();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -15,20 +17,12 @@ const Login = () => {
   let [param] = useSearchParams();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    //setIsAdmin(localStorage.getItem('user_role')=='admin' ? true : false);
-    const admin = localStorage.getItem('user_role')==='admin' ? true : false;
-    if (token) {
-      if(admin)
-        navigate('/admin');
-      else 
-        navigate('/');
-    }
+    if (!sessionLoading && user) navigate(user.role === 'admin' ? '/admin' : '/');
     window.scrollTo({
       top: 0,
       behavior: "smooth", // Adds a nice scroll animation
     });
-  }, [navigate]);
+  }, [navigate, user, sessionLoading]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,12 +37,9 @@ const Login = () => {
     setError('');
     setLoading(true);
 
-    let form_data = new FormData();
-    form_data.append('email',formData.email);
-    form_data.append('password',formData.password);
-
     try {
-      const response = await login(form_data);
+      const response = await login(formData);
+      if (!await refreshSession()) throw new Error("Could not establish your session. Please allow sign-in cookies.");
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -61,7 +52,7 @@ const Login = () => {
       localStorage.setItem('user_role', response.user.role);
       localStorage.setItem('user_name', response.user.name);
       let redirectURL = param.get('ru');
-      if(redirectURL) {
+      if(redirectURL && redirectURL.startsWith('/') && !redirectURL.startsWith('//')) {
         //window.location.href=redirectURL;
         navigate(redirectURL)
       }

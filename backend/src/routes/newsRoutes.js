@@ -18,15 +18,15 @@ router.get('/news', async (req, res) => {
 
     const articles = await News
       .find({}, {source: false})
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .lean(); // Use lean() for faster queries - returns plain JS objects
 
     const totalArticles = await News.countDocuments(); 
 
-    // Cache for 2 minutes for list pages
-    res.set('Cache-Control', 'public, max-age=120');
+    // Revalidate so socket-triggered refreshes cannot reuse a stale list.
+    res.set('Cache-Control', 'no-cache');
 
     res.status(200).json({
       articles,
@@ -50,7 +50,7 @@ router.get('/category/:cat', async (req, res) => {
     const articles = await News
     .find({
       category: new RegExp(`^${cat}$`, 'i')}, {source: false})
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: -1, _id: -1 })
     .skip(skip)
     .limit(limit)
     .lean(); // Use lean() for faster queries
@@ -59,8 +59,8 @@ router.get('/category/:cat', async (req, res) => {
       category: new RegExp(`^${cat}$`, 'i')
     });
 
-    // Cache for 2 minutes for category pages
-    res.set('Cache-Control', 'public, max-age=120');
+    // Revalidate after live article changes.
+    res.set('Cache-Control', 'no-cache');
 
     res.status(200).json({
       articles,
@@ -83,8 +83,8 @@ router.get('/news/:id', async (req, res) => {
       return res.status(404).json({ message: 'Article not found' });
     }
     
-    // Cache individual articles for 5 minutes
-    res.set('Cache-Control', 'public, max-age=300');
+    // Revalidate article details after edits.
+    res.set('Cache-Control', 'no-cache');
     
     res.status(200).json(article[0]);
   } catch (error) {
@@ -136,6 +136,7 @@ router.post('/news', async (req, res) => {
     
     // Emit only the new article data to connected clients for real-time updates
     let io = getIo();
+    io.emit('article:created', { id: String(newArticle._id) });
     io.emit('newArticle', {
       article: {
         _id: newArticle._id,
@@ -209,6 +210,7 @@ router.put('/news', async (req, res) => {
       return res.status(400).json({ message: 'Article not found' });
     }
 
+    getIo().emit('article:updated', { id: String(updatedArticle._id) });
     res.status(200).json(updatedArticle);
 
   } catch (error) {
@@ -240,6 +242,7 @@ router.delete('/news/:id', async (req, res) => {
     if (!article) return res.status(400).json({ message: 'Article not found' });
     //
     let io = getIo();
+    io.emit('article:deleted', { ids: [String(article._id)] });
     io.emit('newArticle', 'call fetchArticles function'); //socket emits
     //
     res.status(200).json({ message: 'Article deleted successfully' });
@@ -269,6 +272,7 @@ router.delete('/news', async (req, res) => {
       return res.status(400).json({ message: 'Article Id(s) required' });
     const objectIds = idsToDelete.map(id => mongoose.Types.ObjectId(id));
     await News.deleteMany({ _id: { $in: objectIds } });
+    getIo().emit('article:deleted', { ids: objectIds.map(String) });
     res.status(200).json({ message: 'Article(s) deleted successfully' });
   } catch (error) {
     res.status(400).json({ message: error.message });

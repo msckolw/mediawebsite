@@ -32,7 +32,7 @@ function boot(env = {}) {
       if (name === 'dotenv') return { config() {} };
       if (name === './socket') return { initSocket() {} };
       if (name.startsWith('./routes/')) return {};
-      if (['cors', 'cookie-parser', 'socket.io'].includes(name)) return () => () => {};
+      if (['cors', 'cookie-parser', 'socket.io', 'compression'].includes(name)) return () => () => {};
       throw new Error(`Unexpected module: ${name}`);
     },
     process: { env: { MONGODB_URI: 'mongodb://test.invalid/news', ...env },
