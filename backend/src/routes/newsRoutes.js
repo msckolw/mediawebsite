@@ -20,9 +20,13 @@ router.get('/news', async (req, res) => {
       .find({}, {source: false})
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean(); // Use lean() for faster queries - returns plain JS objects
 
     const totalArticles = await News.countDocuments(); 
+
+    // Cache for 2 minutes for list pages
+    res.set('Cache-Control', 'public, max-age=120');
 
     res.status(200).json({
       articles,
@@ -48,11 +52,15 @@ router.get('/category/:cat', async (req, res) => {
       category: new RegExp(`^${cat}$`, 'i')}, {source: false})
     .sort({ createdAt: -1 })
     .skip(skip)
-    .limit(limit);  
+    .limit(limit)
+    .lean(); // Use lean() for faster queries
 
     const totalArticles = await News.countDocuments({
       category: new RegExp(`^${cat}$`, 'i')
     });
+
+    // Cache for 2 minutes for category pages
+    res.set('Cache-Control', 'public, max-age=120');
 
     res.status(200).json({
       articles,
@@ -70,10 +78,14 @@ router.get('/news/:id', async (req, res) => {
     let source_page = req.query.source=='true' ? true : false;
 
     // Always allow access to articles with sources - no authentication required
-    const article = await News.find({_id: req.params.id},{source: source_page});
+    const article = await News.find({_id: req.params.id},{source: source_page}).lean();
     if (!article || article.length === 0) {
       return res.status(404).json({ message: 'Article not found' });
     }
+    
+    // Cache individual articles for 5 minutes
+    res.set('Cache-Control', 'public, max-age=300');
+    
     res.status(200).json(article[0]);
   } catch (error) {
     console.error('Error fetching article:', error);
@@ -122,28 +134,18 @@ router.post('/news', async (req, res) => {
 
     res.status(201).json(newArticle);
     
-    //
-    
-    /*const page = 1; 
-    const limit = 10; 
-    const skip = (page - 1) * limit; 
-
-    const articles = await News
-      .find({}, {source: false})
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const totalArticles = await News.countDocuments(); 
-
-    let obj={
-      articles,
-      currentPage: page,
-      totalPages: Math.ceil(totalArticles / limit)
-    };*/
+    // Emit only the new article data to connected clients for real-time updates
     let io = getIo();
-    io.emit('newArticle', 'call fetchArticles function'); //socket emits
-    //
+    io.emit('newArticle', {
+      article: {
+        _id: newArticle._id,
+        title: newArticle.title,
+        summary: newArticle.summary,
+        imageUrl: newArticle.imageUrl,
+        category: newArticle.category,
+        createdAt: newArticle.createdAt
+      }
+    });
     
   } catch (error) {
     console.error('Error creating article:', error);

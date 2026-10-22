@@ -73,6 +73,7 @@ const Bookmarks = () => {
                   <img 
                     src={bookmark.imageUrl} 
                     alt={bookmark.title}
+                    loading="lazy"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = 'https://via.placeholder.com/300x200';

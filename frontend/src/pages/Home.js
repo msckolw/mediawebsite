@@ -40,14 +40,12 @@ const Home = () => {
       console.log('Connected to Socket');
     });
 
-    socket.on('newArticle', (newArticle) => {
-      console.log('Received article via Socket');
-      fetchArticles(1);
-      /*setArticles(newArticle.articles);
-      setPageSettings({ 
-        currentPage: newArticle.currentPage,
-        totalPages: newArticle.totalPages
-      });*/
+    socket.on('newArticle', (data) => {
+      console.log('Received new article via Socket:', data);
+      if (data.article) {
+        // Add the new article to the top of the list
+        setArticles(prev => [data.article, ...prev]);
+      }
     });
 
     socket.on('disconnect', () => {
@@ -164,6 +162,7 @@ const Home = () => {
                   <img 
                     src={article.imageUrl} 
                     alt={article.title}
+                    loading="lazy"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = 'https://via.placeholder.com/300x200';

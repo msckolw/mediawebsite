@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const cookie = require('cookie-parser');
+const compression = require('compression');
 
 // Version: 1.1.0 - Removed authentication for news sources
 const http = require('http'); // Required for socket.io with Express
@@ -18,6 +19,9 @@ const server = http.createServer(app);
 initSocket(server)
 
 // Middleware
+// Enable compression for all responses
+app.use(compression());
+
 const allowedOrigins = ['https://thenobiasmedia.com','https://www.thenobiasmedia.com','http://localhost:3000'];
 
 app.use(cors({

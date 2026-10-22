@@ -47,4 +47,8 @@ const newsSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Indexes for faster queries
+newsSchema.index({ createdAt: -1 }); // For sorting by newest first
+newsSchema.index({ category: 1, createdAt: -1 }); // For category filtering with sort
+
 module.exports = mongoose.model('News', newsSchema);
