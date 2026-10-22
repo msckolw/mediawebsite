@@ -176,7 +176,7 @@ const ArticleDetail = () => {
 
   return <article className="nb-reader" id="mainDiv">
     <Link className="nb-back-link" to={returnTo}>← Back to stories</Link>
-    <header className="nb-reader-heading"><div className="nb-reader-kicker"><Link to={`/category/${article.category}`}>{article.category}</Link><time dateTime={article.createdAt}>{storyDate(article.createdAt)}</time></div><h1>{article.title}</h1><p className="nb-reader-deck">{article.summary}</p><div className="nb-reader-toolbar"><span>THE NOBIAS MEDIA</span><div><button aria-pressed={isSaved} onClick={handleSave}>{isSaved ? 'Saved ✓' : 'Save story +'}</button><button onClick={handleShare}>Share ↗</button></div></div></header>
+    <header className="nb-reader-heading"><div className="nb-reader-kicker"><Link to={`/category/${article.category}`}>{article.category}</Link><time dateTime={article.createdAt}>{storyDate(article.createdAt)}</time></div><h1>{article.title}</h1><div className="nb-reader-toolbar"><span>THE NOBIAS MEDIA</span><div><button aria-pressed={isSaved} onClick={handleSave}>{isSaved ? 'Saved ✓' : 'Save story +'}</button><button onClick={handleShare}>Share ↗</button></div></div></header>
     <StoryImage article={article} priority />
     <div className="nb-reading-layout"><div className="nb-reader-body"><h2>Full Article</h2>{String(article.content || '').split(/\n\s*\n|\r?\n/).filter(Boolean).map((paragraph, i) => <p key={i}>{paragraph}</p>)}<div className="nb-reader-end"><Link to={`/source/${id}`} state={{ returnTo }}>News Sources ↗</Link></div></div></div>
   </article>;

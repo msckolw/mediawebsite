@@ -1,5 +1,5 @@
 /* Keep the original straightforward news grid, with consistent spacing and sizing. */
-.nb-feed{max-width:1200px;margin:auto;padding:0 32px 24px;color:var(--nb-ink)}
+.nb-feed{max-width:1440px;margin:auto;padding:0 32px 24px;color:var(--nb-ink)}
 .nb-simple-heading{padding:28px 0 24px}.nb-simple-heading h1{font:600 28px/1.3 Arial,Helvetica,sans-serif;letter-spacing:-.03em;margin:0}
 .nb-simple-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
 .nb-story{min-width:0;background:#ffffff80;border:1px solid #dfe2d9;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s ease,border-color .2s ease}
