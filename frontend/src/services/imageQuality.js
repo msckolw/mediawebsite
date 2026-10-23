@@ -4,7 +4,7 @@ export function checkImageDimensions(width, height) {
   if (width / height < 1.2 || width / height > 2.2) throw new Error('Use a landscape image with a width-to-height ratio between 1.2 and 2.2.');
 }
 
-export function inspectImage(value) {
+function loadImage(value) {
   if (!value) return Promise.reject(new Error('Add an image URL or upload an image.'));
   if (!/^data:image\/(jpeg|png|webp);base64,/.test(value)) {
     try { const url = new URL(value); if (url.protocol !== 'https:' || url.username || url.password) throw new Error(); }
@@ -22,4 +22,16 @@ export function inspectImage(value) {
     image.onerror = () => { cleanup(); reject(new Error('Image could not be loaded. Use a direct JPEG, PNG, or WebP URL.')); };
     image.src = value;
   });
+}
+
+const recentChecks = new Map();
+export function inspectImage(value) {
+  const previous = recentChecks.get(value);
+  if (previous && previous.expires > Date.now()) return previous.promise;
+  const promise = loadImage(value);
+  const entry = { promise, expires: Date.now() + 60000 };
+  recentChecks.set(value, entry);
+  while (recentChecks.size > 4) recentChecks.delete(recentChecks.keys().next().value);
+  promise.catch(() => { if (recentChecks.get(value) === entry) recentChecks.delete(value); });
+  return promise;
 }

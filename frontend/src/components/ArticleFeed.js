@@ -12,13 +12,13 @@ export function StoryImage({ article, priority = false }) {
   const [failed, setFailed] = React.useState(false);
   React.useEffect(() => setFailed(false), [article.imageUrl]);
   return <div className="nb-story-image">
-    {article.imageUrl && !failed ? <img src={article.imageUrl} alt="" loading={priority ? 'eager' : 'lazy'} onError={() => setFailed(true)} /> : <div className="nb-image-fallback"><img src="/NBM Transparent logo.png" alt="" /></div>}
+    {article.imageUrl && !failed ? <img src={article.imageUrl} alt="" loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} decoding="async" onError={() => setFailed(true)} /> : <div className="nb-image-fallback"><img src="/NBM Transparent logo.png" alt="" /></div>}
   </div>;
 }
 
-function Story({ article, returnTo, showSummary }) {
+function Story({ article, returnTo, showSummary, priority }) {
   return <article className="nb-story">
-    <Link className="nb-story-visual" to={`/article/${article._id}`} state={{ returnTo }} aria-label={`Read: ${article.title}`} tabIndex={-1}><StoryImage article={article} /></Link>
+    <Link className="nb-story-visual" to={`/article/${article._id}`} state={{ returnTo }} aria-label={`Read: ${article.title}`} tabIndex={-1}><StoryImage article={article} priority={priority} /></Link>
     <div className="nb-story-copy">
       <div className="nb-story-meta"><span>{article.category || 'News'}</span><time dateTime={article.createdAt}>{storyDate(article.createdAt)}</time></div>
       <h2><Link to={`/article/${article._id}`} state={{ returnTo }}>{article.title}</Link></h2>
@@ -36,7 +36,7 @@ export default function ArticleFeed({ category }) {
     <header className="nb-simple-heading"><h1>{title}</h1></header>
     {error && <div className="nb-feedback" role="alert"><p>{error}</p><button onClick={() => fetchArticles(1)}>Try again</button></div>}
     {loading ? <div className="nb-skeleton-grid" role="status" aria-label="Loading stories">{[0, 1, 2, 3].map(n => <div className="nb-skeleton" key={n}><div /><span /><span /><span /></div>)}</div> : articles.length ? <>
-      <div className="nb-simple-grid">{articles.map(article => <Story key={article._id} article={article} returnTo={pathname} showSummary={!category} />)}</div>
+      <div className="nb-simple-grid">{articles.map((article, index) => <Story key={article._id} article={article} returnTo={pathname} showSummary={!category} priority={index === 0} />)}</div>
       <div className="nb-pagination" aria-live="polite">{pageSettings.currentPage < pageSettings.totalPages ? <button disabled={busy} onClick={() => fetchArticles(pageSettings.currentPage + 1)}>{busy ? 'Loading…' : 'Load more'}</button> : null}</div>
     </> : !error && <div className="nb-feedback"><h2>No articles found.</h2><p>Check back soon or explore another category.</p>{category && <Link to="/">Back to all news →</Link>}</div>}
   </div>;

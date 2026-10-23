@@ -46,3 +46,15 @@ test('an older load-more response cannot overwrite a newer socket refresh', asyn
   await act(async () => { resolveOld(page(['stale'], 2)); await pending; });
   expect(result.current.articles.map(x => x._id)).toEqual(['new']);
 });
+
+test('first socket connection reuses the initial fetch; reconnect refreshes news', async () => {
+  getArticles.mockResolvedValue(page(['a']));
+  const { result } = renderHook(() => useArticleFeed());
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(async () => handlers.connect());
+  expect(getArticles).toHaveBeenCalledTimes(1);
+  getArticles.mockResolvedValueOnce(page(['updated']));
+  await act(async () => handlers.connect());
+  expect(getArticles).toHaveBeenCalledTimes(2);
+  expect(result.current.articles[0]._id).toBe('updated');
+});

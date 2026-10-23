@@ -1,30 +1,22 @@
 
 import { useSession } from '../context/SessionContext';
-import Swal from 'sweetalert2'
 import {useGoogleLogin} from '@react-oauth/google'
 import { loginOAuth } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-  export const useGoogleHook = (path,raw) => {
+const notify = options => import('sweetalert2').then(({ default: Swal }) => Swal.fire(options));
+
+
+  export const useGoogleHook = (path) => {
     let navigate = useNavigate();
     const { refreshSession } = useSession();
     return useGoogleLogin({
     onSuccess: async (tok) => {
       try {
-        let url = 'https://www.googleapis.com/oauth2/v3/userinfo';
-        //let url = 'https://www.googleapis.com/userinfo/v2/me';
-        let user = await fetch(url,{
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer '+tok.access_token
-          }
-        });
-        let data = await user.json();
-        //console.log('User ->',data);
-        data['access_token']=tok.access_token;
-        const response = await loginOAuth(data);
+        // The backend verifies the Google token and retrieves the profile once.
+        const response = await loginOAuth({ accessToken: tok.access_token });
         if (!await refreshSession()) throw new Error("Session cookie unavailable");
-        Swal.fire({
+        notify({
           toast: true,
           position: "top-end",
           icon: "success",
@@ -35,13 +27,10 @@ import { useNavigate } from 'react-router-dom';
         localStorage.setItem('token', response.token);
         localStorage.setItem('user_role', response.user.role);
         localStorage.setItem('user_name', response.user.name);
-        if(raw)
-            window.location.href=path;
-        else 
-            navigate(path);
+        navigate(path, { replace: true });
       }
       catch(error) {
-        Swal.fire({
+        notify({
           toast: true,
           position: "top-end",
           icon: "error",
@@ -52,7 +41,7 @@ import { useNavigate } from 'react-router-dom';
       }
     },
     onError: async (error) => {
-      Swal.fire({
+      notify({
         toast: true,
         position: "top-end",
         icon: "error",

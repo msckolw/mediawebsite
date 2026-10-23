@@ -31,7 +31,7 @@ export const getImageUrl = (imagePath) => {
 // Articles API
 export const getArticles = async (page=1) => {
   try {
-    const response = await api.get('/news?page='+page);
+    const response = await api.get(`/news?page=${page}&view=feed`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch articles');
@@ -40,7 +40,7 @@ export const getArticles = async (page=1) => {
 
 export const getArticle = async (id,source=false) => {
   try {
-    const response = await api.get(`/news/${id}?source=${source}`);
+    const response = await api.get(`/news/${id}?source=${source}&media=url`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch article');
@@ -68,7 +68,7 @@ export const getSourceType = async () => {
 
 export const getArticleByCategory = async (cat,page=1) => {
   try {
-    const response = await api.get(`/category/${cat}?page=${page}`);
+    const response = await api.get(`/category/${encodeURIComponent(cat)}?page=${page}&view=feed`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch article');
@@ -87,7 +87,7 @@ export const login = async (credentials) => {
 
 export const addArticle = async (data) => {
   try {
-    const response = await api.post('/news', data);
+    const response = await api.post('/news?media=url', data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to add article');

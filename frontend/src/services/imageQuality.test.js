@@ -24,3 +24,19 @@ test('uses decoded natural dimensions and reports loading errors', async () => {
     await expect(broken).rejects.toThrow(/could not be loaded/);
   } finally { window.Image = OriginalImage; }
 });
+
+test('preview and submit share the same image check', async () => {
+  const OriginalImage = window.Image;
+  let current;
+  const create = jest.fn();
+  window.Image = class { constructor() { create(); current = this; } };
+  try {
+    const preview = inspectImage('https://example.com/deduplicated.jpg');
+    const submit = inspectImage('https://example.com/deduplicated.jpg');
+    expect(preview).toBe(submit);
+    expect(create).toHaveBeenCalledTimes(1);
+    current.naturalWidth = 1600; current.naturalHeight = 900; current.onload();
+    await preview;
+    expect(inspectImage('https://example.com/deduplicated.jpg')).toBe(preview);
+  } finally { window.Image = OriginalImage; }
+});

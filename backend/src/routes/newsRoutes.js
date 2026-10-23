@@ -3,6 +3,7 @@ const router = express.Router();
 const News = require('../models/News');
 const SourceType = require('../models/SourceType');
 const { validateArticleImage } = require('../services/imagePolicy');
+const { imageVersion, decodeInlineImage, presentArticle } = require('../services/articleMedia');
 
 const { validateJWT } = require('../utils/validateToken');
 
@@ -19,7 +20,7 @@ router.get('/news', async (req, res) => {
 
     // These independent reads can run together without changing the response.
     const [articles, totalArticles] = await Promise.all([
-      News.find({}, { source: false })
+      News.find({}, req.query.view === 'feed' ? { source: false, content: false } : { source: false })
         .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
         .limit(limit)
@@ -31,7 +32,7 @@ router.get('/news', async (req, res) => {
     res.set('Cache-Control', 'no-cache');
 
     res.status(200).json({
-      articles,
+      articles: articles.map(article => presentArticle(article, req)),
       currentPage: page,
       totalPages: Math.ceil(totalArticles / limit)
     });
@@ -51,7 +52,7 @@ router.get('/category/:cat', async (req, res) => {
     if (!cat) return res.status(400).json({ message: 'Category is Mandatory!' });
     const filter = { category: new RegExp(`^${cat}$`, 'i') };
     const [articles, totalArticles] = await Promise.all([
-      News.find(filter, { source: false })
+      News.find(filter, req.query.view === 'feed' ? { source: false, content: false } : { source: false })
         .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
         .limit(limit)
@@ -63,7 +64,7 @@ router.get('/category/:cat', async (req, res) => {
     res.set('Cache-Control', 'no-cache');
 
     res.status(200).json({
-      articles,
+      articles: articles.map(article => presentArticle(article, req)),
       currentPage: page,
       totalPages: Math.ceil(totalArticles / limit)
     });
@@ -87,10 +88,28 @@ router.get('/news/:id', async (req, res) => {
     }
 
     res.set('Cache-Control', 'no-cache');
-    res.status(200).json(article);
+    res.status(200).json(presentArticle(article, req));
   } catch (error) {
     console.error('Error fetching article:', error);
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Embedded uploads can be downloaded/cached independently of article JSON.
+router.get('/news/:id/image', async (req, res) => {
+  if (!/^[a-fA-F0-9]{24}$/.test(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid article ID' });
+  }
+  try {
+    const article = await News.findOne({ _id: req.params.id }, { imageUrl: 1, updatedAt: 1, createdAt: 1 }).lean();
+    const image = article && decodeInlineImage(article.imageUrl);
+    if (!image) return res.status(404).json({ message: 'Image not found' });
+    res.set('Cache-Control', req.query.v === imageVersion(article) ? 'public, max-age=86400' : 'no-cache');
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.type(image.type).send(image.bytes);
+  } catch (error) {
+    console.error('Error fetching article image:', error.message);
+    res.status(500).json({ message: 'Could not load image' });
   }
 });
 
@@ -133,9 +152,9 @@ router.post('/news', async (req, res) => {
 
     //console.log('Creating article:', article);
     const newArticle = await article.save();
-    console.log('Article created successfully:', newArticle);
+    console.log('Article created:', String(newArticle._id));
 
-    res.status(201).json(newArticle);
+    res.status(201).json(presentArticle(newArticle, req));
     
     // Emit only the new article data to connected clients for real-time updates
     let io = getIo();
@@ -145,7 +164,7 @@ router.post('/news', async (req, res) => {
         _id: newArticle._id,
         title: newArticle.title,
         summary: newArticle.summary,
-        imageUrl: newArticle.imageUrl,
+        imageUrl: presentArticle(newArticle, req).imageUrl,
         category: newArticle.category,
         createdAt: newArticle.createdAt
       }
@@ -211,14 +230,14 @@ router.put('/news', async (req, res) => {
       { new: true }
     );
 
-    console.log('Updated article:', updatedArticle);
+    if (updatedArticle) console.log('Article updated:', String(updatedArticle._id));
 
     if (!updatedArticle) {
       return res.status(400).json({ message: 'Article not found' });
     }
 
     getIo().emit('article:updated', { id: String(updatedArticle._id) });
-    res.status(200).json(updatedArticle);
+    res.status(200).json(presentArticle(updatedArticle, req));
 
   } catch (error) {
     console.error('Error updating article:', error);

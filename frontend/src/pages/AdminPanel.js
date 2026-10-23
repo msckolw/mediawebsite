@@ -2,7 +2,8 @@ import { useSession } from '../context/SessionContext';
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/AdminPanel.css';
 import { useNavigate } from 'react-router-dom';
-import { inspectImage, checkImageDimensions } from '../services/imageQuality';
+import { inspectImage } from '../services/imageQuality';
+import { prepareImageUpload } from '../services/imageUpload';
 import SourceModal from './SourceModal'; // Import the new component
 import Swal from 'sweetalert2'
 import { addArticle, deleteArticle, getArticles, getSourceType } from '../services/api';
@@ -18,6 +19,8 @@ const categories = [
 const AdminPanel = () => {
   let nav = useNavigate();
   const [posting, setPosting] = useState(false);
+  const [processingImage, setProcessingImage] = useState(false);
+  const imageSelection = useRef(0);
   const [imageCheck, setImageCheck] = useState({ status: 'empty', message: '' });
   let imgAsBase = useRef(false);
   const [articles, setArticles] = useState([]);
@@ -41,6 +44,8 @@ const AdminPanel = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   function removeImage() {
+    ++imageSelection.current;
+    setProcessingImage(false);
     setFormData(prevState => ({
       ...prevState,
       imageUrl: ''
@@ -125,42 +130,23 @@ const AdminPanel = () => {
     return () => { active = false; clearTimeout(timer); };
   }, [formData.imageUrl]);
 
-  const compressImage = file => new Promise((resolve, reject) => {
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024) {
-      reject(new Error('Upload a JPEG, PNG, or WebP image no larger than 10 MB.')); return;
-    }
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Could not read the image file.'));
-    reader.onload = event => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('Could not decode the image file.'));
-      img.onload = () => {
-        try {
-          checkImageDimensions(img.naturalWidth, img.naturalHeight);
-          const scale = Math.min(1, 1920 / img.naturalWidth);
-          const canvas = document.createElement('canvas');
-          canvas.width = Math.round(img.naturalWidth * scale);
-          canvas.height = Math.round(img.naturalHeight * scale);
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.88));
-        } catch (error) { reject(error); }
-      };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-
   const handleImageChange = async e => {
-    const file = e.target.files[0];
+    const input = e.target;
+    const file = input.files[0];
     if (!file) return;
+    const request = ++imageSelection.current;
+    setProcessingImage(true);
     try {
-      const compressedImage = await compressImage(file);
+      const compressedImage = await prepareImageUpload(file);
+      if (request !== imageSelection.current) return;
       setFormData(previous => ({ ...previous, imageUrl: compressedImage }));
       imgAsBase.current = true;
       setError(null);
-    } catch (error) { setError(error.message); e.target.value = ''; }
+    } catch (error) {
+      if (request === imageSelection.current) { setError(error.message); input.value = ''; }
+    } finally {
+      if (request === imageSelection.current) setProcessingImage(false);
+    }
   };
 
   // Modal Functions
@@ -184,7 +170,7 @@ const AdminPanel = () => {
     e.preventDefault();
     setError(null);
 
-    if (posting) return;
+    if (posting || processingImage) return;
     setPosting(true);
 
     try {
@@ -238,8 +224,9 @@ const AdminPanel = () => {
           timer: 4000,
         });
 
-        // Refresh articles list
-        await fetchArticles();
+        // Show the saved article immediately, then reconcile pagination in the background.
+        setArticles(previous => [response, ...previous.filter(article => article._id !== response._id)]);
+        fetchArticles();
 
         // Show success message
         //alert('Article added successfully!');
@@ -426,8 +413,8 @@ const AdminPanel = () => {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="submit-btn" disabled={posting || imageCheck.status !== 'valid'}
-              >{posting ? 'Checking and publishing…' : 'Add Article'}</button>
+              <button type="submit" className="submit-btn" disabled={posting || processingImage || imageCheck.status !== 'valid'}
+              >{posting ? 'Checking and publishing…' : processingImage ? 'Preparing image…' : 'Add Article'}</button>
             </div>
           </form>
 

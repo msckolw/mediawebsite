@@ -199,3 +199,22 @@ Backend details and credentials belong in guide 1; testing, support and release
 checks belong in [guide 3](03-OPERATIONS-AND-RELEASE.md). Unsupported callbacks such
 as get_sdk_configuration, get_all_offer_details and quickPayEvent are not made
 supported merely because an archived guide said they worked.
+
+## Smaller reader responses
+
+After deploying the backend optimization, opt into compact feeds with
+`GET /api/news?page=1&view=feed` or
+`GET /api/category/:cat?page=1&view=feed`. These preserve article IDs, titles,
+complete summaries, categories, timestamps and pagination, and omit full bodies
+and sources. Fetch full bodies only on the detail screen:
+`GET /api/news/:id?media=url`. Add `source=true` to include source data.
+The default endpoints retain their previous body and inline-image format for
+older clients. No mobile source changes were included in this optimization.
+
+In compact feeds or with `media=url`, embedded uploads become absolute HTTPS
+image URLs. The image endpoint is public, sends the original image bytes with
+an ETag, and caches matching version URLs for one day. An article edit changes
+its image URL version. External image-host URLs pass through unchanged. Keep
+`PUBLIC_API_URL` set to the canonical backend origin without `/api`; a proxy
+must preserve the host if that setting is absent. Deploy the backend before
+releasing clients that request image URLs.

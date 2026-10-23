@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { useSession } from '../context/SessionContext';
 import { useGoogleHook } from '../hooks/gHook';
 import './Header.css';
@@ -31,7 +30,7 @@ export default function Header() {
   }, [open]);
   const signOut = async () => {
     try { await logout(); close(); navigate('/'); }
-    catch { Swal.fire({ icon: 'error', title: 'Could not sign out', text: 'Please check your connection and try again.' }); }
+    catch { const { default: Swal } = await import('sweetalert2'); Swal.fire({ icon: 'error', title: 'Could not sign out', text: 'Please check your connection and try again.' }); }
   };
   return <header className="nb-header">
     <a className="nb-skip" href="#main-content">Skip to content</a>

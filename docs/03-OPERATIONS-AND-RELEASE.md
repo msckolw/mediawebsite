@@ -199,3 +199,38 @@ production build. CI runs these regression suites automatically.
 New articles require an image; new and replacement images are checked on the server using their actual bytes. Supported formats: JPEG, PNG, WebP, up to 10 MB, at least 1200 × 675 pixels, at most 24 megapixels, with a landscape aspect ratio from 1.2 to 2.2. Remote URLs must use HTTPS and resolve to public addresses; redirects are checked individually and connections use the validated address. Existing images are not retroactively rejected when editing article text. Clients creating articles must provide a qualifying image. These are resolution/format checks, not blur, watermark, authenticity, or copyright checks. No license verification or permission record is required.
 
 The admin form previews URL images and shows their decoded dimensions. Uploads preserve up to 1920 pixels of width rather than reducing every image to 800 pixels. Homepage summaries display their complete text without a line limit.
+
+## Reader and publishing performance (23 October 2026)
+
+The website uses compact feed requests and independently cached embedded images.
+The initial socket connection reuses the first HTTP feed load; subsequent
+reconnects and article mutations still refresh page one. The first story image
+loads eagerly with high priority; later images load lazily and decode asynchronously.
+The optional alert library loads when needed, and sign-in uses the backend's
+Google profile verification without a duplicate browser profile request or reload.
+
+Uploads are resized to at most 1600 pixels wide and encoded asynchronously as
+WebP at quality 0.82, with JPEG fallback. Original minimum dimensions and server
+byte validation remain enforced. Preview and publish reuse recent client image
+checks. Successful publishing immediately adds the saved article to the admin
+list while authoritative pagination refreshes in the background.
+
+On one saved public sample of eight articles, compact JSON was 10,060 bytes
+versus 55,594 bytes (82% smaller); image bytes are downloaded separately when
+needed. Compressed startup JavaScript was 88,195 bytes versus 108,378 bytes
+(19% smaller). These are local payload/build comparisons, not production load-time
+measurements. No live article was published for these checks.
+
+The service worker now caches only public static assets. API, session and payment
+requests stay on the network; a static cache must never confirm a payment.
+The news schema declares compound indexes including the deterministic `_id` sort
+key. Verify those indexes exist in the target database after release; no live
+index migration was run here. Category matching remains case-insensitive for
+compatibility with existing records.
+
+Release backend and frontend together (backend first). Check embedded and remote
+images, direct article/source links, publishing with a real admin in a test
+environment, create/update/delete feed refreshes, and browser/network waterfall
+on a throttled mobile connection. Cloud Run can still have cold starts. Inspect
+startup traces and database region before changing minimum instances; that
+hosting configuration and any resulting cost were not changed here.

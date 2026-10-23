@@ -23,6 +23,7 @@ function harness() {
     require(name) {
       if (name === 'express') return { Router: () => router };
       if (name === '../models/News') return News;
+      if (name === '../services/articleMedia') return require('../src/services/articleMedia');
       if (name === '../services/imagePolicy') return { validateArticleImage: async image => { if (image === 'invalid') throw new Error('Image is too small'); return { imageMetadata: { width: 1200, height: 675 } }; } };
       if (name === '../models/SourceType') return {};
       if (name === '../utils/validateToken') return { validateJWT: token => token === 'admin' ? { code: 1, role: 'admin' } : { code: 401 } };

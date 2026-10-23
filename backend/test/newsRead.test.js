@@ -54,6 +54,7 @@ function harness({ missing = false } = {}) {
     require(name) {
       if (name === 'express') return { Router: () => router };
       if (name === '../models/News') return News;
+      if (name === '../services/articleMedia') return require('../src/services/articleMedia');
       if (name === '../models/SourceType') return {};
       if (name === '../services/imagePolicy') return {};
       if (name === '../utils/validateToken') return { validateJWT() { throw Error('Public reads must not authenticate'); } };
@@ -116,5 +117,17 @@ for (const route of ['get /news', 'get /category/:cat']) {
       assert.ok(h.calls[0].filter.category.test('politics'));
       assert.equal(String(h.calls[0].filter.category), String(h.calls[1].filter.category));
     }
+  });
+}
+
+for (const route of ['get /news', 'get /category/:cat']) {
+  test(`${route} compact feed omits full bodies while legacy reads retain them`, async () => {
+    const h = harness();
+    const res = response();
+    await h.handlers.get(route)({ query: { view: 'feed' }, params: { cat: 'Politics' } }, res);
+    assert.equal(res.code, 200);
+    assert.equal(res.body.articles[0].title, article.title);
+    assert.equal(res.body.articles[0].summary, article.summary);
+    assert.equal(Object.hasOwn(res.body.articles[0], 'content'), false);
   });
 }

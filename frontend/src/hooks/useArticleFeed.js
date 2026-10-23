@@ -45,7 +45,12 @@ export const useArticleFeed = category => {
     // Refetch page one after a mutation/reconnect: offset pages may have shifted.
     // Request generations discard any older page response already in flight.
     const refresh = () => fetchArticles(1);
-    ['article:created', 'article:updated', 'article:deleted', 'connect'].forEach(event => socket.on(event, refresh));
+    let connectedBefore = false;
+    socket.on('connect', () => {
+      if (connectedBefore) refresh();
+      connectedBefore = true;
+    });
+    ['article:created', 'article:updated', 'article:deleted'].forEach(event => socket.on(event, refresh));
     return () => {
       invalidateRequests();
       fetching.current = false;

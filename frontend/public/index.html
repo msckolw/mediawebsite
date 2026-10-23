@@ -11,11 +11,12 @@
       content="The NoBias Media - Delivering unbiased news and analysis from around the world"
     />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <!-- Establish the API connection before JavaScript requests the feed. -->
+    <link rel="preconnect" href="https://thenbm-329287861933.asia-south1.run.app" crossorigin />
+    <!-- Legacy-page icons should not block the first news paint. -->
     <link
       rel="stylesheet"
+      media="print" onload="this.media='all'"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <title>The NoBias Media</title>
