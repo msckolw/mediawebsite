@@ -17,14 +17,15 @@ router.get('/news', async (req, res) => {
     const limit = 10; 
     const skip = (page - 1) * limit; 
 
-    const articles = await News
-      .find({}, {source: false})
-      .sort({ createdAt: -1, _id: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean(); // Use lean() for faster queries - returns plain JS objects
-
-    const totalArticles = await News.countDocuments(); 
+    // These independent reads can run together without changing the response.
+    const [articles, totalArticles] = await Promise.all([
+      News.find({}, { source: false })
+        .sort({ createdAt: -1, _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      News.countDocuments()
+    ]);
 
     // Revalidate so socket-triggered refreshes cannot reuse a stale list.
     res.set('Cache-Control', 'no-cache');
@@ -48,17 +49,15 @@ router.get('/category/:cat', async (req, res) => {
 
     let cat = req.params.cat;
     if (!cat) return res.status(400).json({ message: 'Category is Mandatory!' });
-    const articles = await News
-    .find({
-      category: new RegExp(`^${cat}$`, 'i')}, {source: false})
-    .sort({ createdAt: -1, _id: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean(); // Use lean() for faster queries
-
-    const totalArticles = await News.countDocuments({
-      category: new RegExp(`^${cat}$`, 'i')
-    });
+    const filter = { category: new RegExp(`^${cat}$`, 'i') };
+    const [articles, totalArticles] = await Promise.all([
+      News.find(filter, { source: false })
+        .sort({ createdAt: -1, _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      News.countDocuments(filter)
+    ]);
 
     // Revalidate after live article changes.
     res.set('Cache-Control', 'no-cache');
@@ -76,18 +75,19 @@ router.get('/category/:cat', async (req, res) => {
 // Get a single article - PUBLIC ENDPOINT (no auth required)
 router.get('/news/:id', async (req, res) => {
   try {
-    let source_page = req.query.source=='true' ? true : false;
-
-    // Always allow access to articles with sources - no authentication required
-    const article = await News.find({_id: req.params.id}, {source: source_page}).lean();
-    if (!article || article.length === 0) {
+    if (!/^[a-fA-F0-9]{24}$/.test(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid article ID' });
+    }
+    // An inclusion projection { source: true } drops title and content. Both
+    // reader clients need the article object; sources are an optional addition.
+    const projection = req.query.source === 'true' ? {} : { source: false };
+    const article = await News.findOne({ _id: req.params.id }, projection).lean();
+    if (!article) {
       return res.status(404).json({ message: 'Article not found' });
     }
-    
-    // Revalidate article details after edits.
+
     res.set('Cache-Control', 'no-cache');
-    
-    res.status(200).json(article[0]);
+    res.status(200).json(article);
   } catch (error) {
     console.error('Error fetching article:', error);
     res.status(500).json({ message: error.message });

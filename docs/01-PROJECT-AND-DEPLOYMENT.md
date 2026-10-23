@@ -16,13 +16,13 @@ and release checks. Archived documents are historical, not deployment instructio
 | `vercel.json` | Frontend build and single-page-app routing |
 | `.github/workflows/deploy-backend.yml` | Validation workflow, despite its filename |
 
-The documented production setup is Vercel for the website and Google Cloud Run
-for the API. Deployment dashboards and current runtime variables were not inspected
-in this consolidation. Do not assume old Render/EC2 URLs are current.
+Production hosting is Vercel for the website and Google Cloud Run for the API.
+Deployment dashboards and private runtime variables were not inspected in this check.
 
 Website: `https://thenobiasmedia.com`.
-Previously documented API origin: `https://thenbm-329287861933.asia-south1.run.app`.
-Verify the actual deployed origin before configuring clients or payment callbacks.
+API origin: `https://thenbm-329287861933.asia-south1.run.app`.
+Public health, feed, article and source requests to this origin returned 200 on
+23 October 2026. Recheck it before configuring a different environment.
 An API client base URL includes `/api`; PUBLIC_API_URL does not.
 
 ## Local setup

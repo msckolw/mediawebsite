@@ -16,5 +16,4 @@ mobile-app
 .vscode
 *.md
 *.sh
-render.yaml
 vercel.json

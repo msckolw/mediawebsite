@@ -38,6 +38,21 @@ Public news APIs need no authentication:
 Check non-2xx responses. Do not substitute mock news for production failures.
 The admin write endpoints are not part of the mobile reader integration.
 
+Reader details contract: both `/api/news/:id` and `/api/news/:id?source=true`
+return a single article object, including `_id`, `title`, `summary`, and `content`.
+The latter also includes `source` as an array; an article without sources has an
+empty array. These endpoints are public and require no login. Use the article's
+`_id` from the feed when navigating; do not pass a page number or an undefined ID.
+Malformed IDs return 400 and unknown article IDs return 404.
+
+The deployed API base checked on 23 October 2026 is
+`https://thenbm-329287861933.asia-south1.run.app/api`. All mobile requests must
+use the same base, including details and sources. The current mobile source was
+not available for this backend change, so its button handlers, navigation and
+on-device latency remain unverified. Deploy the backend change before relying
+on the expanded sources response.
+
+
 ## Donation request and responses
 
 POST `/api/donations` with JSON:

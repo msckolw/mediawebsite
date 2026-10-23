@@ -37,11 +37,10 @@ origins and localhost; new origins require an intentional server configuration
 change. For Google origin_mismatch, compare the deployed OAuth client ID and exact
 browser origin with Google Console, then rebuild if the client ID changes.
 
-Old Render cold-start reports are historical. If the current service is Render,
-inspect its actual tier/idle behavior; for Cloud Run, inspect instance settings
-and latency. Do not treat old percentages, timeout measurements or keep-alive
-claims as current observations. Avoid automatically retrying a payment because
-hosting is slow.
+The API runs on Google Cloud Run. For slow first requests, inspect startup latency,
+instance settings, MongoDB connection time and database region. A minimum instance
+can reduce cold starts but adds hosting cost; measure the released service before
+changing it. Do not automatically retry a payment because hosting is slow.
 
 The website registers `/service-worker.js`, currently using cache version v4.
 For stale pages, inspect registration and Cache Storage, test a hard refresh,

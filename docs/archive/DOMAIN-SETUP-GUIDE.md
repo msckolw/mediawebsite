@@ -145,7 +145,7 @@ Make sure this CNAME record exists:
 ```
 Type: CNAME
 Name: api
-Value: <your-backend-service-url> (from Render or EC2)
+Value: https://thenbm-329287861933.asia-south1.run.app/api (Google Cloud Run)
 ```
 
 ---
