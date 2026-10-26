@@ -1,4 +1,8 @@
-# 2. Mobile API and payment integration
+# 2. Client APIs and payments
+
+Reviewed October 23, 2026. This is the shared website/mobile client contract.
+Reader and performance changes described here require the local backend changes
+to be deployed. The current mobile source was not available or tested.
 
 Use the backend donation status as the source of truth. The SDK success, failure,
 cancellation, or 5019 error callback is a signal to check status, not permission
@@ -8,9 +12,8 @@ and has not been tested here.
 ## Connection and sign-in
 
 Use the verified API origin from [guide 1](01-PROJECT-AND-DEPLOYMENT.md), with
-`/api` included once in apiBase. The documented Cloud Run URL must be verified
-against the actual release environment. Anurag's app is not the Expo sample in
-this repository; validate against his installed SDK and network client.
+`/api` included once in apiBase. Confirm the API base for the release environment. The current React Native app
+is maintained separately; validate its installed SDK and network client.
 
 POST `/api/auth/googleSignIn` with a Google OAuth **access token**, not an ID token:
 
@@ -23,7 +26,10 @@ requires a verified email and returns success/user metadata. Authentication uses
 an HTTP-only `access_token` cookie; the JSON token value `"Active"` is not a JWT
 and must not be used as a Bearer token. The mobile HTTP client must preserve the
 cookie if it needs authenticated endpoints. Token verification is
-POST `/api/auth/verifyAccessToken` with that cookie.
+POST `/api/auth/verifyAccessToken` with that cookie. Current website clients use
+GET `/api/auth/session`, returning `{ user: { email, role, name } }` or 401, and
+POST `/api/auth/logout`, returning 204 and expiring the cookie. Logout does not
+revoke other copies of an already-issued JWT.
 
 Public news APIs need no authentication:
 
@@ -53,6 +59,25 @@ on-device latency remain unverified. Deploy the backend change before relying
 on the expanded sources response.
 
 
+## Smaller reader responses
+
+After deploying the backend optimization, opt into compact feeds with
+`GET /api/news?page=1&view=feed` or
+`GET /api/category/:cat?page=1&view=feed`. These preserve article IDs, titles,
+complete summaries, categories, timestamps and pagination, and omit full bodies
+and sources. Fetch full bodies only on the detail screen:
+`GET /api/news/:id?media=url`. Add `source=true` to include source data.
+The default endpoints retain their previous body and inline-image format for
+older clients. No mobile source changes were included in this optimization.
+
+In compact feeds or with `media=url`, embedded uploads become absolute HTTPS
+image URLs. The image endpoint is public, sends the original image bytes with
+an ETag, and caches matching version URLs for one day. An article edit changes
+its image URL version. External image-host URLs pass through unchanged. Keep
+`PUBLIC_API_URL` set to the canonical backend origin without `/api`; a proxy
+must preserve the host if that setting is absent. Deploy the backend before
+releasing clients that request image URLs.
+
 ## Donation request and responses
 
 POST `/api/donations` with JSON:
@@ -79,7 +104,8 @@ A new successful checkout returns the same metadata plus checkout. Native
 checkout is `type: "payu_form"` with url and fields. Status reads omit checkout.
 Repeat or settled checkout returns 409 with checkout null, code, message and
 nextAction check_status. No client should infer success from an SDK callback,
-a redirect query parameter, or the presence of old checkout fields.
+a redirect query parameter, or the presence of old checkout fields. See [performance](04-PERFORMANCE.md) for
+reader caching; payment and session traffic stays on the network.
 
 ## Keep one donation ID and idempotency key for the unresolved donation
 
@@ -159,13 +185,14 @@ installed SDK's hash completion method. Do not send error bodies to the SDK.
 its checkout amount, product, name, email, and empty UDFs. Settled sessions return
 409 and must go to status. Auxiliary hashes require the exact configured merchant
 key and command matching the callback name in `key|command|var1|` format. Supported
-names: getBinInfo, validateVPA, get_checkout_details, get_eligible_payment_options,
-eligibleBinsForEMI, payment_source. Unknown formats and V2 return 400; collect a
+names: `getBinInfo`, `validateVPA`, `get_checkout_details`, and
+`get_eligible_payment_options`. `eligibleBinsForEMI` and `payment_source` are not
+in the current allowlist. Unknown formats and V2 return 400; collect a
 redacted callback example for validation rather than relaxing signing restrictions.
 
 ## Backend validation and release
 
-Run `npm test` from backend. Tests use fake credentials and mocked providers;
+Run `rtk npm test --prefix backend` from the repository root. Tests use fake credentials and mocked providers;
 no live payment is made. Deploy the backend changes before using this contract.
 Then test one real app payment with the actual installed SDK, confirm status,
 and confirm duplicate callbacks do not reopen checkout. Error 5019 alone does
@@ -199,22 +226,3 @@ Backend details and credentials belong in guide 1; testing, support and release
 checks belong in [guide 3](03-OPERATIONS-AND-RELEASE.md). Unsupported callbacks such
 as get_sdk_configuration, get_all_offer_details and quickPayEvent are not made
 supported merely because an archived guide said they worked.
-
-## Smaller reader responses
-
-After deploying the backend optimization, opt into compact feeds with
-`GET /api/news?page=1&view=feed` or
-`GET /api/category/:cat?page=1&view=feed`. These preserve article IDs, titles,
-complete summaries, categories, timestamps and pagination, and omit full bodies
-and sources. Fetch full bodies only on the detail screen:
-`GET /api/news/:id?media=url`. Add `source=true` to include source data.
-The default endpoints retain their previous body and inline-image format for
-older clients. No mobile source changes were included in this optimization.
-
-In compact feeds or with `media=url`, embedded uploads become absolute HTTPS
-image URLs. The image endpoint is public, sends the original image bytes with
-an ETag, and caches matching version URLs for one day. An article edit changes
-its image URL version. External image-host URLs pass through unchanged. Keep
-`PUBLIC_API_URL` set to the canonical backend origin without `/api`; a proxy
-must preserve the host if that setting is absent. Deploy the backend before
-releasing clients that request image URLs.

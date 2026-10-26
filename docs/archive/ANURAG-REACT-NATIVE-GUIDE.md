@@ -1,4 +1,4 @@
-> Historical document. Superseded by the [three active guides](../01-PROJECT-AND-DEPLOYMENT.md).
+> Historical document. Superseded by the [current guides](../../README.md).
 > Hosting, completion claims and API examples below may be outdated.
 
 # React Native donation payment flow

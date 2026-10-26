@@ -1,236 +1,166 @@
-# 3. Operations, troubleshooting and release
+# 3. Operations and release
 
-Updated 8 October 2026. Use [guide 1](01-PROJECT-AND-DEPLOYMENT.md) for setup and
-[guide 2](02-MOBILE-AND-PAYMENTS.md) for the client contract. This guide replaces
-historical checklists and compliance summaries; it does not certify provider or
-app-store approval.
+Reviewed October 23, 2026. Use [setup](01-PROJECT-AND-DEPLOYMENT.md) for environments,
+[client APIs](02-MOBILE-AND-PAYMENTS.md) for integration, and
+[performance](04-PERFORMANCE.md) for caching and publishing behavior.
 
-## Payment diagnosis
+## Verification status
 
-Record donation ID, txnid, gateway, environment, callback timestamp, endpoint and
-HTTP status. Compare backend logs with the provider's transaction dashboard and
-redacted app network logs. Do not record merchant salt, tokens, full payment
-credentials or unnecessary personal data in support logs.
-
-| Symptom | Check and response |
+| Evidence | Result and limits |
 |---|---|
-| Error 5019 after a successful payment | Check server status. If successful, display success and do not reopen the SDK. Compare repeated txnids and checkout calls; the error alone does not prove the app's request sequence. |
-| Checkout 409 | Read code and nextAction. Already-paid or unresolved payments deliberately return no checkout fields. |
-| Cancel returns 202 | Provider outcome is pending/unavailable. Do not generate a new key or launch another charge. |
-| Pending after a timeout | Poll status, check provider/callback logs, then use support reconciliation. An absent provider record is not proof of failure. |
-| Payment succeeded but local record says failed | Status checks reconcile legacy failed records with PayU. Check provider credentials/mode and the returned amount/amt. |
-| Hash request returns 400 | Confirm exact callback name, supported format, merchant key and unchanged checkout fields. Unknown callbacks need validation, not arbitrary signing. |
-| Hash request returns 409 | Session is settled; go to status. |
-| No mobile SDK fields | Confirm platform app and PayU enabled. Web DBQR must not substitute a QR payload for mobile fields. |
-| Invalid response hash | Check matching key/salt/mode, unchanged callback payload and provider format. Never bypass hash validation to mark success. |
+| Latest backend suite | 49 tests passed; local servers, in-memory models, and mocked providers |
+| Latest frontend suite | 27 tests passed; no physical-device coverage |
+| Frontend production build | Passed locally; not proof of a successful hosted release |
+| Public API reads on October 23 | Health, feed, detail, and sources returned 200 before deployment of the local changes |
+| Release state | Local changes prepared; no deployment, live payment, or production index migration performed |
+| Mobile app | Current source unavailable; current app navigation and startup unverified |
 
-A provider-verified failure allows checkout to issue a fresh txnid for the same
-donation. A new idempotency key is for a genuinely new donation after the old one
-is resolved. Browser/SDK errors do not establish that a charge failed.
+## Release checklist
 
-## Website and hosting diagnosis
+1. Review the diff and confirm the intended API origin and payment environment.
+   Run from the repository root:
 
-For empty news or API errors, inspect the browser's actual request URL. Check
-REACT_APP_API_URL ends in /api and was included in the deployed frontend build.
-Check `/api/health` and MongoDB connectivity. CORS allows the configured website
-origins and localhost; new origins require an intentional server configuration
-change. For Google origin_mismatch, compare the deployed OAuth client ID and exact
-browser origin with Google Console, then rebuild if the client ID changes.
+   ```sh
+   rtk npm test --prefix backend
+   rtk npm test --prefix frontend -- --watchAll=false --runInBand
+   rtk npm run build --prefix frontend
+   ```
 
-The API runs on Google Cloud Run. For slow first requests, inspect startup latency,
-instance settings, MongoDB connection time and database region. A minimum instance
-can reduce cold starts but adds hosting cost; measure the released service before
-changing it. Do not automatically retry a payment because hosting is slow.
+2. Run checks with Node 24.x, matching the package engines, `.node-version`,
+   GitHub Actions, Docker, and Vercel configuration documented in guide 1.
+   The GitHub validation workflow runs both regression suites and builds
+   Docker/frontend; it does not deploy. Do not assume a passing workflow changes
+   the hosted service.
+3. Release the backend first, with the correct runtime secrets and canonical
+   `PUBLIC_API_URL`. Verify its revision and `/api/health`. Verify compound news
+   indexes exist; schema declarations alone do not prove deployment or index creation.
+4. Release the frontend with the intended `REACT_APP_API_URL` and OAuth client ID.
+   Test home/category feeds, full summaries, Read More, Sources, source links,
+   direct legal-page URLs, sign-in, logout, bookmarks, and consent settings.
+5. Test publishing in a test environment: upload and URL images, invalid images,
+   create/edit/delete, immediate admin feedback, and live reader refreshes.
+   Confirm compact-feed images and full articles after page reload/reconnect.
+6. Inspect the service worker and a clean browser session. Check API/session/payment
+   requests use the network. Compare loading on a throttled mobile connection;
+   local payload reductions are not a production speed measurement.
+7. In provider sandboxes, check success, decline, cancellation, timeout, delayed
+   callbacks, and duplicate callbacks for each enabled gateway. Native PayU must
+   still receive SDK form fields when web QR is enabled.
+8. Test double-taps, reopened screens, lost checkout responses, and retries after
+   success. Never reopen old transaction fields or replace an unresolved donation
+   with a new idempotency key. Verify amounts and that confirmed success survives
+   a concurrent failure/cancel signal.
+9. Verify provider callbacks and the separately maintained app against the released
+   backend. Any controlled live transaction needs its actual provider outcome
+   checked; retain redacted evidence rather than inferring settlement from a screen.
 
-The website registers `/service-worker.js`, currently using cache version v4.
-For stale pages, inspect registration and Cache Storage, test a hard refresh,
-and compare against a clean browser session. Navigation uses network-first with
-an offline shell fallback; this is not a guarantee that all articles work offline.
-Do not allow payment/status responses to be served as cached confirmation.
+## Website and hosting troubleshooting
 
-CookieConsent stores cookieConsent and cookieConsentDate in local storage.
-The current component automatically accepts after one second; it is not a
-verified opt-in tracking gate. Earlier claims of GDPR/CCPA compliance or guaranteed
-performance gains are not supported by this implementation.
-
-## Release checks
-
-1. Backend: run `rtk npm test` in backend. The latest payment changes passed 27
-   tests using local test servers, fake credentials and in-memory/provider mocks.
-   No live MongoDB settlement or actual React Native SDK was exercised.
-2. Frontend: run tests with watch disabled and run its production build. Confirm
-   normal news routes, direct legal-page links, donation page and status page.
-3. Sandbox payments: test success, decline, user cancel, provider timeout,
-   callback delay and duplicate callbacks. Check PayU SDK fields when web QR is
-   enabled. Check PhonePe web checkout separately if enabled.
-4. Retry tests: double-tap checkout, refresh/reopen, lose the checkout HTTP
-   response, and retry after success. Confirm no old txnid is reopened and no
-   unresolved donation is replaced by a fresh idempotency key.
-5. Settlement: confirm provider amount equals the stored donation amount, success
-   survives concurrent failure/cancel, and pending does not display success.
-6. Deployment: inspect released revision and runtime settings, verify health and
-   callback delivery, then conduct a controlled live transaction using the actual
-   merchant account and separately maintained app. Retain redacted evidence.
-
-There is no automated refund API in the current backend. Reconcile the transaction
-and process approved refunds through the provider's dashboard; confirm the provider
-reference and communicate the actual processing status. Cancelling an SDK screen
-is not a refund. Do not promise the historical 5–7-day timeline: the current refund
-web page states two days and includes physical-goods language. The owner must
-resolve this policy mismatch for a donations-only news product.
-
-## Public pages and business details
-
-| Page | Production path |
+| Symptom | Check |
 |---|---|
-| Privacy policy | /privacy-policy |
-| Terms | /terms-conditions |
-| Refund policy | /refund-policy |
-| Account deletion | /delete-account |
-| Copyright claims | /copyright-claims |
-| Support/contact | /contact |
-| About | /about |
+| Empty news or API error | Actual browser request URL, `/api` suffix, response status, health, and MongoDB connectivity |
+| Slow initial request | Cloud Run startup traces, MongoDB connection time/region, payload size, and external image hosts |
+| Reader image fails | Release the image endpoint before its clients; verify `PUBLIC_API_URL`, image request status, and remote-host accessibility |
+| Old page after release | Released asset hashes, service-worker registration/cache, hard refresh, and a clean session |
+| Google `origin_mismatch` | Exact browser origin and OAuth client ID in the deployed frontend build and Google Console |
+| Sign-in or logout fails | Cookie delivery, HTTPS, cross-site cookie restrictions, session/logout response, and the configured CORS allowlist |
+| Read More or Sources fails | Same API base as the feed, article `_id`, HTTP status, and expected object response; app navigation needs current app logs/source |
 
-Website: https://thenobiasmedia.com. Support: contact@thenobiasmedia.com.
-Existing published address: The NoBias Media, 75–76 West Guru Angad Nagar, near
-Nirman Vihar Metro Station, Delhi 110092, India. Verify owner-approved business
-identity/address before gateway or store submission.
+The backend listens after MongoDB connects. Health returns 200 while connected
+and 503 after disconnect. Cloud Run can still cold-start; a minimum instance
+can reduce startup waits but adds cost. Hosting settings were not changed here.
 
-Keep public policy content in `frontend/src/pages/` as the source for what users
-are told. Verify these URLs on the deployed website rather than relying on an old
-"completed" label. Keep provider submissions and app disclosures consistent with
-the actual product, data flows and approved policies.
+The service worker uses `nobias-media-cache-v7`. It caches public static assets,
+uses network-first navigation with an offline shell fallback, and bypasses API,
+session, payment, non-GET, and cross-origin requests. Offline shell availability
+does not mean articles or payments work offline. Image HTTP caching is separate;
+see guide 4.
 
-## App-store submission
+## Sessions, consent, and live feeds
 
-Provide working privacy, support and deletion URLs. Check the actual app has the
-required account-deletion flow and that support can fulfil requests. The backend
-currently has no account-deletion/deactivation endpoint; the web page describes an
-email process. Earlier documents' claims that automated deactivation, grace-period
-recovery, purge and confirmation emails are implemented are not evidence.
+- The website verifies its HttpOnly cookie through `/api/auth/session` and expires
+  it through `/api/auth/logout`. There is no server-side JWT revocation registry.
+- Optional analytics stays disabled until explicit acceptance in `cookieConsentV2`.
+  Old timer-based choices are requested again. Cookie settings allows withdrawal;
+  legacy `cookieConsent` and `cookieConsentDate` are also written for compatibility.
+- Article mutations emit `article:created`, `article:updated`, and `article:deleted`.
+  Home/category feeds reset to page one after mutations and reconnects, and discard
+  older in-flight responses. The first connection reuses the initial HTTP load.
+  The legacy `newArticle` event remains available.
 
-Complete Google Play Data Safety and Apple privacy disclosures from an inventory
-of the released app's SDKs and data: Google sign-in/profile, donation contact data,
-bookmarks, diagnostics, analytics and any third-party processing. Do not copy old
-forms claiming all data is optional or never shared. Verify provider and platform
-requirements at submission time, including login and deletion requirements.
+## Payment troubleshooting
 
-The repository Expo sample has bundle/package ID com.nobiasmedia.app and currently
-builds APKs in its EAS production Android profile. Store packaging/signing must be
-verified for the actual app; that sample is not proof Anurag's payment build is
-ready for Google Play or Apple. Keep screenshots, branding, versioning, rating,
-reviewer access instructions and privacy information aligned with the release.
+Record donation ID, transaction ID, gateway/environment, callback timestamp,
+endpoint, and HTTP status. Compare provider records with redacted backend/app logs.
+Never record salts, tokens, full payment credentials, or unnecessary personal data.
 
-## Support, deletion and copyright operations
+| Symptom | Response |
+|---|---|
+| SDK error 5019 after success | Read server status; confirmed success must not reopen the SDK. Compare transaction IDs and checkout calls |
+| Checkout 409 | Follow `code` and `nextAction`; already-paid/unresolved payments have no reusable checkout fields |
+| Cancel returns 202 | Outcome is pending or unavailable; keep the donation/key and check status |
+| Timeout or missing provider record | Reconcile status and callbacks; absence alone is not proof of failure |
+| Provider success but local failure | Check credentials/mode, returned amount/amt, and server-side reconciliation |
+| Hash 400 | Check the exact V1 callback, merchant key, command format, and original checkout fields; see guide 2's allowlist |
+| Hash 409 | Session is settled; check status instead of using cached fields |
+| Native response lacks SDK fields | Check `platform: "app"` and PayU enablement |
+| Invalid response hash | Match credentials/environment and payload; never bypass verification |
 
-For deletion/export requests, verify the requester through the registered Google
-account, record the request, remove or retain data according to the approved policy,
-and confirm completion. Check database records, bookmarks/local device data,
-sessions and backups separately. Payment/accounting retention and session revocation
-need an actual operational process; do not infer them from a static policy page.
+Poll pending status every ten seconds with a bounded wait and manual refresh/support
+fallback. A provider-verified failure permits a new transaction for the same donation.
+An SDK cancellation alone does not establish failure. Full response handling and
+supported hash commands belong in [guide 2](02-MOBILE-AND-PAYMENTS.md).
 
-For copyright complaints, record the article URL, claimed work, claimant identity,
-proof and requested action. The historical internal target was acknowledgment
-within 48 hours and review within 1–3 business days; confirm the current published
-policy and achievable commitments. Preserve evidence, assess permissions, remove
-or correct content when appropriate, and record the resolution. A policy page does
-not establish fair use or DMCA safe-harbor protection. Escalate disputed or formal
-legal notices to the responsible owner/legal adviser rather than promising immunity.
+## Refunds, support, and public policies
 
-For the source-type migration, `backend/scripts/update-source-types.js` replaces
-Conservative labels with Traditionalist in matching articles. It writes to MongoDB:
-use a verified target database, backup, and reviewed maintenance plan before running
-it. Validate changes afterwards. Old EC2/PM2 examples apply only if that deployment
-actually exists; they are not Cloud Run instructions.
+There is no automated refund API. Reconcile the payment and process approved
+refunds through the provider dashboard. Confirm the actual provider reference and
+processing status; closing the SDK is not a refund. Published refund wording
+currently includes a two-day timeline and physical-goods language; the owner must
+resolve that mismatch for a donation-based news product before promising a timeline.
 
-## Known gaps and credentials
+| Public page | Path |
+|---|---|
+| Privacy | `/privacy-policy` |
+| Terms | `/terms-conditions` |
+| Refunds | `/refund-policy` |
+| Account deletion | `/delete-account` |
+| Copyright claims | `/copyright-claims` |
+| Contact | `/contact` |
+| About | `/about` |
 
-The previous review found hard-coded admin login credentials and frontend sign-out
-that does not clear the authentication cookie; the payment fixes did not address
-those issues. The runtime version mismatch, cookie auto-acceptance and policy
-mismatches above also remain. Schedule changes separately rather than presenting
-this documentation update as a fix.
+Support is `contact@thenobiasmedia.com`. Public policy/business content lives in
+`frontend/src/pages/`; verify the published identity, address, commitments, and URLs
+with the owner before gateway/store submissions. Static pages are not proof of
+legal compliance, provider approval, or implemented operational processes.
 
-An old mobile guide contained a plaintext merchant salt. It has been redacted from
-the documentation archive and is not included in the active guides. Rotate that
-credential through the provider and runtime secret configuration, and assess Git
-history or previously shared copies; moving/redacting files does not revoke it.
+For deletion/export, verify the requester, record the request, apply the approved
+retention policy across database records, sessions, local device data, and backups,
+and confirm completion. No account-deletion/deactivation API is implemented; the
+page describes an email process.
 
-## Documentation ownership
+For copyright requests, record the article URL, claimed work, identity, evidence,
+and requested action. Confirm published response commitments before promising
+one; preserve evidence, assess permissions, and record any correction/removal.
+Escalate disputed formal notices to the responsible owner/adviser.
 
-Maintain only these three guides as the active operating references. README is
-an index. `docs/archive/` preserves superseded material for history, with sensitive
-values redacted; do not use it to override the source code or current deployment.
-Update guides with behavior changes and distinguish code-supported behavior,
-local test results and production observations.
+For store submissions, inventory the actual released app's SDKs/data and verify
+working privacy, support, and deletion flows. Do not copy archived claims that all
+data is optional, never shared, or that account purge/recovery is automated. No
+current app package, signing, SDK, or store readiness was verified in this work.
 
+## Open issues and maintenance
 
-## Session, consent, and live-feed release checks
+- Admin login credentials remain hard-coded in the backend source. Replacing
+  them is separate implementation work; do not copy their values into docs.
+- Runtime versions differ between the frontend package, CI, and Docker image.
+- Published policy wording and the operational deletion/retention process need
+  owner review. Image format/resolution checks do not verify copyright or authenticity.
+- A merchant salt was previously exposed in historical material. Redaction does
+  not revoke it; the owner must confirm rotation and assess earlier shared copies/history.
+- `backend/scripts/update-source-types.js` writes to MongoDB. A verified target,
+  backup, and reviewed maintenance plan are needed before running it.
 
-Deploy the backend and frontend together. The frontend now uses `GET /api/auth/session`
-to verify its HttpOnly cookie and `POST /api/auth/logout` to expire it. Existing
-`verifyAccessToken` clients remain supported. Logout clears the browser cookie; it
-does not implement a server-side JWT revocation registry.
-
-The mobile PayU V1 auxiliary hash allowlist is `getBinInfo`, `validateVPA`,
-`get_checkout_details`, and `get_eligible_payment_options`. Each request must use
-`merchantKey|matchingCommand|nonemptyValue|`. Unrecognized operations, mismatched
-commands, and salt overrides are rejected. Add newly required SDK operations only
-with verified formats and regression tests. Payment hashes remain bound to pending
-checkout records. Smoke-test the production mobile SDK in the provider sandbox
-before rollout; local tests use fake credentials.
-
-Analytics stays disabled until a reader explicitly accepts through the new
-`cookieConsentV2` preference. Legacy choices are requested again because older
-banners auto-accepted. Readers can withdraw consent through Cookie settings.
-
-News mutations emit `article:created`, `article:updated`, and `article:deleted`.
-Home and category feeds reload page one after changes or reconnects, resetting
-offset pagination and discarding older requests. The legacy `newArticle` event
-remains available for existing clients. Article/list responses revalidate their
-cache, and service-worker cache v5 removes cached assets from the older release.
-
-Run `npm test --prefix backend`, then all frontend Jest tests and the frontend
-production build. CI runs these regression suites automatically.
-
-
-### Image quality checks
-
-New articles require an image; new and replacement images are checked on the server using their actual bytes. Supported formats: JPEG, PNG, WebP, up to 10 MB, at least 1200 × 675 pixels, at most 24 megapixels, with a landscape aspect ratio from 1.2 to 2.2. Remote URLs must use HTTPS and resolve to public addresses; redirects are checked individually and connections use the validated address. Existing images are not retroactively rejected when editing article text. Clients creating articles must provide a qualifying image. These are resolution/format checks, not blur, watermark, authenticity, or copyright checks. No license verification or permission record is required.
-
-The admin form previews URL images and shows their decoded dimensions. Uploads preserve up to 1920 pixels of width rather than reducing every image to 800 pixels. Homepage summaries display their complete text without a line limit.
-
-## Reader and publishing performance (23 October 2026)
-
-The website uses compact feed requests and independently cached embedded images.
-The initial socket connection reuses the first HTTP feed load; subsequent
-reconnects and article mutations still refresh page one. The first story image
-loads eagerly with high priority; later images load lazily and decode asynchronously.
-The optional alert library loads when needed, and sign-in uses the backend's
-Google profile verification without a duplicate browser profile request or reload.
-
-Uploads are resized to at most 1600 pixels wide and encoded asynchronously as
-WebP at quality 0.82, with JPEG fallback. Original minimum dimensions and server
-byte validation remain enforced. Preview and publish reuse recent client image
-checks. Successful publishing immediately adds the saved article to the admin
-list while authoritative pagination refreshes in the background.
-
-On one saved public sample of eight articles, compact JSON was 10,060 bytes
-versus 55,594 bytes (82% smaller); image bytes are downloaded separately when
-needed. Compressed startup JavaScript was 88,195 bytes versus 108,378 bytes
-(19% smaller). These are local payload/build comparisons, not production load-time
-measurements. No live article was published for these checks.
-
-The service worker now caches only public static assets. API, session and payment
-requests stay on the network; a static cache must never confirm a payment.
-The news schema declares compound indexes including the deterministic `_id` sort
-key. Verify those indexes exist in the target database after release; no live
-index migration was run here. Category matching remains case-insensitive for
-compatibility with existing records.
-
-Release backend and frontend together (backend first). Check embedded and remote
-images, direct article/source links, publishing with a real admin in a test
-environment, create/update/delete feed refreshes, and browser/network waterfall
-on a throttled mobile connection. Cloud Run can still have cold starts. Inspect
-startup traces and database region before changing minimum instances; that
-hosting configuration and any resulting cost were not changed here.
+Maintain the four guides linked from the root README. Keep environment settings
+in guide 1, client contracts in guide 2, operations here, and performance in guide 4.
+Archived material is historical and must not override current code or verified runtime facts.

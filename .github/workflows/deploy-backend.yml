@@ -9,6 +9,8 @@ on:
       - 'frontend/**'
       - 'Dockerfile'
       - '.dockerignore'
+      - '.node-version'
+      - 'package.json'
       - '.github/workflows/deploy-backend.yml'
   pull_request:
     branches:
@@ -18,6 +20,8 @@ on:
       - 'frontend/**'
       - 'Dockerfile'
       - '.dockerignore'
+      - '.node-version'
+      - 'package.json'
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
@@ -34,7 +38,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version-file: '.node-version'
 
       - name: Validate backend JavaScript syntax
         run: find backend -type f -name '*.js' -print0 | xargs -0 -n 1 node --check
@@ -60,7 +64,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version-file: '.node-version'
 
       - name: Install dependencies
         run: npm ci

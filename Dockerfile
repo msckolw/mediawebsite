@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:24-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 # Copy package files from the backend subdirectory
 COPY backend/package*.json ./
 
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy backend source code
 COPY backend/src ./src

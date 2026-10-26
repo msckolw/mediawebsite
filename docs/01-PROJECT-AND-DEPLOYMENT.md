@@ -1,6 +1,6 @@
 # 1. Project setup and deployment
 
-Updated 8 October 2026. This is the active setup reference for The NoBias Media.
+Reviewed October 23, 2026. This is the active setup reference for The NoBias Media.
 Use [the mobile/payment guide](02-MOBILE-AND-PAYMENTS.md) for API integration and
 [the operations/release guide](03-OPERATIONS-AND-RELEASE.md) for troubleshooting
 and release checks. Archived documents are historical, not deployment instructions.
@@ -11,7 +11,7 @@ and release checks. Archived documents are historical, not deployment instructio
 |---|---|
 | `frontend/` | React 18 / Create React App website; news, bookmarks, legal pages, donations |
 | `backend/` | Express, MongoDB/Mongoose, cookie authentication, Socket.IO, PayU and PhonePe |
-| `mobile-app/` | Repository Expo sample; not Anurag's separately maintained payment app |
+| External React Native app | Shares the API; current source is outside this checkout |
 | `Dockerfile` | Backend container, built from the repository root |
 | `vercel.json` | Frontend build and single-page-app routing |
 | `.github/workflows/deploy-backend.yml` | Validation workflow, despite its filename |
@@ -27,10 +27,18 @@ An API client base URL includes `/api`; PUBLIC_API_URL does not.
 
 ## Local setup
 
-Use a current supported Node release compatible with the dependency lockfiles.
-The frontend package declares Node >=24, while the workflow uses Node 20 and the
-Dockerfile uses Node 18. These settings disagree; this documentation consolidation
-does not change runtimes. Align and test them before a runtime upgrade/release.
+Use Node.js 24.x for local development and builds. The root, frontend, and backend
+packages declare `engines.node: "24.x"`; GitHub Actions reads `.node-version`, and
+the backend container uses `node:24-alpine`. Use your Node version manager to
+select Node 24 before installing dependencies or running checks.
+
+Vercel supports Node 24.x and uses the root package's engine declaration for the
+existing repository-root deployment. Keep the Vercel Root Directory at the
+repository root. `vercel.json` installs with `npm ci --prefix frontend`, builds
+with `npm run build --prefix frontend`, and publishes `frontend/build`. This
+preserves the frontend lockfile and does not install the Cloud Run backend.
+The project can also select 24.x under Vercel Settings > Build and Deployment >
+Node.js Version; the package engine declaration controls new deployments.
 
 Create a private `backend/.env` with development database and signing secrets,
 plus sandbox payment settings if payments are being tested. Keep secrets out of Git.
@@ -105,6 +113,12 @@ as a JavaScript origin. Add other actual browser origins as needed, including
 The current popup flow does not use a redirect URI. An OAuth client change also
 requires a frontend rebuild if its ID changes.
 
+CORS currently uses an explicit allowlist in [server.js](../backend/src/server.js):
+the two website origins and `http://localhost:3000`. Changing `FRONTEND_URL` alone
+does not add a new CORS origin. Authentication cookies use `Secure`, `HttpOnly`,
+and `SameSite=None`; verify local cookie handling before debugging protected
+endpoints. Public news endpoints do not require a cookie.
+
 ## Domains
 
 Add both `thenobiasmedia.com` and `www.thenobiasmedia.com` to the Vercel project.
@@ -119,14 +133,23 @@ PUBLIC_API_URL and frontend/mobile API settings, and update gateway callback URL
 ## Build, callbacks and deployment
 
 1. Run backend tests (`rtk npm test` in backend), frontend tests, and the frontend
-   production build. Review the changes intended for release.
+   production build. Review the changes intended for release. From the root:
+
+   ```sh
+   rtk npm test --prefix backend
+   rtk npm test --prefix frontend -- --watchAll=false --runInBand
+   rtk npm run build --prefix frontend
+   ```
 2. Build the backend container from the repository root so `COPY backend/...`
    paths resolve. Configure Cloud Run's runtime secrets and URLs independently
-   from the frontend's public build variables.
+   from the frontend's public build variables. Set `PUBLIC_API_URL` to the API
+   origin so generated image and payment URLs use the canonical HTTPS host.
+   Release the backend first, then the frontend; new image URLs require the
+   image endpoint in the backend revision.
 3. Verify the project's Cloud Build trigger and Vercel deployment settings. The
-   repository's GitHub validation workflow checks syntax, builds Docker, runs a
-   focused frontend test and builds the frontend. It does not deploy to Google
-   Cloud, and it currently does not run the new backend regression suite.
+   repository's GitHub validation workflow checks backend syntax, runs the backend
+   and frontend regression suites, builds Docker, and builds the frontend. It does
+   not deploy to Google Cloud. Documentation-only changes do not match its path filters.
 4. Configure PayU callback URLs:
    - `{PUBLIC_API_URL}/api/payments/payu/success`
    - `{PUBLIC_API_URL}/api/payments/payu/failure`
@@ -138,6 +161,7 @@ PUBLIC_API_URL and frontend/mobile API settings, and update gateway callback URL
    Google sign-in and the payment scenarios in guide 3. Local tests are not proof
    that the production SDK, merchant products or callbacks are configured correctly.
 
-The latest payment work passed 27 backend tests using fake credentials and mocked
-providers. It was not deployed and did not make a live payment. Do not carry over
-old documents' claims that credentials, live payments or compliance are verified.
+Latest local validation on October 23, 2026: 49 backend tests, 27 frontend tests,
+and a successful production frontend build. No deployment or live payment was
+performed. See [operations](03-OPERATIONS-AND-RELEASE.md) for release verification
+and [performance](04-PERFORMANCE.md) for the new reader/image behavior.
