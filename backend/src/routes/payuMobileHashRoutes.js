@@ -10,9 +10,12 @@ const RATE_LIMIT_MAX_CLIENTS = 10000;
 const requestsByClient = new Map();
 const PAYMENT_FIELD_COUNT = 16;
 
-// Explicit SDK V1 commands only. Callback names must match the signed command.
+// Checkout Pro requests initialization hashes before showing payment methods.
+// Keep a finite list: this endpoint must never sign arbitrary merchant commands.
 const AUXILIARY_HASH_NAMES = new Set([
-  'getBinInfo', 'validateVPA', 'get_checkout_details', 'get_eligible_payment_options'
+  'getBinInfo', 'validateVPA', 'get_checkout_details', 'get_eligible_payment_options',
+  'get_sdk_configuration', 'get_all_offer_details', 'quickPayEvent',
+  'eligibleBinsForEMI', 'payment_source', 'payment_related_details_for_mobile_sdk'
 ]);
 
 function isRateLimited(clientId, now) {
@@ -59,12 +62,9 @@ router.post('/hash', async (req, res) => {
     return res.status(400).json({ message: 'Invalid hashName or hashString.' });
   }
 
-  const hashType = body.hashType === undefined || body.hashType === '' ? 'V1' : body.hashType;
+  const hashType = body.hashType == null || body.hashType === '' ? 'V1' : body.hashType;
   if (!['V1', 'V2'].includes(hashType)) {
     return res.status(400).json({ message: `Unsupported hash type: ${String(hashType).slice(0, 100)}.` });
-  }
-  if (hashType === 'V2') {
-    return res.status(400).json({ message: 'PayU V2 hash format is not supported.' });
   }
 
   let postSalt = '';
@@ -74,7 +74,7 @@ router.post('/hash', async (req, res) => {
         !/^nbm\d{13}[0-9a-f]{6}$/.test(fields[1]) || !/^(?:0|[1-9]\d{0,8})(?:\.\d{1,2})?$/.test(fields[2]) || fields.slice(11, 16).some((field) => field !== '')) {
       return res.status(400).json({ message: 'payment_hash: invalid format.' });
     }
-    if (body.postSalt !== undefined && (typeof body.postSalt !== 'string' || body.postSalt.length > 1024 || body.postSalt.includes('|'))) {
+    if (body.postSalt != null && (typeof body.postSalt !== 'string' || body.postSalt.length > 1024 || body.postSalt.includes('|'))) {
       return res.status(400).json({ message: 'Invalid postSalt.' });
     }
     let payment;
@@ -85,7 +85,9 @@ router.post('/hash', async (req, res) => {
       return res.status(409).json({ code: payment.status === 'success' ? 'ALREADY_PAID' : 'PAYMENT_RESOLVED',
         nextAction: 'check_status', message: 'This payment session is no longer open.' });
     }
-    if (fields[2] !== payment.amount || fields[3] !== payment.productinfo ||
+    // SDKs can format 50.00 as 50. Validate its value, but sign the original
+    // string byte-for-byte so PayU receives the hash for the SDK's own input.
+    if (Number(fields[2]).toFixed(2) !== payment.amount || fields[3] !== payment.productinfo ||
         fields[4] !== payment.firstname || fields[5] !== payment.email ||
         fields.slice(6, 11).some(field => field !== '')) {
       return res.status(400).json({ message: 'Payment hash fields do not match the checkout session.' });
@@ -98,12 +100,19 @@ router.post('/hash', async (req, res) => {
         !fields[2].trim() || fields[3] !== '' || /[\r\n\0]/.test(hashString)) {
       return res.status(400).json({ message: 'Unsupported SDK command or invalid hash format.' });
     }
-    if (body.postSalt !== undefined) {
+    if (body.postSalt != null && body.postSalt !== '') {
       return res.status(400).json({ message: 'postSalt is only valid for payment_hash.' });
     }
   }
 
-  const hash = crypto.createHash('sha512').update(`${hashString}${salt}${postSalt}`, 'utf8').digest('hex');
+  if (hashType === 'V2' && postSalt) {
+    return res.status(400).json({ message: 'postSalt is only supported for V1 payment hashes.' });
+  }
+  // PayU V2 signs the original string using the merchant salt as the HMAC key;
+  // V1 appends the salt (and optional payment postSalt) before SHA-512.
+  const hash = hashType === 'V2'
+    ? crypto.createHmac('sha256', salt).update(hashString, 'utf8').digest('hex')
+    : crypto.createHash('sha512').update(`${hashString}${salt}${postSalt}`, 'utf8').digest('hex');
   return res.json({ [hashName]: hash });
 });
 

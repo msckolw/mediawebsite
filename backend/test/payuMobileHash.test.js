@@ -95,7 +95,7 @@ test('mobile hash route validates callback names, input length, and salt overrid
     assert.equal((await send({ hashName: 'payment_hash', hashString: 'merchant_key_123||1|product|first|email|||||||||||' })).status, 400);
     assert.equal((await send({ hashName: 'payment_hash', hashString: 'merchant_key_123|txn||product|first|email|||||||||||' })).status, 400);
     assert.equal((await send({ hashName: 'payment_hash', hashString: 'merchant_key_123|txn|1|product|first|email|||||||||||x|' })).status, 400);
-    assert.equal((await send({ hashName: 'validateVPA', hashString: 'merchant_key_123|validateVPA|vpa|', postSalt: '' })).status, 400);
+    assert.equal((await send({ hashName: 'validateVPA', hashString: 'merchant_key_123|validateVPA|vpa|', postSalt: '' })).status, 200);
     assert.equal((await send({ hashName: 'validateVPA', hashString: 'x', merchantSalt: 'override' })).status, 400);
     assert.equal((await send({ hashName: 'adminCommand', hashString: 'x' })).status, 400);
     assert.equal((await send({ hashName: 'lookup api hash', hashString: 'x' })).status, 400);

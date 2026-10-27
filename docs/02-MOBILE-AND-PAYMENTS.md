@@ -31,6 +31,16 @@ GET `/api/auth/session`, returning `{ user: { email, role, name } }` or 401, and
 POST `/api/auth/logout`, returning 204 and expiring the cookie. Logout does not
 revoke other copies of an already-issued JWT.
 
+The backend retries Google's userinfo read once for temporary network failures,
+timeouts, HTTP 429, or HTTP 5xx. Each attempt has a 4.5-second timeout, with a
+150-ms delay between attempts. Invalid credentials are not retried. A persistent
+Google failure returns 503, not an invalid-token 401; no session is issued until
+Google returns a verified email and the user record is saved. Mobile clients
+should keep sign-in pending until the backend responds, preserve the returned
+cookie, and distinguish 503/network failures from invalid credentials. This
+backend change requires deployment; the current mobile implementation remains
+unverified without its source or a failing request log.
+
 Public news APIs need no authentication:
 
 | Request | Result |
@@ -182,13 +192,41 @@ and optional payment-only postSalt. Check the HTTP status before calling the
 installed SDK's hash completion method. Do not send error bodies to the SDK.
 
 `payment_hash` is signed only for an existing pending PayU transaction, matching
-its checkout amount, product, name, email, and empty UDFs. Settled sessions return
-409 and must go to status. Auxiliary hashes require the exact configured merchant
-key and command matching the callback name in `key|command|var1|` format. Supported
-names: `getBinInfo`, `validateVPA`, `get_checkout_details`, and
-`get_eligible_payment_options`. `eligibleBinsForEMI` and `payment_source` are not
-in the current allowlist. Unknown formats and V2 return 400; collect a
-redacted callback example for validation rather than relaxing signing restrictions.
+its checkout amount, product, name, email, and empty UDFs. Equivalent decimal
+amounts (`50`, `50.0`, `50.00`) are accepted; the original SDK string is signed
+without reformatting. Settled sessions return 409 and must go to status.
+
+Auxiliary hashes require the exact configured merchant key and command matching
+the callback name in `key|command|var1|` format. Supported names:
+`getBinInfo`, `validateVPA`, `get_checkout_details`,
+`get_eligible_payment_options`, `get_sdk_configuration`, `get_all_offer_details`,
+`quickPayEvent`, `eligibleBinsForEMI`, `payment_source`, and
+`payment_related_details_for_mobile_sdk`. Unknown names and formats return 400.
+
+V1 (also the default for an omitted, null, or empty hashType) returns the hex
+SHA-512 of `hashString + merchantSalt + postSalt`. V2 returns the hex HMAC-SHA256
+of the original hashString, with the server's merchant salt as its key. Both
+versions enforce the same merchant/command and payment-session checks above;
+this does not authorize arbitrary opaque strings. Nonempty postSalt is supported
+only for V1 payment hashes; absent, null, and empty postSalt are treated as absent.
+Special-purpose hashes such as `lookup api hash` remain unsupported.
+
+Mobile initialization compatibility was updated October 27, 2026. Previously,
+the initialization names above were rejected, as were all V2 requests and SDK
+payment amounts formatted without two decimal places. These rejections can leave
+Checkout Pro waiting for a hash. The update requires backend deployment; the
+actual app's failing callback and on-device behavior have not been verified.
+Algorithm references: [PayU dynamic hashing](https://docs.payu.in/docs/generate-dynamic-hash-react)
+and [PayU V2 hashing](https://docs.payu.in/docs/hash-generation-for-checkoutpro-sdk#v2-hashes).
+
+For this API, a successful hash response is `{ [hashName]: "<hex hash>" }`.
+Pass that map to `PayUBizSdk.hashGenerated`, rather than reading `response.hash`.
+Forward hashName, hashString, hashType, and postSalt from the SDK callback, and
+handle HTTP errors with a bounded timeout so the app cannot wait indefinitely.
+For React Native 0.82+, check PayU's current
+[Android integration instructions](https://docs.payu.in/docs/reactnative-checkoutpro-android-integration)
+for its `PayUBizSdk.makeHttpRequest` networking requirement. The mobile source is
+outside this checkout; these client changes cannot be applied here.
 
 ## Backend validation and release
 
@@ -223,6 +261,6 @@ New mobile integrations should use the donation endpoints above. The legacy
 create endpoint is not the donation idempotency contract.
 
 Backend details and credentials belong in guide 1; testing, support and release
-checks belong in [guide 3](03-OPERATIONS-AND-RELEASE.md). Unsupported callbacks such
-as get_sdk_configuration, get_all_offer_details and quickPayEvent are not made
-supported merely because an archived guide said they worked.
+checks belong in [guide 3](03-OPERATIONS-AND-RELEASE.md). Archived guides do not override the supported hash formats and algorithms listed
+in this guide. Collect a redacted callback and its HTTP error before extending
+support for another format.

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const OauthUsers = require('../models/OAuth');
+const { getGoogleUserInfo, GoogleIdentityError } = require('../services/googleIdentity');
 
 const cookieOptions = { httpOnly: true, sameSite: 'none', secure: true, path: '/' };
 router.use((req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
@@ -34,7 +35,7 @@ router.post('/login', async (req, res) => {
 
     // Create JWT token for any credentials
     const token = jwt.sign(
-      { 
+      {
         email: email,
         role: 'admin'
       },
@@ -44,7 +45,7 @@ router.post('/login', async (req, res) => {
     );
 
     const refresh = jwt.sign(
-      { 
+      {
         email: email,
         role: 'admin'
       },
@@ -56,7 +57,7 @@ router.post('/login', async (req, res) => {
     // Return success response with token
 
     res.cookie('access_token', token, cookieOptions);
-    
+
     res.json({
       success: true,
       message: 'Login successful',
@@ -86,7 +87,7 @@ router.post('/regenerateAccessToken', (req, res) => {
   jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: 'Invalid token' });
 
-    const newAccessToken = jwt.sign({ email: user.email, role: user.role }, 
+    const newAccessToken = jwt.sign({ email: user.email, role: user.role },
     process.env.JWT_SECRET, { expiresIn: '24h' });
 
     res.status(201).json({ accessToken: newAccessToken });
@@ -122,23 +123,7 @@ router.post('/googleSignIn', async (req, res) => {
         return res.status(401).json({ message: 'Missing or invalid Google access token.' });
       }
 
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
-      let googleResponse;
-      try {
-        googleResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          signal: controller.signal
-        });
-      } finally {
-        clearTimeout(timeout);
-      }
-
-      if (!googleResponse.ok) {
-        return res.status(401).json({ message: 'Invalid Google access token.' });
-      }
-
-      const googleUser = await googleResponse.json();
+      const googleUser = await getGoogleUserInfo(accessToken);
       const email = String(googleUser.email || '').trim().toLowerCase();
       const name = String(googleUser.name || '').trim().slice(0, 100);
       if (!email || email.length > 254 || googleUser.email_verified !== true) {
@@ -188,10 +173,13 @@ router.post('/googleSignIn', async (req, res) => {
         }
       });
   } catch (error) {
+      if (error instanceof GoogleIdentityError) {
+        return res.status(error.statusCode).json({ message: error.message });
+      }
       console.error('Google sign-in error:', error);
       res.status(500).json({ message: 'Could not complete Google sign-in.' });
   }
 });
 
 
-module.exports = router; 
+module.exports = router;
