@@ -9,13 +9,18 @@ const RATE_LIMIT_MAX_REQUESTS = 60;
 const RATE_LIMIT_MAX_CLIENTS = 10000;
 const requestsByClient = new Map();
 const PAYMENT_FIELD_COUNT = 16;
+// Checkout Pro's native CP_PAYMENT_HASH is "payment_source". Older clients
+// use "payment_hash". Both sign the same transaction-bound payment string.
+const PAYMENT_HASH_NAMES = new Set(['payment_hash', 'payment_source']);
 
 // Checkout Pro requests initialization hashes before showing payment methods.
 // Keep a finite list: this endpoint must never sign arbitrary merchant commands.
 const AUXILIARY_HASH_NAMES = new Set([
   'getBinInfo', 'validateVPA', 'get_checkout_details', 'get_eligible_payment_options',
   'get_sdk_configuration', 'get_all_offer_details', 'quickPayEvent',
-  'eligibleBinsForEMI', 'payment_source', 'payment_related_details_for_mobile_sdk'
+  'eligibleBinsForEMI', 'payment_related_details_for_mobile_sdk',
+  'vas_for_mobile_sdk', 'binBaseDetails', 'check_isDomestic',
+  'check_offer_details', 'getEmiAmountAccordingToInterest'
 ]);
 
 function isRateLimited(clientId, now) {
@@ -68,7 +73,7 @@ router.post('/hash', async (req, res) => {
   }
 
   let postSalt = '';
-  if (hashName === 'payment_hash') {
+  if (PAYMENT_HASH_NAMES.has(hashName)) {
     const fields = hashString.split('|');
     if (!hashString.endsWith('|') || fields.length !== PAYMENT_FIELD_COUNT + 1 || fields[0] !== merchantKey ||
         !/^nbm\d{13}[0-9a-f]{6}$/.test(fields[1]) || !/^(?:0|[1-9]\d{0,8})(?:\.\d{1,2})?$/.test(fields[2]) || fields.slice(11, 16).some((field) => field !== '')) {

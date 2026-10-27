@@ -35,7 +35,8 @@ function harness() {
 test('Checkout Pro initialization callbacks receive V1 hashes instead of HTTP 400', async () => {
   const h = harness();
   for (const hashName of ['get_sdk_configuration', 'get_all_offer_details', 'quickPayEvent',
-    'eligibleBinsForEMI', 'payment_source', 'payment_related_details_for_mobile_sdk']) {
+    'eligibleBinsForEMI', 'payment_related_details_for_mobile_sdk', 'vas_for_mobile_sdk',
+    'binBaseDetails', 'check_isDomestic', 'check_offer_details', 'getEmiAmountAccordingToInterest']) {
     const hashString = `${key}|${hashName}|default|`;
     const result = await h.send({ hashName, hashString });
     assert.equal(result.statusCode, 200, hashName);
@@ -120,4 +121,46 @@ test('V1 postSalt remains supported and is never silently ignored for V2', async
   assert.equal(result.statusCode, 200);
   assert.equal(result.body.payment_hash, crypto.createHash('sha512').update(paymentString + salt + 'extra').digest('hex'));
   assert.equal((await h.send({ ...body, hashType: 'V2' })).statusCode, 400);
+});
+
+test('native Checkout Pro payment_source signs the complete SDK payment string', async () => {
+  const h = harness();
+  // HashGenerationHelper.getPaymentHashData uses CP_PAYMENT_HASH, whose native
+  // PayuConstants.PAYMENT_SOURCE value is payment_source, not payment_hash.
+  for (const hashType of ['V1', 'V2']) {
+    const response = await h.send({ hashName: 'payment_source', hashString: paymentString,
+      hashType, postSalt: '' });
+    assert.equal(response.statusCode, 200);
+    const legacy = await h.send({ hashName: 'payment_hash', hashString: paymentString, hashType });
+    assert.equal(response.body.payment_source, legacy.body.payment_hash);
+    assert.deepEqual(Object.keys(response.body), ['payment_source']);
+  }
+  assert.equal(h.queries, 4);
+});
+
+test('native payment_source cannot bypass donor, amount, transaction or settled-session checks', async () => {
+  const h = harness();
+  for (const [hashString, status] of [
+    [paymentString.replace('|50.00|', '|51.00|'), 400],
+    [paymentString.replace('|Test Donor|', '|Someone Else|'), 400],
+    [paymentString.replace('donor@example.org', 'other@example.org'), 400],
+    [paymentString.replace('|NBM Donation|', '|Other Product|'), 400],
+    [paymentString.replace(txnid, 'nbm1234567890123abcdee'), 404],
+    [`${key}|payment_source|default|`, 400],
+    [`${key}|refund|default|`, 400]
+  ]) assert.equal((await h.send({ hashName: 'payment_source', hashString })).statusCode, status);
+  for (const status of ['success', 'failed']) {
+    h.payment.status = status;
+    const result = await h.send({ hashName: 'payment_source', hashString: paymentString });
+    assert.equal(result.statusCode, 409);
+    assert.equal(result.body.nextAction, 'check_status');
+  }
+});
+
+test('native payment_source uses the SDK amount bytes and V1 postSalt', async () => {
+  const h = harness();
+  const hashString = paymentString.replace('|50.00|', '|50|');
+  const result = await h.send({ hashName: 'payment_source', hashString, postSalt: 'extra' });
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.body.payment_source, crypto.createHash('sha512').update(hashString + salt + 'extra').digest('hex'));
 });

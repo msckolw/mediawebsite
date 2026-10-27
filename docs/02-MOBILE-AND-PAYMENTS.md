@@ -191,7 +191,10 @@ POST `/api/payments/payu/hash` with the original SDK hashName, hashString, hashT
 and optional payment-only postSalt. Check the HTTP status before calling the
 installed SDK's hash completion method. Do not send error bodies to the SDK.
 
-`payment_hash` is signed only for an existing pending PayU transaction, matching
+Native Checkout Pro sends `payment_source` for its full payment hash. The backend
+accepts both `payment_source` and the legacy `payment_hash` name through the same
+transaction validation, returning the hash under the exact requested name. Both
+are signed only for an existing pending PayU transaction, matching
 its checkout amount, product, name, email, and empty UDFs. Equivalent decimal
 amounts (`50`, `50.0`, `50.00`) are accepted; the original SDK string is signed
 without reformatting. Settled sessions return 409 and must go to status.
@@ -200,8 +203,10 @@ Auxiliary hashes require the exact configured merchant key and command matching
 the callback name in `key|command|var1|` format. Supported names:
 `getBinInfo`, `validateVPA`, `get_checkout_details`,
 `get_eligible_payment_options`, `get_sdk_configuration`, `get_all_offer_details`,
-`quickPayEvent`, `eligibleBinsForEMI`, `payment_source`, and
-`payment_related_details_for_mobile_sdk`. Unknown names and formats return 400.
+`quickPayEvent`, `eligibleBinsForEMI`, `payment_related_details_for_mobile_sdk`,
+`vas_for_mobile_sdk`, `binBaseDetails`, `check_isDomestic`, `check_offer_details`,
+and `getEmiAmountAccordingToInterest`. Unknown names and formats return 400.
+`payment_source` is a payment hash, never an auxiliary `key|command|var1|` hash.
 
 V1 (also the default for an omitted, null, or empty hashType) returns the hex
 SHA-512 of `hashString + merchantSalt + postSalt`. V2 returns the hex HMAC-SHA256
@@ -227,6 +232,29 @@ For React Native 0.82+, check PayU's current
 [Android integration instructions](https://docs.payu.in/docs/reactnative-checkoutpro-android-integration)
 for its `PayUBizSdk.makeHttpRequest` networking requirement. The mobile source is
 outside this checkout; these client changes cannot be applied here.
+
+## UPI processing regression corrected October 27, 2026
+
+The native SDK's `PayuConstants.PAYMENT_SOURCE` value is `payment_source`.
+`HashGenerationHelper.getPaymentHashData` sends the complete transaction string
+under that name when starting payment. Previously this API mistakenly classified
+`payment_source` as an auxiliary command and rejected that full string with 400.
+This can leave Checkout Pro waiting for a hash after the user selects UPI.
+The route now applies the existing pending-session, donor, amount, merchant, and
+UDF checks to both payment hash names. It preserves the SDK callback name in the
+response, so the mobile client can pass it directly to `hashGenerated`.
+
+Also restored the native SDK's read-only `vas_for_mobile_sdk` initialization
+command and the other supported read-only commands listed above. Merchant and
+command binding remain required. Payment verification continues on the server;
+this change does not permit signing refund, capture, cancellation, or arbitrary
+commands.
+
+Verified against published source artifacts `in.payu:payu-checkout-pro:3.3.13`
+and `in.payu:payu-sdk:7.12.9`, which are used by the current published React Native
+package. The app's installed SDK version and its actual failing request remain
+unavailable. Deploy this backend correction and test on-device; local regression
+tests do not establish that the installed app has completed a payment.
 
 ## Backend validation and release
 

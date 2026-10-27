@@ -34,6 +34,9 @@ test('mobile payment hash signs only the exact documented V1 payment string', as
     const paymentResponse = await send({ hashName: 'payment_hash', hashString: payment });
     assert.equal(paymentResponse.status, 200);
     assert.deepEqual(await paymentResponse.json(), { payment_hash: crypto.createHash('sha512').update(`${payment}fake-salt`).digest('hex') });
+    const nativeResponse = await send({ hashName: 'payment_source', hashString: payment });
+    assert.equal(nativeResponse.status, 200);
+    assert.deepEqual(await nativeResponse.json(), { payment_source: crypto.createHash('sha512').update(`${payment}fake-salt`).digest('hex') });
     assert.equal((await send({ hashName: 'validateVPA', hashString: 'merchant_key_123|refund|' })).status, 400);
     assert.equal((await send({ hashName: 'payment_hash', hashString: 'merchant_key_123|admin|1|x|x|x|||||||||||' })).status, 400);
     assert.equal((await send({ hashName: 'payment_hash', hashString: `other_key|txn|1|product|first|email||||||||||` })).status, 400);
