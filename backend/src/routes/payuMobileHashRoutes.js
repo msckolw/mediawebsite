@@ -79,6 +79,13 @@ router.post('/hash', async (req, res) => {
         !/^nbm\d{13}[0-9a-f]{6}$/.test(fields[1]) || !/^(?:0|[1-9]\d{0,8})(?:\.\d{1,2})?$/.test(fields[2]) || fields.slice(11, 16).some((field) => field !== '')) {
       return res.status(400).json({ message: 'payment_hash: invalid format.' });
     }
+    // UDF1..5 are optional SDK metadata. Earlier clients (including PayU's
+    // sample integration) populate them; native nullable entries can also be
+    // interpolated as literal "null". Preserve those bytes for PayU's hash.
+    // Keep the reserved fields empty and bind the payment itself below.
+    if (fields.slice(6, 11).some(field => field.length > 255 || /[\r\n\0]/.test(field))) {
+      return res.status(400).json({ message: 'Invalid payment metadata.' });
+    }
     if (body.postSalt != null && (typeof body.postSalt !== 'string' || body.postSalt.length > 1024 || body.postSalt.includes('|'))) {
       return res.status(400).json({ message: 'Invalid postSalt.' });
     }
@@ -93,8 +100,7 @@ router.post('/hash', async (req, res) => {
     // SDKs can format 50.00 as 50. Validate its value, but sign the original
     // string byte-for-byte so PayU receives the hash for the SDK's own input.
     if (Number(fields[2]).toFixed(2) !== payment.amount || fields[3] !== payment.productinfo ||
-        fields[4] !== payment.firstname || fields[5] !== payment.email ||
-        fields.slice(6, 11).some(field => field !== '')) {
+        fields[4] !== payment.firstname || fields[5] !== payment.email) {
       return res.status(400).json({ message: 'Payment hash fields do not match the checkout session.' });
     }
     postSalt = body.postSalt || '';

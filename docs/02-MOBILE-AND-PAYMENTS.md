@@ -195,7 +195,10 @@ Native Checkout Pro sends `payment_source` for its full payment hash. The backen
 accepts both `payment_source` and the legacy `payment_hash` name through the same
 transaction validation, returning the hash under the exact requested name. Both
 are signed only for an existing pending PayU transaction, matching
-its checkout amount, product, name, email, and empty UDFs. Equivalent decimal
+its checkout amount, product, name, and email. UDF1–5 may contain SDK metadata
+(up to 255 characters each, without control characters or pipe delimiters).
+Those values are signed byte-for-byte, including literal `null` strings emitted
+by native nullable fields; reserved fields after UDF5 must remain empty. Equivalent decimal
 amounts (`50`, `50.0`, `50.00`) are accepted; the original SDK string is signed
 without reformatting. Settled sessions return 409 and must go to status.
 
@@ -241,7 +244,7 @@ under that name when starting payment. Previously this API mistakenly classified
 `payment_source` as an auxiliary command and rejected that full string with 400.
 This can leave Checkout Pro waiting for a hash after the user selects UPI.
 The route now applies the existing pending-session, donor, amount, merchant, and
-UDF checks to both payment hash names. It preserves the SDK callback name in the
+reserved-field checks to both payment hash names. It preserves the SDK callback name in the
 response, so the mobile client can pass it directly to `hashGenerated`.
 
 Also restored the native SDK's read-only `vas_for_mobile_sdk` initialization
@@ -255,6 +258,17 @@ and `in.payu:payu-sdk:7.12.9`, which are used by the current published React Nat
 package. The app's installed SDK version and its actual failing request remain
 unavailable. Deploy this backend correction and test on-device; local regression
 tests do not establish that the installed app has completed a payment.
+
+## Compatibility with existing SDK UDF metadata
+
+Earlier releases accepted native `payment_source` strings containing UDF1–5.
+The stricter session validation accidentally required all five fields to be empty,
+rejecting existing SDK integrations that populate them (including PayU's sample
+values `udf1` through `udf5`). This restriction is removed for both payment hash
+names. Metadata remains bounded, and the merchant, pending transaction, amount,
+product, donor name, and email must still match the stored checkout session.
+No UDF values are rewritten before signing. The on-device cause remains
+unconfirmed until the installed app is retested against the deployed change.
 
 ## Backend validation and release
 

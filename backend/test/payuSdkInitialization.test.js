@@ -164,3 +164,61 @@ test('native payment_source uses the SDK amount bytes and V1 postSalt', async ()
   assert.equal(result.statusCode, 200);
   assert.equal(result.body.payment_source, crypto.createHash('sha512').update(hashString + salt + 'extra').digest('hex'));
 });
+
+
+test('native payment metadata accepted by earlier releases remains compatible', async () => {
+  const h = harness();
+  // PayU's React Native example supplies udf1..udf5. Native Kotlin also
+  // interpolates absent nullable UDF entries as the literal string "null".
+  // They are SDK metadata, not the donation amount or recipient.
+  for (const udfs of [
+    ['udf1', 'udf2', 'udf3', 'udf4', 'udf5'],
+    ['null', 'null', 'null', 'null', 'null'],
+    ['donation-reference', '', 'App donation', '', '']
+  ]) {
+    const fields = paymentString.split('|');
+    fields.splice(6, 5, ...udfs);
+    const hashString = fields.join('|');
+    for (const hashName of ['payment_source', 'payment_hash']) {
+      for (const hashType of ['V1', 'V2']) {
+        const result = await h.send({ hashName, hashString, hashType });
+        assert.equal(result.statusCode, 200, `${hashName}: ${udfs.join(',')}`);
+        const expected = hashType === 'V2'
+          ? crypto.createHmac('sha256', salt).update(hashString).digest('hex')
+          : crypto.createHash('sha512').update(hashString + salt).digest('hex');
+        assert.equal(result.body[hashName], expected);
+      }
+    }
+  }
+});
+
+test('SDK metadata cannot change payment identity, amount, donor or settlement checks', async () => {
+  const h = harness();
+  const fields = paymentString.split('|');
+  fields[6] = 'app-metadata';
+  const hashString = fields.join('|');
+  for (const [input, status] of [
+    [hashString.replace('|50.00|', '|51.00|'), 400],
+    [hashString.replace('|Test Donor|', '|Someone Else|'), 400],
+    [hashString.replace('donor@example.org', 'other@example.org'), 400],
+    [hashString.replace('|NBM Donation|', '|Other Product|'), 400],
+    [hashString.replace(key, 'other_key'), 400],
+    [hashString.replace(txnid, 'nbm1234567890123abcdee'), 404]
+  ]) {
+    assert.equal((await h.send({ hashName: 'payment_source', hashString: input })).statusCode, status);
+  }
+  for (const status of ['success', 'failed']) {
+    h.payment.status = status;
+    assert.equal((await h.send({ hashName: 'payment_source', hashString })).statusCode, 409);
+  }
+});
+
+test('SDK metadata rejects oversized fields, control characters and extra delimiters', async () => {
+  const h = harness();
+  for (const udf of ['x'.repeat(256), 'line\nbreak', 'carriage\rreturn', 'nul\0value', 'extra|field']) {
+    const fields = paymentString.split('|');
+    fields[6] = udf;
+    const result = await h.send({ hashName: 'payment_source', hashString: fields.join('|') });
+    assert.equal(result.statusCode, 400);
+  }
+});
