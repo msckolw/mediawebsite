@@ -11,7 +11,7 @@
 
 ```bash
 # Set your project ID
-export PROJECT_ID="thenbm"
+export PROJECT_ID="project-d19d2737-e186-40d9-879"
 
 # Create Admin Email Secret
 echo -n "manisankarthenobias@gmail.com" | gcloud secrets create ADMIN_EMAIL \
@@ -57,7 +57,7 @@ gcloud run services update thenbm \
 ### Alternative: Using Google Cloud Console (Web UI)
 
 1. **Navigate to Secret Manager**:
-   - Go to https://console.cloud.google.com/security/secret-manager?project=thenbm
+   - Go to https://console.cloud.google.com/security/secret-manager?project=project-d19d2737-e186-40d9-879
    - Click "CREATE SECRET"
 
 2. **Create ADMIN_EMAIL Secret**:
