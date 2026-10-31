@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const newsSchema = new mongoose.Schema({
+  assistantAssignment: { type: mongoose.Schema.Types.ObjectId, ref: 'NewsAssignment' },
+  imageCaption: { type: String, maxlength: 500 },
+  imageCredit: { type: String, maxlength: 300 },
   title: {
     type: String,
     required: [true, 'Title is required'],

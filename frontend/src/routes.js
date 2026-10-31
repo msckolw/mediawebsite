@@ -16,8 +16,10 @@ let ContactUs = React.lazy(() => import('./pages/ContactUs'))
 let Bookmarks = React.lazy(() => import('./pages/Bookmarks'))
 let Donate = React.lazy(() => import('./pages/Donate'))
 let DonateStatus = React.lazy(() => import('./pages/DonateStatus'))
+let NewsAssistant = React.lazy(() => import('./pages/NewsAssistant'))
 
 export const routes = [
+    {path: "/admin/assistant", element: <NewsAssistant />},
     {path: "/login", element: <Login />},
     {path: "/admin", element: <AdminPanel />},
     {path: "/article/:id", element: <ArticleDetail />},

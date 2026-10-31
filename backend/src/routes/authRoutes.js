@@ -29,7 +29,13 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if(email!=='admin@nbm.com' || password!=='maniisadmin') {
+    const configuredEmail = process.env.ADMIN_EMAIL;
+    const passwordHash = process.env.ADMIN_PASSWORD_HASH;
+    if (!configuredEmail || !passwordHash) {
+      return res.status(503).json({message: 'Admin sign-in is not configured.'});
+    }
+    if (typeof email !== 'string' || typeof password !== 'string' || password.length > 256 ||
+        email !== configuredEmail || !await require('bcryptjs').compare(password, passwordHash)) {
       return res.status(401).json({message: 'Invalid Credentials'});
     }
 

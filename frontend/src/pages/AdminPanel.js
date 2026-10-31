@@ -1,7 +1,7 @@
 import { useSession } from '../context/SessionContext';
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/AdminPanel.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { inspectImage } from '../services/imageQuality';
 import { prepareImageUpload } from '../services/imageUpload';
 import SourceModal from './SourceModal'; // Import the new component
@@ -295,6 +295,7 @@ const AdminPanel = () => {
   return (
     <div className="admin-panel" id="mainDiv">
       <h1>Admin Panel</h1>
+      <p><Link to="/admin/assistant">Open News Assistant →</Link></p>
 
       {error && <div className="error-message">{error}</div>}
 
