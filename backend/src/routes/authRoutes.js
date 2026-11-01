@@ -33,7 +33,18 @@ router.post('/login', async (req, res) => {
     const passwordHash = process.env.ADMIN_PASSWORD_HASH;
     
     // Debug logging (remove after testing)
-    console.log('Login attempt:', { email, configuredEmail: configuredEmail || 'NOT_SET', hashSet: !!passwordHash });
+    console.log('=== LOGIN DEBUG ===');
+    console.log('Environment check:', {
+      ADMIN_EMAIL_exists: !!process.env.ADMIN_EMAIL,
+      ADMIN_EMAIL_value: process.env.ADMIN_EMAIL,
+      ADMIN_PASSWORD_HASH_exists: !!process.env.ADMIN_PASSWORD_HASH,
+      ADMIN_PASSWORD_HASH_length: process.env.ADMIN_PASSWORD_HASH ? process.env.ADMIN_PASSWORD_HASH.length : 0
+    });
+    console.log('Login attempt:', { 
+      email, 
+      configuredEmail: configuredEmail || 'NOT_SET', 
+      hashSet: !!passwordHash 
+    });
     
     if (!configuredEmail || !passwordHash) {
       console.error('Admin credentials not configured in environment');
