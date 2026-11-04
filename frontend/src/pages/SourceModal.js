@@ -2,29 +2,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/AdminPanel.css';
 
-const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20, typeList }) => {
+const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20, typeList = [] }) => {
   const [sources, setSources] = useState([{ source_type: '', url: '', _id: '' }]);
   const modalRef = useRef(null);
-  const [sourceOptions, setSourceOptions] = useState([{ source_type: '', url: '', _id: '' }]);
-  
-  // Source options from your original code
-  /*const sourceOptions = [
-    { _id: '1', source: 'S-1'},
-    { _id: '2', source: 'S-2'},
-    { _id: '3', source: 'S-3'},
-    { _id: '4', source: 'S-4'},
-    { _id: '5', source: 'S-5'}
-  ];*/
+  const sourceOptions = typeList;
+  const [error, setError] = useState('');
+  const wasOpen = useRef(false);
 
-  // Initialize with provided sources or default empty one
+  // Start a fresh draft only when opening. Options can refresh while editing.
   useEffect(() => {
-    if (initialSources && initialSources.length > 0 && initialSources[0].url) {
-      setSources(initialSources);
-    } else {
-      setSources([{ source_type: '', url: '', _id: '' }]);
+    if (isOpen && !wasOpen.current) {
+      setSources(initialSources?.length
+        ? initialSources.map(source => ({ ...source }))
+        : [{ source_type: '', url: '', _id: '' }]);
+      setError('');
     }
-    setSourceOptions(typeList);
-  }, [initialSources, isOpen, typeList]);
+    wasOpen.current = isOpen;
+  }, [initialSources, isOpen]);
 
   // Handle click outside to close modal
   useEffect(() => {
@@ -37,7 +31,7 @@ const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20,
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -46,38 +40,39 @@ const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20,
   // Handle source change
   const handleSourceChange = (index, e) => {
     const { name, value } = e.target;
-    //console.log(sourceOptions)
-    const newSources = [...sources];
-    newSources[index] = { ...newSources[index], [name]: value };
-    
-    if (name === 'source_type') {
-      let id = '';
-      const foundSource = sourceOptions.find(s => s.source_type === value);
-      if (foundSource) {
-        id = foundSource._id;
+    setError('');
+    setSources(previous => previous.map((source, row) => {
+      if (row !== index) return source;
+      const updated = { ...source, [name]: value };
+      if (name === 'source_type') {
+        updated._id = sourceOptions.find(option => option.source_type === value)?._id || '';
       }
-      newSources[index] = { ...newSources[index], _id: id };
-    }
-    
-    setSources(newSources);
+      return updated;
+    }));
   };
 
   // Add new source
   const handleAddSource = () => {
-    if (sources.length >= maxSources) return;
-    setSources([...sources, { source_type: '', url: '', _id: '' }]);
+    setSources(previous => previous.length >= maxSources ? previous : [...previous, { source_type: '', url: '', _id: '' }]);
   };
 
   // Remove source
   const handleRemoveSource = (index) => {
-    const newSources = sources.filter((_, i) => i !== index);
-    setSources(newSources);
+    setSources(previous => previous.filter((_, i) => i !== index));
+    setError('');
   };
 
   // Save sources
   const saveSourcesHandler = () => {
-    let validSources = sources.filter(source => source._id && source.url);
-    validSources = validSources.length ? validSources : [{ source_type: '', url: '', _id: '' }];
+    const incomplete = sources.findIndex(source =>
+      (source.source_type || source._id || source.url.trim()) &&
+      (!source.source_type || !source._id || !source.url.trim()));
+    if (incomplete !== -1) {
+      setError(`Complete the source type and URL for source ${incomplete + 1}, or clear the row.`);
+      return;
+    }
+    const validSources = sources.filter(source => source._id && source.url.trim())
+      .map(source => ({ ...source, url: source.url.trim() }));
     onSave(validSources);
   };
 
@@ -88,26 +83,28 @@ const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20,
       <div className="modal" ref={modalRef}>
         <div className="modal-header">
           <span className="modal-title">
-            <h3>{sources.length > 0 && sources[0].source_type && sources[0].url ? 
+            <h3>{sources.length > 0 && sources[0].source_type && sources[0].url ?
               'Edit Sources' : 'Add Sources'}</h3>
           </span>
           <span className="modal-close">
-            <button 
-              className="close-btn" 
-              onClick={onClose} 
+            <button
+              type="button"
+              className="close-btn"
+              onClick={onClose}
               aria-label="Close"
             >
               ×
             </button>
           </span>
         </div>
-        
+
         <div className="modal-body">
+          {error && <p className="error-message" role="alert">{error}</p>}
           {sources.map((source, index) => (
             <div key={index} className="source-item">
               <div className="source-row">
                 <div className="source-number">{index + 1}</div>
-                
+
                 <div className="source-select">
                   <select
                     name="source_type"
@@ -121,7 +118,7 @@ const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20,
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="source-input">
                   <input
                     type="text"
@@ -132,7 +129,7 @@ const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20,
                     aria-label={`Source information ${index + 1}`}
                   />
                 </div>
-                
+
                 <div className="source-remove">
                   {index !== 0 && (
                     <button
@@ -148,25 +145,27 @@ const SourceModal = ({ isOpen, onClose, initialSources, onSave, maxSources = 20,
               </div>
             </div>
           ))}
-          
+
           {sources.length < maxSources && (
             <div className="add-source-hint">
               <p>Add up to {maxSources} sources</p>
             </div>
           )}
         </div>
-        
+
         <div className="modal-footer">
-          <button 
-            className="add-more-btn" 
+          <button
+            type="button"
+            className="add-more-btn"
             onClick={handleAddSource}
             disabled={sources.length >= maxSources}
             aria-label="Add another source"
           >
             Add More
           </button>
-          <button 
-            className="save-btn" 
+          <button
+            type="button"
+            className="save-btn"
             onClick={saveSourcesHandler}
             aria-label="Save sources"
           >
