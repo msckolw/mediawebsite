@@ -40,3 +40,10 @@ test('serves cached versioned static assets without another download', async () 
   await expect(result).resolves.toBe(cached);
   expect(fetch).not.toHaveBeenCalled();
 });
+
+test('article navigation bypasses caches so server HTML and error status remain authoritative', () => {
+  const {handlers,caches}=worker();
+  const respondWith=jest.fn();
+  handlers.fetch({request:{url:'https://example.org/article/507f1f77bcf86cd799439011',method:'GET',mode:'navigate'},respondWith});
+  expect(respondWith).not.toHaveBeenCalled();expect(caches.match).not.toHaveBeenCalled();
+});

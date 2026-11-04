@@ -5,30 +5,45 @@ import '../styles/ArticleDetail.css';
 import {getArticle} from '../services/api'
 import Swal from 'sweetalert2'
 import { StoryImage, storyDate } from '../components/ArticleFeed';
+import { updateMetadata } from '../seo/articleMetadata';
+
+function initialArticle(id) {
+  try {
+    const article = JSON.parse(document.getElementById('nbm-article-data')?.textContent || 'null');
+    return article?._id === id ? article : null;
+  } catch { return null; }
+}
 
 const ArticleDetail = () => {
   const { id } = useParams();
   const { user } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
-  const [article, setArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [article, setArticle] = useState(() => initialArticle(id));
+  const [loading, setLoading] = useState(() => !initialArticle(id));
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    updateMetadata(document, article?._id === id ? article : null);
+    return () => updateMetadata(document, null);
+  }, [article, id]);
 
   const returnTo = location.state?.returnTo?.startsWith('/category/') ? location.state.returnTo : '/';
   useEffect(() => {
     let active = true;
-    setLoading(true);
+    const initial = initialArticle(id);
+    setArticle(initial);
+    setLoading(!initial);
     setError(null);
-    getArticle(id).then(response => {
+    getArticle(id, true).then(response => {
       if (!active) return;
       if (!response) { setError('Article not found'); return; }
       setArticle(response);
       let bookmarks = [];
       try { bookmarks = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]'); } catch { /* Ignore damaged local bookmarks. */ }
       setIsSaved(Array.isArray(bookmarks) && bookmarks.some(bookmark => bookmark.id === response._id));
-    }).catch(() => { if (active) setError('Failed to load article. Please try again later.'); })
+    }).catch(() => { if (active && !initial) setError('Failed to load article. Please try again later.'); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [id]);

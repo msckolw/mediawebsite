@@ -57,6 +57,7 @@ const payuMobileHashRoutes = require('./routes/payuMobileHashRoutes');
 const donationRoutes = require('./routes/donationRoutes');
 
 app.use('/api', newsRoutes);
+app.use('/api', require('./routes/sitemapRoutes').createRouter());
 app.use('/api/auth', authRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api/payments/payu', payuMobileHashRoutes);

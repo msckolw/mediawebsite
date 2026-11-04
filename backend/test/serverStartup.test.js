@@ -31,7 +31,7 @@ function boot(env = {}) {
       if (name === 'http') return { createServer: () => server };
       if (name === 'dotenv') return { config() {} };
       if (name === './socket') return { initSocket() {} };
-      if (name === './routes/assistantRoutes') return { createRouter: () => ({}) };
+      if (['./routes/assistantRoutes', './routes/sitemapRoutes'].includes(name)) return { createRouter: () => ({}) };
       if (name.startsWith('./routes/')) return {};
       if (['cors', 'cookie-parser', 'socket.io', 'compression'].includes(name)) return () => () => {};
       throw new Error(`Unexpected module: ${name}`);

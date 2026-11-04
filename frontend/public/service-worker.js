@@ -1,5 +1,5 @@
 // Service Worker for caching
-const CACHE_NAME = 'nobias-media-cache-v7';
+const CACHE_NAME = 'nobias-media-cache-v8';
 // IMPORTANT:
 // Do NOT hardcode CRA build asset paths like `/static/js/main.js` or `/static/css/main.css`
 // because production filenames are hashed (e.g. main.abc123.js) and these URLs 404,
@@ -39,7 +39,8 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')));
+    // Keep document statuses and article metadata authoritative on the server.
+    // Offline failures must not masquerade as a successful article response.
     return;
   }
   const isStatic = url.pathname.startsWith('/static/') || urlsToCache.includes(decodeURI(url.pathname));

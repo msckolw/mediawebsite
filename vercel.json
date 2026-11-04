@@ -5,21 +5,26 @@
   "framework": "create-react-app",
   "redirects": [
     {
-      "source": "/",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
           "value": "www.thenobiasmedia.com"
         }
       ],
-      "destination": "https://thenobiasmedia.com",
+      "destination": "https://thenobiasmedia.com/:path*",
       "permanent": true
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/:path*",
+      "destination": "/api/page?route=/:path*"
     }
-  ]
+  ],
+  "functions": {
+    "api/page.js": {
+      "includeFiles": "frontend/build/index.html"
+    }
+  }
 }

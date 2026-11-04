@@ -13,7 +13,7 @@ and release checks. Archived documents are historical, not deployment instructio
 | `backend/` | Express, MongoDB/Mongoose, cookie authentication, Socket.IO, PayU and PhonePe |
 | External React Native app | Shares the API; current source is outside this checkout |
 | `Dockerfile` | Backend container, built from the repository root |
-| `vercel.json` | Frontend build and single-page-app routing |
+| `vercel.json` | Frontend build, server-rendered articles, and explicit client routing |
 | `.github/workflows/deploy-backend.yml` | Validation workflow, despite its filename |
 
 Production hosting is Vercel for the website and Google Cloud Run for the API.
@@ -165,3 +165,39 @@ Latest local validation on October 23, 2026: 49 backend tests, 27 frontend tests
 and a successful production frontend build. No deployment or live payment was
 performed. See [operations](03-OPERATIONS-AND-RELEASE.md) for release verification
 and [performance](04-PERFORMANCE.md) for the new reader/image behavior.
+
+## Article HTML, metadata, and sitemaps (November 4, 2026)
+
+Vercel's `api/page.js` fetches public article JSON from the backend and returns a
+complete article document with title, summary, body, source links, canonical URL,
+Open Graph/Twitter tags, and NewsArticle JSON-LD. It bundles the generated
+`frontend/build/index.html`, preserving hashed React assets and existing reader
+controls. React starts with the embedded public article and revalidates it; its
+metadata updates on client navigation and resets when leaving the article.
+No author identity is invented when the article record has no author field.
+
+Set **SITE_API_URL** in Vercel's server runtime to the backend base including `/api`.
+It falls back to REACT_APP_API_URL and then the current production API. Set this
+explicitly for previews to use a different backend. The renderer only sends public
+GET requests; it never forwards browser cookies or payment information.
+
+The backend now serves `/api/sitemap.xml` (an index) and
+`/api/sitemaps/1.xml` (and numbered shards of up to 5,000 articles). Vercel exposes
+these at `/sitemap.xml` and `/sitemaps/1.xml` on the website origin. Shards include
+article URLs and real last-modified dates. The first also includes canonical
+public pages and categories from the database. The former static sitemap is
+removed. robots.txt already points to the same public sitemap URL.
+
+Malformed/missing article URLs and unknown paths, including unsupported discovery
+files, return HTML with HTTP 404 and noindex. Backend failures/timeouts return
+uncached 503 with Retry-After, rather than a misleading 404. Existing client routes
+remain available. Register new client routes in api/page.js when adding them.
+Static Vercel assets continue to be served from the build output. The service
+worker caches static assets but does not substitute an offline shell for document
+navigation. The www redirect now preserves all paths.
+
+Run `rtk npm run test:seo` from the root in addition to the backend/frontend suites
+and production build. These changes require **backend deployment first**, then a
+Vercel rebuild/deployment. Local changes alone do not update the public website.
+After release, verify raw article HTML without JavaScript, real 404 and 503 status
+codes, social metadata, sitemap XML and asset loading on the Vercel deployment.
