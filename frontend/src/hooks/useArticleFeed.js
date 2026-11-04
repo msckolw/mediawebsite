@@ -2,13 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { BASE_URL } from '../config';
 import { getArticles, getArticleByCategory } from '../services/api';
+import { initialFeed } from '../seo/initialPage';
 
 export const useArticleFeed = category => {
-  const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [articles, setArticles] = useState(() => initialFeed(category)?.articles || []);
+  const [loading, setLoading] = useState(() => !initialFeed(category));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [pageSettings, setPageSettings] = useState({ currentPage: 1, totalPages: 0 });
+  const [pageSettings, setPageSettings] = useState(() => ({ currentPage: 1, totalPages: initialFeed(category)?.totalPages || 0 }));
   const generation = useRef(0);
   const fetching = useRef(false);
   const fetchArticles = useCallback(async (page = 1) => {
@@ -37,9 +38,10 @@ export const useArticleFeed = category => {
 
   const invalidateRequests = useCallback(() => { ++generation.current; }, []);
   useEffect(() => {
-    setLoading(true);
-    setArticles([]);
-    setPageSettings({ currentPage: 1, totalPages: 0 });
+    const initial = initialFeed(category);
+    setLoading(!initial);
+    setArticles(initial?.articles || []);
+    setPageSettings({ currentPage: 1, totalPages: initial?.totalPages || 0 });
     fetchArticles(1);
     const socket = io(BASE_URL, { transports: ['websocket', 'polling'], reconnectionAttempts: 5 });
     // Refetch page one after a mutation/reconnect: offset pages may have shifted.
@@ -56,7 +58,7 @@ export const useArticleFeed = category => {
       fetching.current = false;
       socket.disconnect();
     };
-  }, [fetchArticles, invalidateRequests]);
+  }, [category, fetchArticles, invalidateRequests]);
 
   return { articles, loading, busy, error, pageSettings, fetchArticles };
 };

@@ -201,3 +201,36 @@ and production build. These changes require **backend deployment first**, then a
 Vercel rebuild/deployment. Local changes alone do not update the public website.
 After release, verify raw article HTML without JavaScript, real 404 and 503 status
 codes, social metadata, sitemap XML and asset loading on the Vercel deployment.
+
+
+## Public retrieval and rendered landing pages (November 4, 2026)
+
+`frontend/public/llms.txt` is copied to `/llms.txt` by the frontend build. It links
+to the live sitemap, articles, editorial context and policies, and explains public
+retrieval, attribution and rights boundaries. It is guidance, not authentication
+or a blanket license. Vercel explicitly serves it as UTF-8 plain text.
+
+The homepage and category routes now render live feed headlines, summaries, dates
+and article/source links using public backend GET requests. Source pages also
+render the references for the requested article. Their initial public data is
+embedded as escaped JSON so React can show content while revalidating it.
+Upstream feed failures return 503 instead of an empty successful page.
+
+`frontend/scripts/prerender.js` runs after CRA's production build. It uses React's
+server renderer on the existing About, Contact, Media Bias Details and legal-page
+components. `frontend/build/prerendered.json` contains their actual copy; no API
+or credentials are needed to generate informational pages. Canonical URLs point
+policy aliases to the primary policy paths. Only pure public components are in
+the shared publicPages manifest; unsupported imports fail the build explicitly.
+
+Vercel's ordered routes send `/` and `/index.html` through the server function
+before filesystem matching, serve existing static assets directly, and route
+other page requests to the renderer. This prevents a static empty index from
+overriding the rendered homepage. www requests are redirected with their path
+and query parameters intact. The function bundles the template and prerendered
+manifest, and has a 30-second duration limit around 15-second API timeouts.
+
+Deploy the updated Vercel application to publish these changes. The earlier
+dynamic sitemap still requires the corresponding backend revision. Plain
+`react-scripts start` remains client-rendered development; production rendering
+uses Vercel's function. No production deployment is performed by the build.

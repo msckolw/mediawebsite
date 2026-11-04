@@ -3,28 +3,40 @@
   "outputDirectory": "frontend/build",
   "installCommand": "npm ci --prefix frontend",
   "framework": "create-react-app",
-  "redirects": [
+  "functions": {
+    "api/page.js": {
+      "includeFiles": "frontend/build/{index.html,prerendered.json}",
+      "maxDuration": 30
+    }
+  },
+  "routes": [
     {
-      "source": "/:path*",
+      "src": "^/(.*)$",
       "has": [
         {
           "type": "host",
           "value": "www.thenobiasmedia.com"
         }
       ],
-      "destination": "https://thenobiasmedia.com/:path*",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
+      "dest": "/api/page?route=/$1"
+    },
     {
-      "source": "/:path*",
-      "destination": "/api/page?route=/:path*"
+      "src": "^/(?:index\\.html)?$",
+      "dest": "/api/page?route=/"
+    },
+    {
+      "src": "^/llms\\.txt$",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8"
+      },
+      "continue": true
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/(.*)$",
+      "dest": "/api/page?route=/$1"
     }
-  ],
-  "functions": {
-    "api/page.js": {
-      "includeFiles": "frontend/build/index.html"
-    }
-  }
+  ]
 }

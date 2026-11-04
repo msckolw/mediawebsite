@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import '../styles/SourcePage.css';
 import { getArticle } from '../services/api';
+import { initialSource } from '../seo/initialPage';
 const color = label => /left|liberal/i.test(label) ? '#a33b38' : /right|traditionalist/i.test(label) ? '#285e92' : '#746087';
 const safeSource = value => { try { const url = new URL(value); return ['https:', 'http:'].includes(url.protocol) ? url : null; } catch { return null; } };
 export default function SourcePage() {
   const { id } = useParams();
   const { state } = useLocation();
-  const [article, setArticle] = useState(null);
+  const [article, setArticle] = useState(() => initialSource(id));
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !initialSource(id));
   useEffect(() => {
     let active = true;
-    setLoading(true); setError(''); setArticle(null);
-    getArticle(id, true).then(result => { if (active) setArticle(result); }).catch(() => { if (active) setError('We couldn’t load the sources. Please return to the story and try again.'); }).finally(() => { if (active) setLoading(false); });
+    const initial = initialSource(id);
+    setLoading(!initial); setError(''); setArticle(initial);
+    getArticle(id, true).then(result => { if (active) setArticle(result); }).catch(() => { if (active && !initial) setError('We couldn’t load the sources. Please return to the story and try again.'); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [id]);
   const groups = (article?.source || []).reduce((result, source) => {

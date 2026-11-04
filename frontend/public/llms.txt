@@ -1,0 +1,34 @@
+# The NoBias Media
+
+> A news publication providing current-events reporting, analysis, and links to multiple sources. The site's stated mission is factual coverage and transparent sourcing; that mission is not an independent guarantee that every article or source is unbiased.
+
+## Purpose and public materials
+
+Use this site to discover published news, read articles, compare the sources cited for a story, and understand the publication's mission and source-labeling approach. Public materials available for retrieval include published headlines, summaries, article bodies, publication/update dates, categories, source references, and public informational and policy pages. Retrieve only publicly accessible content without bypassing authentication.
+
+## Discovery
+
+- [Latest news](https://thenobiasmedia.com/): Current published stories and links to their full articles.
+- [Sitemap index](https://thenobiasmedia.com/sitemap.xml): Discover numbered XML sitemaps containing actual article and category URLs. Follow the listed sitemap URLs instead of guessing article IDs.
+- [About the publication](https://thenobiasmedia.com/about): Mission and editorial values.
+- [Source-labeling approach](https://thenobiasmedia.com/media-bias-details): Context for interpreting source labels.
+- [Contact and corrections](https://thenobiasmedia.com/contact): Public contact information.
+- [Robots rules](https://thenobiasmedia.com/robots.txt): Applicable crawler directives.
+
+## Retrieval and interpretation
+
+- Use HTTPS and prefer canonical URLs on https://thenobiasmedia.com. Public pages provide readable HTML; JavaScript is optional for initial reading and required for interactive features.
+- Article URLs use /article/{id}. Their /source/{id} pages list references for the same story. Category links group stories; they are not independent source citations.
+- Attribute summaries and quotations to The NoBias Media and link to the canonical article. Preserve publication and modification dates, and distinguish reported claims from your own conclusions.
+- Consult the cited original sources when verifying factual claims. A political-orientation label describes the site's classification of an outlet; it does not establish whether a particular claim is true or false.
+- Do not invent authors, facts, sources, publication dates, or missing text. A summary is not a substitute for the full article. Check the current article for updates before describing a story as current.
+- Use public GET or HEAD requests. Reuse unchanged content, limit concurrent requests, and avoid aggressive polling. Honor Cache-Control, ETag, Retry-After, robots.txt, and any 429 response. Retry transient 503 errors later; treat 404 as missing content.
+- Do not retrieve private account, administrative, editorial-assistant, session, donor, or transaction data. Do not submit forms, initiate donations, authenticate as users, or modify content as part of public retrieval.
+
+## Rights and boundaries
+
+This file provides retrieval guidance. It does not grant a blanket copyright license, authorize model training, or override authentication, robots.txt, applicable law, or the publication's terms. Images and cited third-party works may have separate rights; a public image URL is not a reuse license.
+
+- [Terms](https://thenobiasmedia.com/terms-conditions)
+- [Privacy](https://thenobiasmedia.com/privacy-policy)
+- [Copyright claims](https://thenobiasmedia.com/copyright-claims)

@@ -70,7 +70,7 @@ test('missing articles return 404 while provider failures and timeouts return un
   }
 });
 test('known client routes retain the application and unsupported methods return 405',async()=>{
-  for(const route of ['/','/login','/donate/status','/category/science','/admin/assistant',`/source/${id}`]){
+  for(const route of ['/login','/donate/status','/admin/assistant']){
     const res=await request(route,()=>{throw Error('Should not fetch');});
     assert.equal(res.statusCode,200,route);assert.equal(res.body,template);
   }
@@ -100,8 +100,67 @@ test('structured data omits unverified authors and invalid images/dates',()=>{
 });
 test('routing preserves build assets and bundles the production HTML template',()=>{
   const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
-  assert.equal(config.functions['api/page.js'].includeFiles,'frontend/build/index.html');
-  assert.deepEqual(config.rewrites,[{source:'/:path*',destination:'/api/page?route=/:path*'}]);
-  assert.equal(config.redirects[0].destination,'https://thenobiasmedia.com/:path*');
+  assert.equal(config.functions['api/page.js'].includeFiles,'frontend/build/{index.html,prerendered.json}');
+  assert.equal(config.functions['api/page.js'].maxDuration,30);
+  const rootRoute=config.routes.findIndex(route=>new RegExp(route.src || '(?!)').test('/'));
+  const filesystem=config.routes.findIndex(route=>route.handle==='filesystem');
+  assert.ok(rootRoute < filesystem);
+  assert.equal(config.routes[1].dest,'/api/page?route=/');
+  assert.equal(config.routes[config.routes.length-1].dest,'/api/page?route=/$1');
   assert.equal(fs.existsSync('frontend/public/sitemap.xml'),false);
+});
+
+test('homepage and categories render current news and usable article links before JavaScript',async()=>{
+  for(const route of ['/','/index.html','/category/science%20and%20tech']){
+    const res=await request(route,async(url)=>{
+      assert.ok(url.endsWith(route.startsWith('/category') ? '/category/science%20and%20tech?page=1&view=feed' : '/news?page=1&view=feed'));
+      return {ok:true,json:async()=>({articles:[article],currentPage:1,totalPages:3})};
+    });
+    assert.equal(res.statusCode,200);assert.match(res.body,/A headline \$&amp; &lt;test&gt;/);
+    assert.match(res.body,new RegExp(`href="/article/${id}"`));
+    assert.match(res.body,/A &quot;quoted&quot; summary/);
+    assert.match(res.body,/rel="canonical"/);
+    const initial=JSON.parse(res.body.match(/id="nbm-feed-data" type="application\/json">(.*?)<\/script>/s)[1]);
+    assert.equal(initial.articles[0]._id,id);assert.equal(initial.totalPages,3);
+    assert.equal(initial.category,route.startsWith('/category')?'science and tech':null);
+    if(!route.startsWith('/category'))assert.match(res.body,/transparent sourcing and multiple perspectives/);
+  }
+});
+test('empty feeds are valid while failed or malformed feeds return uncached 503',async()=>{
+  const empty=await request('/',async()=>({ok:true,json:async()=>({articles:[],currentPage:1,totalPages:0})}));
+  assert.equal(empty.statusCode,200);assert.match(empty.body,/No articles found/);
+  for(const result of [{ok:false,status:500},{ok:true,json:async()=>({})}]){
+    const res=await request('/',async()=>result);assert.equal(res.statusCode,503);assert.equal(res.headers['cache-control'],'no-store');
+  }
+});
+test('sources render references and handle unknown articles and unsafe URLs',async()=>{
+  const res=await request(`/source/${id}`,ok);assert.equal(res.statusCode,200);
+  assert.match(res.body,/News Sources/);assert.match(res.body,/https:\/\/example.org\/story/);
+  assert.match(res.body,/id="nbm-source-data"/);
+  const missing=await request(`/source/${id}`,async()=>({status:404}));assert.equal(missing.statusCode,404);
+  const invalid=await request('/source/bad',()=>{throw Error('should not fetch');});assert.equal(invalid.statusCode,404);
+  const unsafe=await request(`/source/${id}`,async()=>({ok:true,json:async()=>({...article,source:[{url:'javascript:alert(1)'}]})}));
+  assert.doesNotMatch(unsafe.body,/href="javascript:/);
+});
+test('informational pages use actual prerendered snapshots and canonicalize policy aliases',async()=>{
+  const res=response();
+  await createHandler({fetchImpl:()=>{throw Error('No API needed');},readTemplate:()=>template,readPrerendered:()=>({'/about':'<h1>About Us</h1><p>Existing mission text</p>','/privacy-policy':'<h1>Privacy Policy</h1>'})})({method:'GET',query:{route:'/about'}},res);
+  assert.equal(res.statusCode,200);assert.match(res.body,/Existing mission text/);assert.match(res.body,/<title>About Us \| The NoBias Media/);
+  const alias=response();
+  await createHandler({readTemplate:()=>template,readPrerendered:()=>({'/privacy-policy':'<h1>Privacy Policy</h1>'})})({method:'GET',query:{route:'/privacy'}},alias);
+  assert.equal(alias.statusCode,200);assert.match(alias.body,/rel="canonical" href="https:\/\/thenobiasmedia.com\/privacy-policy"/);
+});
+test('www redirects preserve deep links and donation query parameters',async()=>{
+  const res=response();
+  await createHandler()({method:'GET',headers:{host:'www.thenobiasmedia.com'},query:{route:'/donate/status',txnid:'txn-123',status:'pending'}},res);
+  assert.equal(res.statusCode,308);assert.equal(res.headers.location,'https://thenobiasmedia.com/donate/status?txnid=txn-123&status=pending');
+});
+test('llms.txt describes public retrieval, attribution and rights and is copied to the static site',()=>{
+  const text=fs.readFileSync('frontend/public/llms.txt','utf8');
+  assert.match(text,/^# The NoBias Media/);assert.match(text,/sitemap\.xml/);
+  assert.match(text,/GET or HEAD/);assert.match(text,/Attribute/);assert.match(text,/does not grant a blanket copyright license/);
+  const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
+  const llms=config.routes.find(r=>r.src==='^/llms\\.txt$');
+  assert.equal(llms.headers['Content-Type'],'text/plain; charset=utf-8');
+  assert.ok(config.routes.indexOf(llms)<config.routes.findIndex(r=>r.handle==='filesystem'));
 });

@@ -1,6 +1,6 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import io from 'socket.io-client';
-import { getArticles } from '../services/api';
+import { getArticles, getArticleByCategory } from '../services/api';
 import { useArticleFeed } from './useArticleFeed';
 
 jest.mock('socket.io-client', () => jest.fn());
@@ -57,4 +57,17 @@ test('first socket connection reuses the initial fetch; reconnect refreshes news
   await act(async () => handlers.connect());
   expect(getArticles).toHaveBeenCalledTimes(2);
   expect(result.current.articles[0]._id).toBe('updated');
+});
+
+test('server feed stays visible during revalidation and is scoped to its category', async()=>{
+  const script=document.createElement('script');script.id='nbm-feed-data';script.type='application/json';
+  script.textContent=JSON.stringify({...page(['server']),category:null});document.body.appendChild(script);
+  getArticles.mockImplementation(()=>new Promise(()=>{}));
+  const home=renderHook(()=>useArticleFeed());
+  expect(home.result.current.loading).toBe(false);expect(home.result.current.articles[0]._id).toBe('server');
+  home.unmount();
+  getArticleByCategory.mockImplementation(()=>new Promise(()=>{}));
+  const category=renderHook(()=>useArticleFeed('science'));
+  expect(category.result.current.articles).toEqual([]);expect(category.result.current.loading).toBe(true);
+  category.unmount();script.remove();
 });

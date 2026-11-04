@@ -33,7 +33,7 @@ export default function ArticleFeed({ category }) {
   const { pathname } = useLocation();
   const title = category ? category.replace(/\b\w/g, c => c.toUpperCase()) : 'Latest News';
   return <div className="nb-feed" id="mainDiv">
-    <header className="nb-simple-heading"><h1>{title}</h1></header>
+    <header className="nb-simple-heading"><h1>{title}</h1>{!category && <p>The NoBias Media publishes news and analysis with transparent sourcing and multiple perspectives. Read the full stories and explore their original sources.</p>}</header>
     {error && <div className="nb-feedback" role="alert"><p>{error}</p><button onClick={() => fetchArticles(1)}>Try again</button></div>}
     {loading ? <div className="nb-skeleton-grid" role="status" aria-label="Loading stories">{[0, 1, 2, 3].map(n => <div className="nb-skeleton" key={n}><div /><span /><span /><span /></div>)}</div> : articles.length ? <>
       <div className="nb-simple-grid">{articles.map((article, index) => <Story key={article._id} article={article} returnTo={pathname} showSummary={!category} priority={index === 0} />)}</div>

@@ -2,6 +2,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { escapeHtml: html, scriptJson, publicUrl, metadataTags } = require('../frontend/src/seo/articleMetadata');
 
+const {pages,pageTags,documentHtml,frame,feedHtml,sourceHtml} = require('../server/publicHtml');
+
 // Keep only real client routes here. Unknown discovery documents must return 404.
 const clientRoutes = new Set(['/', '/login', '/admin', '/admin/assistant', '/privacy-policy', '/privacy',
   '/privacypolicy', '/terms-conditions', '/terms-and-conditions', '/terms', '/termsandconditions',
@@ -22,14 +24,23 @@ function articleHtml(article) {
     ${sources ? `<section><h2>News sources</h2><ul>${sources}</ul></section>` : ''}
     <a href="/source/${html(article._id)}">View news sources</a></article></main>`;
 }
-function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync(path.join(process.cwd(), 'frontend/build/index.html'), 'utf8') } = {}) {
+function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync(path.join(process.cwd(), 'frontend/build/index.html'), 'utf8'), readPrerendered = () => JSON.parse(fs.readFileSync(path.join(process.cwd(), 'frontend/build/prerendered.json'), 'utf8')) } = {}) {
   return async function handler(req, res) {
     if (!['GET', 'HEAD'].includes(req.method)) {
       res.setHeader('Allow', 'GET, HEAD'); return res.status(405).end();
     }
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'no-cache');
-    const route = typeof req.query?.route === 'string' ? req.query.route : '';
+    const requestedRoute = typeof req.query?.route === 'string' ? req.query.route : '';
+    const route = requestedRoute === '/index.html' ? '/' : requestedRoute.replace(/\/$/, '') || '/';
+    if (req.headers?.host === 'www.thenobiasmedia.com') {
+      const query = new URLSearchParams();
+      Object.entries(req.query || {}).filter(([key]) => key !== 'route').forEach(([key,value]) => {
+        for (const item of Array.isArray(value) ? value : [value]) query.append(key,item);
+      });
+      res.setHeader('Location', `https://thenobiasmedia.com${route}${query.size ? '?' + query : ''}`);
+      return res.status(308).end();
+    }
     const send = (code, body, type = 'text/html; charset=utf-8') => {
       res.setHeader('Content-Type', type);
       return res.status(code).send(req.method === 'HEAD' ? '' : body);
@@ -42,6 +53,34 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
         if (upstream.status === 404) return errorPage(404, 'Page not found');
         if (!upstream.ok || !/xml/i.test(upstream.headers.get('content-type') || '')) throw Error('Sitemap unavailable');
         return send(200, await upstream.text(), 'application/xml; charset=utf-8');
+      }
+      const publicPage = pages.find(page => page.path === route || page.aliases?.includes(route));
+      if (publicPage) {
+        const content = readPrerendered()[publicPage.path];
+        if (!content) throw Error('Missing prerendered page');
+        return send(200, documentHtml(readTemplate(), frame(content), pageTags(publicPage.title, publicPage.description, publicPage.path)));
+      }
+      if (route === '/' || /^\/category\/[^/]+$/.test(route)) {
+        let category = null;
+        try { category = route === '/' ? null : decodeURIComponent(route.slice('/category/'.length)); }
+        catch { return errorPage(404, 'Page not found'); }
+        const endpoint = category ? `/category/${encodeURIComponent(category)}?page=1&view=feed` : '/news?page=1&view=feed';
+        const response = await fetchImpl(`${apiBase}${endpoint}`, {headers:{Accept:'application/json'}, signal:AbortSignal.timeout(15000)});
+        if (!response.ok) throw Error('Feed unavailable');
+        const feed = await response.json();
+        if (!Array.isArray(feed.articles) || feed.currentPage !== 1 || !Number.isSafeInteger(feed.totalPages) || feed.totalPages < 0) throw Error('Invalid feed');
+        const rendered = feedHtml(feed, category);
+        return send(200, documentHtml(readTemplate(), rendered.content, pageTags(rendered.title,rendered.description,category ? `/category/${encodeURIComponent(category)}` : '/'), 'nbm-feed-data', {...feed,category}));
+      }
+      if (route.startsWith('/source/')) {
+        const match = /^\/source\/([a-f\d]{24})$/i.exec(route);
+        if (!match) return errorPage(404,'Article not found');
+        const response = await fetchImpl(`${apiBase}/news/${match[1]}?source=true&media=url`, {headers:{Accept:'application/json'},signal:AbortSignal.timeout(15000)});
+        if (response.status === 404 || response.status === 400) return errorPage(404,'Article not found');
+        if (!response.ok) throw Error('Sources unavailable');
+        const article = await response.json();
+        if (String(article._id).toLowerCase() !== match[1].toLowerCase() || !article.title) throw Error('Invalid source article');
+        return send(200, documentHtml(readTemplate(),sourceHtml(article),pageTags(`Sources: ${article.title}`,`References for ${article.title}`,`/source/${article._id}`),'nbm-source-data',article));
       }
       if (route.startsWith('/article/')) {
         const match = /^\/article\/([a-f\d]{24})\/?$/i.exec(route);
@@ -60,7 +99,7 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
         template = template.replace('<div id="root"></div>', () => `<div id="root">${articleHtml(article)}</div><script id="nbm-article-data" type="application/json">${scriptJson(article)}</script>`);
         return send(200, template);
       }
-      if (clientRoutes.has(route) || /^\/category\/[^/]+\/?$/.test(route) || /^\/source\/[a-f\d]{24}\/?$/i.test(route)) {
+      if (clientRoutes.has(route)) {
         return send(200, readTemplate());
       }
       return errorPage(404, 'Page not found');
