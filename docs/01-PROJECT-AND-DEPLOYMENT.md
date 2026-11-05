@@ -236,6 +236,17 @@ dynamic sitemap still requires the corresponding backend revision. Plain
 uses Vercel's function. No production deployment is performed by the build.
 
 
+## FAQ and reader help (November 5, 2026)
+
+The homepage includes visible FAQ answers and help/documentation links in React
+and its initial server-rendered HTML. `/faq` prerenders all 15 questions from the
+shared public FAQ data, using native details/summary controls that work without
+JavaScript. It is listed in llms.txt and the backend sitemap. The copy describes
+editorial aims without making guarantees about neutrality or unverified team
+credentials. Validate with root SEO tests, frontend tests, and the production
+build. Publish the frontend through Vercel; release the backend to publish the
+additional sitemap entry. Local validation does not update the public site.
+
 ## Site identity structured data (November 5, 2026)
 
 The shared `frontend/public/index.html` includes JSON-LD for the

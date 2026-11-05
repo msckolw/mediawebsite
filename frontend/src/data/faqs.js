@@ -1,0 +1,63 @@
+// Shared public FAQ copy for React and initial HTML.
+module.exports = [
+  {
+    "question": "What is The NoBias Media and what is its mission?",
+    "answer": "The NoBias Media is a news publication that aims to inform, educate, and empower readers through factual coverage, multiple perspectives, and transparent sourcing."
+  },
+  {
+    "question": "What kind of news does The NoBias Media publish?",
+    "answer": "We publish news and analysis on politics, business, world events, legal affairs, and other topics, bringing together different perspectives on current issues."
+  },
+  {
+    "question": "How does The NoBias Media work to reduce bias?",
+    "answer": "Our editorial approach emphasizes comparing sources, distinguishing reported facts from opinions, and linking to the reporting behind a story. No publication or source label guarantees that every article is free from bias."
+  },
+  {
+    "question": "What types of media bias does The NoBias Media address?",
+    "answer": "Our media bias guide discusses how story selection, framing, confirmation bias, and corporate interests can influence coverage. Readers can use that context when comparing sources."
+  },
+  {
+    "question": "Where does The NoBias Media get its news and information?",
+    "answer": "Stories draw on news outlets with a range of geographic and editorial perspectives. Source labels describe our classifications of outlets; they do not establish whether a particular claim is true."
+  },
+  {
+    "question": "Can I see the original sources behind the news stories?",
+    "answer": "Yes. Open the News Sources link on a story to see its listed references and follow links to the original reporting. If a story has no references listed, the source page says so."
+  },
+  {
+    "question": "How can I contact The NoBias Media?",
+    "answer": "Use our contact form or email contact@thenobiasmedia.com to share questions, suggestions, or feedback. Our contact page also provides our published business contact details in Delhi, India."
+  },
+  {
+    "question": "Does The NoBias Media accept investment or partnership inquiries?",
+    "answer": "Yes. Choose investment interest in our contact form to start a conversation. Sending an inquiry does not transfer funds or create an investment commitment."
+  },
+  {
+    "question": "How does The NoBias Media handle corrections or feedback?",
+    "answer": "Please send the article URL, the specific concern, and supporting evidence through our contact form. This helps the team review factual errors, bias concerns, and suggestions for improvement."
+  },
+  {
+    "question": "What is The NoBias Media’s editorial approach?",
+    "answer": "Our stated editorial values focus on factual reporting, clear sourcing, and multiple perspectives. Read our About and Media Bias Details pages for more context about the publication and its approach."
+  },
+  {
+    "question": "How does The NoBias Media handle controversial or politically sensitive topics?",
+    "answer": "We aim to provide context and different perspectives, with links to the reporting cited for a story. Readers should compare those sources and independently verify important claims."
+  },
+  {
+    "question": "Can readers share or save articles?",
+    "answer": "Yes. You can share article links and use the website’s bookmark controls to save stories. Interactive controls require JavaScript. Sharing a link does not grant permission to republish the full article or its images."
+  },
+  {
+    "question": "How often is the news updated?",
+    "answer": "The homepage lists the latest published stories. Check the dates shown on articles and revisit the homepage for new coverage; we do not promise a fixed publication schedule."
+  },
+  {
+    "question": "Where can I find the privacy policy and terms of use?",
+    "answer": "The Privacy Policy and Terms and Conditions are linked in the website footer. They describe our published privacy practices and the terms governing use of the website and its content."
+  },
+  {
+    "question": "How can I verify the credibility of the content myself?",
+    "answer": "Follow the sources linked to a story, compare their perspectives and evidence, check publication dates, and verify important claims independently. Source labels and summaries are context rather than proof of accuracy."
+  }
+];

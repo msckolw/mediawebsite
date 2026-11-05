@@ -219,3 +219,24 @@ test('WebMCP manifest is linked for discovery and the private inbox remains a kn
   const res=await request('/admin/inquiries',()=>{throw Error('No public inbox fetch');});
   assert.equal(res.statusCode,200);assert.equal(res.body,template);
 });
+
+
+test('homepage exposes FAQ answers and help links in initial HTML', async () => {
+  const res = await request('/', async () => ({ok:true,json:async()=>({articles:[],currentPage:1,totalPages:0})}));
+  assert.equal(res.statusCode, 200);
+  const faqs = require('../frontend/src/data/faqs');
+  for (const index of [0, 5, 8]) {
+    assert.ok(res.body.includes(faqs[index].question));
+    assert.ok(res.body.includes(faqs[index].answer));
+  }
+  assert.match(res.body, /href="\/faq"/);
+  assert.match(res.body, /aria-label="Help and documentation"/);
+  assert.match(res.body, /href="\/media-bias-details"/);
+});
+test('FAQ route serves prerendered content without a backend request', async () => {
+  const res = response();
+  await createHandler({readTemplate:()=>template,readPrerendered:()=>({'/faq':'<h1>Frequently Asked Questions</h1><details><summary>Reader question</summary><p>Reader answer</p></details>'}),fetchImpl:()=>{throw Error('No API needed');}})({method:'GET',query:{route:'/faq'}},res);
+  assert.equal(res.statusCode,200);
+  assert.match(res.body, /Reader answer/);
+  assert.match(res.body, /rel="canonical" href="https:\/\/thenobiasmedia.com\/faq"/);
+});

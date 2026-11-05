@@ -1,5 +1,6 @@
 // Shared routing/build definitions. Prerender the actual React copy, not a duplicate.
 module.exports = [
+  {path:'/faq', component:'FAQ', title:'Frequently Asked Questions', description:'Answers about The NoBias Media coverage, sources, feedback, and reader support.'},
   {path:'/about', component:'AboutUs', title:'About Us', description:'The mission, editorial values, and work of The NoBias Media.'},
   {path:'/contact', component:'ContactUs', title:'Contact Us', description:'Share your experience, suggest improvements, or discuss investing in The NoBias Media.'},
   {path:'/media-bias-details', component:'MediaBiasDetails', title:'Media Bias Details', description:'Understand source labels and The NoBias Media approach to media bias.'},

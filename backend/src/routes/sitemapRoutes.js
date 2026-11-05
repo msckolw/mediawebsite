@@ -2,7 +2,7 @@ const express = require('express');
 const News = require('../models/News');
 const SITE = 'https://thenobiasmedia.com';
 const PAGE_SIZE = 5000;
-const STATIC_PATHS = ['/', '/about', '/contact', '/media-bias-details', '/privacy-policy',
+const STATIC_PATHS = ['/', '/faq', '/about', '/contact', '/media-bias-details', '/privacy-policy',
   '/terms-conditions', '/refund-policy', '/delete-account', '/copyright-claims', '/donate'];
 const xml = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&apos;'}[c]));
 function entry(location, modified) {

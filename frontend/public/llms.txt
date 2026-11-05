@@ -10,6 +10,7 @@ Use this site to discover published news, read articles, compare the sources cit
 
 - [Latest news](https://thenobiasmedia.com/): Current published stories and links to their full articles.
 - [Sitemap index](https://thenobiasmedia.com/sitemap.xml): Discover numbered XML sitemaps containing actual article and category URLs. Follow the listed sitemap URLs instead of guessing article IDs.
+- [Frequently asked questions and reader help](https://thenobiasmedia.com/faq): Answers about coverage, sources, corrections, and contacting the team.
 - [About the publication](https://thenobiasmedia.com/about): Mission and editorial values.
 - [Source-labeling approach](https://thenobiasmedia.com/media-bias-details): Context for interpreting source labels.
 - [Feedback and investment inquiries](https://thenobiasmedia.com/contact): A private contact form for reader experiences, suggestions, general inquiries, and investment interest.

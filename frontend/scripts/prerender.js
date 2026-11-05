@@ -17,6 +17,7 @@ for (const page of pages) {
   const compiled = {exports:{}};
   const localRequire = name => {
     if (name.endsWith('.css')) return {};
+    if (name === '../data/faqs') return require('../src/data/faqs');
     if (name === 'react') return React;
     if (name === 'react-router-dom') return require('react-router-dom');
     throw new Error(`Prerender page ${page.component} has an unsupported import: ${name}`);
