@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const {prefersMarkdown, publicMarkdown} = require('../server/markdown');
 const { escapeHtml: html, scriptJson, publicUrl, metadataTags } = require('../frontend/src/seo/articleMetadata');
 
 const {pages,pageTags,documentHtml,frame,feedHtml,sourceHtml} = require('../server/publicHtml');
@@ -31,6 +32,7 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
     }
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'no-cache');
+    const markdown = prefersMarkdown(req.headers?.accept);
     const requestedRoute = typeof req.query?.route === 'string' ? req.query.route : '';
     const route = requestedRoute === '/index.html' ? '/' : requestedRoute.replace(/\/$/, '') || '/';
     if (req.headers?.host === 'www.thenobiasmedia.com') {
@@ -43,9 +45,17 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
     }
     const send = (code, body, type = 'text/html; charset=utf-8') => {
       res.setHeader('Content-Type', type);
+      if (/^text\/(html|markdown)/.test(type)) {
+        const vary = String(res.getHeader?.('Vary') || '').split(',').map(value => value.trim()).filter(Boolean);
+        if (!vary.some(value => value === '*' || value.toLowerCase() === 'accept')) vary.push('Accept');
+        res.setHeader('Vary', vary.join(', '));
+      }
       return res.status(code).send(req.method === 'HEAD' ? '' : body);
     };
-    const errorPage = (code, title) => send(code, `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>${title} | The NoBias Media</title></head><body><main><h1>${title}</h1><a href="/">Back to news</a></main></body></html>`);
+    const sendPage = (code, body, canonical = route) => markdown
+      ? send(code, publicMarkdown(body, canonical), 'text/markdown; charset=utf-8')
+      : send(code, body);
+    const errorPage = (code, title) => sendPage(code, `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>${title} | The NoBias Media</title></head><body><main><h1>${title}</h1><a href="/">Back to news</a></main></body></html>`);
     try {
       const apiBase = (process.env.SITE_API_URL || process.env.REACT_APP_API_URL || 'https://thenbm-329287861933.asia-south1.run.app/api').replace(/\/+$/, '');
       if (route === '/sitemap.xml' || /^\/sitemaps\/[1-9]\d*\.xml$/.test(route)) {
@@ -58,7 +68,7 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
       if (publicPage) {
         const content = readPrerendered()[publicPage.path];
         if (!content) throw Error('Missing prerendered page');
-        return send(200, documentHtml(readTemplate(), frame(content), pageTags(publicPage.title, publicPage.description, publicPage.path)));
+        return sendPage(200, documentHtml(readTemplate(), frame(content), pageTags(publicPage.title, publicPage.description, publicPage.path)), publicPage.path);
       }
       if (route === '/' || /^\/category\/[^/]+$/.test(route)) {
         let category = null;
@@ -70,7 +80,7 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
         const feed = await response.json();
         if (!Array.isArray(feed.articles) || feed.currentPage !== 1 || !Number.isSafeInteger(feed.totalPages) || feed.totalPages < 0) throw Error('Invalid feed');
         const rendered = feedHtml(feed, category);
-        return send(200, documentHtml(readTemplate(), rendered.content, pageTags(rendered.title,rendered.description,category ? `/category/${encodeURIComponent(category)}` : '/'), 'nbm-feed-data', {...feed,category}));
+        return sendPage(200, documentHtml(readTemplate(), rendered.content, pageTags(rendered.title,rendered.description,category ? `/category/${encodeURIComponent(category)}` : '/'), 'nbm-feed-data', {...feed,category}));
       }
       if (route.startsWith('/source/')) {
         const match = /^\/source\/([a-f\d]{24})$/i.exec(route);
@@ -80,7 +90,7 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
         if (!response.ok) throw Error('Sources unavailable');
         const article = await response.json();
         if (String(article._id).toLowerCase() !== match[1].toLowerCase() || !article.title) throw Error('Invalid source article');
-        return send(200, documentHtml(readTemplate(),sourceHtml(article),pageTags(`Sources: ${article.title}`,`References for ${article.title}`,`/source/${article._id}`),'nbm-source-data',article));
+        return sendPage(200, documentHtml(readTemplate(),sourceHtml(article),pageTags(`Sources: ${article.title}`,`References for ${article.title}`,`/source/${article._id}`),'nbm-source-data',article));
       }
       if (route.startsWith('/article/')) {
         const match = /^\/article\/([a-f\d]{24})\/?$/i.exec(route);
@@ -92,6 +102,10 @@ function createHandler({ fetchImpl = fetch, readTemplate = () => fs.readFileSync
         if (!response.ok) throw Error('Article unavailable');
         const article = await response.json();
         if (String(article._id).toLowerCase() !== match[1].toLowerCase() || !article.title || !article.content) throw Error('Invalid article response');
+        if (markdown) {
+          const updated = article.updatedAt ? `<p>Last updated: ${html(article.updatedAt)}</p>` : '';
+          return sendPage(200, articleHtml(article).replace('</article>', () => `${updated}</article>`));
+        }
         let template = readTemplate();
         template = template.replace(/<title>[\s\S]*?<\/title>/i, '').replace(/<meta\s+name="description"[\s\S]*?>/i, '');
         template = template.replace('</head>', () => `${metadataTags(article)}</head>`);

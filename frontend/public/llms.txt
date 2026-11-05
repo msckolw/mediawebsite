@@ -21,6 +21,7 @@ Use this site to discover published news, read articles, compare the sources cit
 ## Retrieval and interpretation
 
 - Use HTTPS and prefer canonical URLs on https://thenobiasmedia.com. Public pages provide readable HTML; JavaScript is optional for initial reading and required for interactive features.
+- Request `Accept: text/markdown` on public article, source, homepage, category, informational, and policy pages for Markdown. HTML remains the default; responses vary on Accept. GET and HEAD preserve HTTP status codes. Markdown does not add access to private screens or change content rights.
 - Article URLs use /article/{id}. Their /source/{id} pages list references for the same story. Category links group stories; they are not independent source citations.
 - Attribute summaries and quotations to The NoBias Media and link to the canonical article. Preserve publication and modification dates, and distinguish reported claims from your own conclusions.
 - Consult the cited original sources when verifying factual claims. A political-orientation label describes the site's classification of an outlet; it does not establish whether a particular claim is true or false.

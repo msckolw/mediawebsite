@@ -262,3 +262,27 @@ Publish with a Vercel rebuild/deployment; this frontend change requires no backe
 release. After deployment, inspect raw page HTML and check the homepage with the
 Schema.org validator and an article with Google's Rich Results Test. Valid schema
 does not guarantee a rich result or an immediate change in a third-party audit.
+
+
+## Markdown content negotiation (November 5, 2026)
+
+Public page GET/HEAD requests with an explicit preference for `text/markdown`
+return `Content-Type: text/markdown; charset=utf-8`. HTML stays the default for
+missing Accept headers, wildcards, and equal Markdown/HTML quality values.
+Both representations include `Vary: Accept` for cache separation.
+
+The homepage, category feeds, article/source pages, and prerendered informational
+and policy pages share their existing public content with the Markdown renderer.
+Links resolve to absolute URLs and responses include the canonical page URL.
+Article Markdown includes publication and available modification dates.
+Scripts, interactive forms, and browser assets are omitted. Client-only account,
+admin, bookmark, and payment screens continue to return their HTML shell; no
+private API or write action is invoked. Sitemaps remain XML. Unknown pages keep
+404 status; upstream errors keep uncached 503 with Retry-After. No token-count
+header is estimated. Content rights and authentication are unchanged.
+
+Run root `rtk npm run test:seo`, frontend tests, and the frontend production build.
+Publish through a Vercel rebuild/deployment; no backend release is required.
+After release, compare GET and HEAD with `Accept: text/html` and
+`Accept: text/markdown` on the same public URL and verify Content-Type, Vary,
+body content, and error statuses. Local validation does not update production.
