@@ -17,6 +17,7 @@ let Bookmarks = React.lazy(() => import('./pages/Bookmarks'))
 let Donate = React.lazy(() => import('./pages/Donate'))
 let DonateStatus = React.lazy(() => import('./pages/DonateStatus'))
 let NewsAssistant = React.lazy(() => import('./pages/NewsAssistant'))
+let FAQ = React.lazy(() => import('./pages/FAQ'))
 
 const InquiryInbox = React.lazy(() => import('./pages/InquiryInbox'));
 
@@ -28,6 +29,7 @@ export const routes = [
     {path: "/article/:id", element: <ArticleDetail />},
     {path: "/category/:cat", element: <ABC />},
     {path: "/source/:id", element: <SourcePage />},
+    {path: "/faq", element: <FAQ />},
     // Privacy Policy - multiple aliases for PhonePe compliance
     {path: "/privacy-policy", element: <PrivacyPolicy />},
     {path: "/privacy", element: <PrivacyPolicy />},

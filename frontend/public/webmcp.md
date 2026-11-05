@@ -27,6 +27,20 @@ result; early preview browsers receive that JSON in a text content envelope.
 Runtime registration passes the fields supported by the browser API; the
 documentation manifest carries output schemas and detailed access rules.
 
+## Help & Documentation
+
+For common questions about The NoBias Media, our FAQ is available at [/faq](/faq).
+Topics covered include:
+- What is The NoBias Media and how we ensure unbiased reporting
+- News categories we cover and update frequency
+- How to support us and submit news tips
+- Source verification process
+- Privacy policy and contact information
+- Error reporting and content republication
+
+For additional help or inquiries not covered in the FAQ, use the Contact form
+available at [/contact](/contact).
+
 ## Inquiry access and confirmation
 
 No sign-in is required to prepare an inquiry. Preparing a draft never stores it

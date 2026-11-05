@@ -43,7 +43,7 @@ export default function Header() {
     <dialog ref={dialog} className="nb-menu" aria-labelledby="nb-menu-title" onCancel={close} onClose={close} onClick={event => { if (event.target === dialog.current) { const rect = dialog.current.getBoundingClientRect(); if (event.clientX > rect.right || event.clientX < rect.left || event.clientY < rect.top || event.clientY > rect.bottom) close(); } }}>
       <div className="nb-menu-top"><span id="nb-menu-title">Categories</span><button aria-label="Close navigation" onClick={close}>×</button></div>
       <nav aria-label="Main navigation"><Link to="/" onClick={close}>All stories</Link>{sections.map(([name, slug]) => <Link key={slug} to={`/category/${slug}`} onClick={close}>{name}</Link>)}{user && <Link to="/bookmarks" onClick={close}>Bookmarks</Link>}{user?.role === 'admin' && <Link to="/admin" onClick={close}>Profile</Link>}</nav>
-      <div className="nb-menu-secondary"><Link to="/media-bias-details" onClick={close}>How we compare sources ↗</Link><Link to="/about" onClick={close}>About NoBias</Link><Link to="/donate" onClick={close}>Support our work</Link><Link to="/contact" onClick={close}>Contact</Link></div>
+      <div className="nb-menu-secondary"><Link to="/faq" onClick={close}>FAQ</Link><Link to="/media-bias-details" onClick={close}>How we compare sources ↗</Link><Link to="/about" onClick={close}>About NoBias</Link><Link to="/donate" onClick={close}>Support our work</Link><Link to="/contact" onClick={close}>Contact</Link></div>
 
     </dialog>
   </header>;
