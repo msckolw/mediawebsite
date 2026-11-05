@@ -1,6 +1,6 @@
 const {SITE, escapeHtml:html, publicUrl, scriptJson} = require('../frontend/src/seo/articleMetadata');
 const pages = require('../frontend/src/seo/publicPages');
-const faqs = require('../frontend/src/data/faqs');
+const faqs = require('../frontend/src/data/faqs.json');
 function homeHelpHtml() {
   return `<section class="nb-home-help" aria-labelledby="home-faq-title"><h2 id="home-faq-title">Frequently Asked Questions</h2>${faqs.filter((_, index) => [0, 5, 8].includes(index)).map(faq => `<div><h3>${html(faq.question)}</h3><p>${html(faq.answer)}</p></div>`).join('')}<a href="/faq">Read all frequently asked questions →</a><nav class="faq-resources" aria-label="Help and documentation"><h2>Help and documentation</h2><a href="/faq">FAQ and reader help</a><a href="/media-bias-details">Media bias and source guide</a><a href="/about">How The NoBias Media works</a><a href="/contact">Contact support or report an error</a></nav></section>`;
 }

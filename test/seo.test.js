@@ -224,7 +224,7 @@ test('WebMCP manifest is linked for discovery and the private inbox remains a kn
 test('homepage exposes FAQ answers and help links in initial HTML', async () => {
   const res = await request('/', async () => ({ok:true,json:async()=>({articles:[],currentPage:1,totalPages:0})}));
   assert.equal(res.statusCode, 200);
-  const faqs = require('../frontend/src/data/faqs');
+  const faqs = require('../frontend/src/data/faqs.json');
   for (const index of [0, 5, 8]) {
     assert.ok(res.body.includes(faqs[index].question));
     assert.ok(res.body.includes(faqs[index].answer));

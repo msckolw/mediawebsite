@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import FAQ from './FAQ';
-import faqs from '../data/faqs';
+import faqs from '../data/faqs.json';
 
 test('all supplied FAQ topics and answers are available without JavaScript interaction', () => {
   const { container } = render(<FAQ />);
