@@ -5,7 +5,7 @@ const { escapeHtml: html, scriptJson, publicUrl, metadataTags } = require('../fr
 const {pages,pageTags,documentHtml,frame,feedHtml,sourceHtml} = require('../server/publicHtml');
 
 // Keep only real client routes here. Unknown discovery documents must return 404.
-const clientRoutes = new Set(['/', '/login', '/admin', '/admin/assistant', '/privacy-policy', '/privacy',
+const clientRoutes = new Set(['/', '/login', '/admin', '/admin/assistant', '/admin/inquiries', '/privacy-policy', '/privacy',
   '/privacypolicy', '/terms-conditions', '/terms-and-conditions', '/terms', '/termsandconditions',
   '/terms-of-use', '/refund-policy', '/refund', '/refundpolicy', '/cancellation-policy',
   '/delete-account', '/copyright-claims', '/about', '/media-bias-details', '/contact',

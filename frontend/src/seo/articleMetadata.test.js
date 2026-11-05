@@ -21,3 +21,25 @@ test('head updates treat headline markup as text and exclude non-HTTP images',()
   expect(document.querySelector('meta[property="og:image"]')).toBeNull();
   expect(document.title).toBe('<img src=x onerror=alert(1)> | The NoBias Media');
 });
+
+test('site JSON-LD survives article navigation and cleanup without duplicates',()=>{
+  const site=document.createElement('script');
+  site.type='application/ld+json';
+  site.setAttribute('data-nbm-site','');
+  site.textContent=JSON.stringify({'@context':'https://schema.org','@type':'WebSite'});
+  document.head.appendChild(site);
+  try {
+    updateMetadata(document,article);
+    updateMetadata(document,{...article,title:'Next headline'});
+    expect(document.querySelectorAll('script[data-nbm-site]')).toHaveLength(1);
+    expect(document.querySelectorAll('script[data-nbm-meta]')).toHaveLength(1);
+    const news=JSON.parse(document.querySelector('script[data-nbm-meta]').textContent);
+    expect(news.publisher['@id']).toBe('https://thenobiasmedia.com/#organization');
+    expect(news.isPartOf['@id']).toBe('https://thenobiasmedia.com/#website');
+    updateMetadata(document,null);
+    expect(document.querySelector('script[data-nbm-site]')).toBe(site);
+    expect(document.querySelector('script[data-nbm-meta]')).toBeNull();
+  } finally {
+    site.remove();
+  }
+});

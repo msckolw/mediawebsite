@@ -18,7 +18,10 @@ let Donate = React.lazy(() => import('./pages/Donate'))
 let DonateStatus = React.lazy(() => import('./pages/DonateStatus'))
 let NewsAssistant = React.lazy(() => import('./pages/NewsAssistant'))
 
+const InquiryInbox = React.lazy(() => import('./pages/InquiryInbox'));
+
 export const routes = [
+    {path: "/admin/inquiries", element: <InquiryInbox />},
     {path: "/admin/assistant", element: <NewsAssistant />},
     {path: "/login", element: <Login />},
     {path: "/admin", element: <AdminPanel />},

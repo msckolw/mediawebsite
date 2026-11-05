@@ -295,6 +295,7 @@ const AdminPanel = () => {
   return (
     <div className="admin-panel" id="mainDiv">
       <h1>Admin Panel</h1>
+      <p><Link to="/admin/inquiries">Reader &amp; investor inbox →</Link></p>
       <p><Link to="/admin/assistant">Open News Assistant →</Link></p>
 
       {error && <div className="error-message">{error}</div>}

@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const React = require('react');
 const {renderToStaticMarkup} = require('react-dom/server');
+const {StaticRouter} = require('react-router-dom/server');
 const babel = require('@babel/core');
 const pages = require('../src/seo/publicPages');
 const output = {};
@@ -17,11 +18,12 @@ for (const page of pages) {
   const localRequire = name => {
     if (name.endsWith('.css')) return {};
     if (name === 'react') return React;
+    if (name === 'react-router-dom') return require('react-router-dom');
     throw new Error(`Prerender page ${page.component} has an unsupported import: ${name}`);
   };
   // Compile trusted local application source. No remote content is evaluated.
   new Function('require','module','exports',code)(localRequire,compiled,compiled.exports);
-  output[page.path] = renderToStaticMarkup(React.createElement(compiled.exports.default));
+  output[page.path] = renderToStaticMarkup(React.createElement(StaticRouter,{location:page.path},React.createElement(compiled.exports.default)));
 }
 fs.writeFileSync(path.join(__dirname,'../build/prerendered.json'), JSON.stringify(output));
 console.log(`Prerendered ${Object.keys(output).length} public informational pages.`);

@@ -9,6 +9,7 @@ import './components/ScrollTopButton.css';
 import './styles/ReaderTheme.css';
 
 import Header from './components/Header';
+import SiteTools from './components/SiteTools';
 import Footer from './components/Footer';
 import ScrollToTopButton from './components/ScrollTopButton';
 import ScrollToTop from './components/ScrollToTop';
@@ -28,6 +29,7 @@ function App() {
   return (
     <div className="app">
       <ScrollToTop />
+      <SiteTools />
       <Header />
       <main className="main-content" id="main-content" tabIndex={-1}>
         <Routes>

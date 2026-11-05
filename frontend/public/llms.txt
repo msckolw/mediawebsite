@@ -12,7 +12,9 @@ Use this site to discover published news, read articles, compare the sources cit
 - [Sitemap index](https://thenobiasmedia.com/sitemap.xml): Discover numbered XML sitemaps containing actual article and category URLs. Follow the listed sitemap URLs instead of guessing article IDs.
 - [About the publication](https://thenobiasmedia.com/about): Mission and editorial values.
 - [Source-labeling approach](https://thenobiasmedia.com/media-bias-details): Context for interpreting source labels.
-- [Contact and corrections](https://thenobiasmedia.com/contact): Public contact information.
+- [Feedback and investment inquiries](https://thenobiasmedia.com/contact): A private contact form for reader experiences, suggestions, general inquiries, and investment interest.
+- [WebMCP tool schemas](https://thenobiasmedia.com/webmcp.json): Public content retrieval and a visitor-reviewed inquiry draft tool.
+- [WebMCP access rules](https://thenobiasmedia.com/webmcp.md): Browser support, input/output contracts, and confirmation requirements.
 - [Robots rules](https://thenobiasmedia.com/robots.txt): Applicable crawler directives.
 
 ## Retrieval and interpretation
@@ -32,3 +34,7 @@ This file provides retrieval guidance. It does not grant a blanket copyright lic
 - [Terms](https://thenobiasmedia.com/terms-conditions)
 - [Privacy](https://thenobiasmedia.com/privacy-policy)
 - [Copyright claims](https://thenobiasmedia.com/copyright-claims)
+
+## Visitor-assisted inquiries
+
+At the visitor’s request, a browser agent may use the registered prepare_inquiry tool with visitor-provided details. It only prepares a visible form draft. The visitor reviews the details, explicitly agrees to being contacted, and clicks Send. Never infer consent, submit unsolicited inquiries, make investment commitments, or retrieve the private inbox.

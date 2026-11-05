@@ -29,7 +29,8 @@ function articleMetadata(article) {
     headline:article.title, description:article.summary, articleBody:article.content,
     articleSection:article.category, datePublished:isoDate(article.createdAt),
     dateModified:isoDate(article.updatedAt || article.createdAt),
-    publisher:{ '@type':'Organization', name:DEFAULT_TITLE, url:SITE,
+    isPartOf:{ '@id':`${SITE}/#website` },
+    publisher:{ '@type':'NewsMediaOrganization', '@id':`${SITE}/#organization`, name:DEFAULT_TITLE, url:SITE,
       logo:{ '@type':'ImageObject', url:`${SITE}/NBM%20Transparent%20logo.png` } },
     ...(image ? {image:[image]} : {}),
     ...((article.source || []).length ? {citation:article.source.map(s => publicUrl(s.url)).filter(Boolean)} : {})

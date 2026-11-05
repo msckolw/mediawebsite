@@ -50,6 +50,13 @@ const PrivacyPolicy = () => {
         </section>
 
         <section>
+          <h2>Feedback and investment inquiries</h2>
+          <p>When you submit our contact form, we store your name, email address, message, inquiry type, consent timestamp, and any optional phone number or organization you provide. Authorized administrators use our private inbox to review and respond to your inquiry. Submissions are not published on the website.</p>
+          <p>We use Resend to send our team a notification containing the inquiry type and reference, without your contact details or message. An investment inquiry starts a conversation and does not make a payment or investment commitment. To request correction or deletion of an inquiry, email contact@thenobiasmedia.com with its reference.</p>
+          <p>We temporarily store keyed, hashed email and network identifiers with submission counters to limit spam. These counters expire automatically after the rate-limit window. Inquiry records are retained only as needed to handle the inquiry and any applicable legal obligations.</p>
+        </section>
+
+        <section>
           <h2>Usage</h2>
           <p>
             We use personal data to provide the services you request. To the extent we use your personal data

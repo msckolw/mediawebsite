@@ -11,6 +11,7 @@
       content="The NoBias Media - Delivering unbiased news and analysis from around the world"
     />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="alternate" type="application/json" href="/webmcp.json" title="WebMCP tool schemas and access rules" />
     <!-- Establish the API connection before JavaScript requests the feed. -->
     <link rel="preconnect" href="https://thenbm-329287861933.asia-south1.run.app" crossorigin />
     <!-- Legacy-page icons should not block the first news paint. -->
@@ -19,6 +20,32 @@
       media="print" onload="this.media='all'"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <!-- Site identity is available to crawlers before JavaScript runs. -->
+    <script data-nbm-site type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "NewsMediaOrganization",
+            "@id": "https://thenobiasmedia.com/#organization",
+            "name": "The NoBias Media",
+            "url": "https://thenobiasmedia.com",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://thenobiasmedia.com/NBM%20Transparent%20logo.png"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://thenobiasmedia.com/#website",
+            "url": "https://thenobiasmedia.com",
+            "name": "The NoBias Media",
+            "description": "The NoBias Media - Delivering unbiased news and analysis from around the world",
+            "publisher": { "@id": "https://thenobiasmedia.com/#organization" }
+          }
+        ]
+      }
+    </script>
     <title>The NoBias Media</title>
   </head>
   <body>

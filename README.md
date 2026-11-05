@@ -13,6 +13,7 @@ uses Express, MongoDB, and Socket.IO. Hosting is Vercel and Google Cloud Run.
 | Validate a release or troubleshoot production | [3. Operations and release](docs/03-OPERATIONS-AND-RELEASE.md) |
 | Understand uploads, caching, and loading improvements | [4. Performance](docs/04-PERFORMANCE.md) |
 | Configure the Luna/Grok editorial assistant | [5. News Assistant](docs/05-NEWS-ASSISTANT.md) |
+| Collect reader feedback and investment inquiries; configure WebMCP and email | [6. Inquiries and WebMCP](docs/06-INQUIRIES-AND-WEBMCP.md) |
 
 ## Environments and current status
 

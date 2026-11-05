@@ -234,3 +234,20 @@ Deploy the updated Vercel application to publish these changes. The earlier
 dynamic sitemap still requires the corresponding backend revision. Plain
 `react-scripts start` remains client-rendered development; production rendering
 uses Vercel's function. No production deployment is performed by the build.
+
+
+## Site identity structured data (November 5, 2026)
+
+The shared `frontend/public/index.html` includes JSON-LD for the
+`NewsMediaOrganization` and `WebSite`, using stable entity IDs. It is present in
+initial HTML on the homepage, categories, informational pages, and article pages,
+without requiring JavaScript. Article `NewsArticle` data references these same
+publisher and website IDs. Site identity remains present when article metadata
+changes during browser navigation. No unverified author, social profile, or
+search action is added.
+
+Validate with the root SEO tests, frontend metadata tests, and production build.
+Publish with a Vercel rebuild/deployment; this frontend change requires no backend
+release. After deployment, inspect raw page HTML and check the homepage with the
+Schema.org validator and an article with Google's Rich Results Test. Valid schema
+does not guarantee a rich result or an immediate change in a third-party audit.

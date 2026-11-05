@@ -29,18 +29,18 @@ export const getImageUrl = (imagePath) => {
 });*/
 
 // Articles API
-export const getArticles = async (page=1) => {
+export const getArticles = async (page=1,signal) => {
   try {
-    const response = await api.get(`/news?page=${page}&view=feed`);
+    const response = await api.get(`/news?page=${page}&view=feed`,{signal});
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch articles');
   }
 };
 
-export const getArticle = async (id,source=false) => {
+export const getArticle = async (id,source=false,signal) => {
   try {
-    const response = await api.get(`/news/${id}?source=${source}&media=url`);
+    const response = await api.get(`/news/${id}?source=${source}&media=url`,{signal});
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch article');
@@ -66,9 +66,9 @@ export const getSourceType = async () => {
   }
 };
 
-export const getArticleByCategory = async (cat,page=1) => {
+export const getArticleByCategory = async (cat,page=1,signal) => {
   try {
-    const response = await api.get(`/category/${encodeURIComponent(cat)}?page=${page}&view=feed`);
+    const response = await api.get(`/category/${encodeURIComponent(cat)}?page=${page}&view=feed`,{signal});
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch article');

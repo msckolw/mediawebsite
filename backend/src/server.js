@@ -63,6 +63,7 @@ app.use('/api', paymentRoutes);
 app.use('/api/payments/payu', payuMobileHashRoutes);
 app.use('/api', donationRoutes);
 app.use('/api/admin/assistant', require('./routes/assistantRoutes').createRouter());
+app.use('/api', require('./routes/inquiryRoutes').createRouter());
 
 // Error handling middleware
 app.use((err, req, res, next) => {

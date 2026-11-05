@@ -164,3 +164,58 @@ test('llms.txt describes public retrieval, attribution and rights and is copied 
   assert.equal(llms.headers['Content-Type'],'text/plain; charset=utf-8');
   assert.ok(config.routes.indexOf(llms)<config.routes.findIndex(r=>r.handle==='filesystem'));
 });
+
+function structuredData(body) {
+  return [...body.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
+    .map(match => JSON.parse(match[1]));
+}
+test('shared HTML provides publisher and website JSON-LD before JavaScript on public pages',async()=>{
+  const sourceTemplate=fs.readFileSync('frontend/public/index.html','utf8');
+  const site=structuredData(sourceTemplate);
+  assert.equal(site.length,1);
+  assert.equal(site[0]['@context'],'https://schema.org');
+  const organization=site[0]['@graph'].find(node=>node['@type']==='NewsMediaOrganization');
+  const website=site[0]['@graph'].find(node=>node['@type']==='WebSite');
+  assert.equal(organization.name,'The NoBias Media');
+  assert.equal(organization.url,'https://thenobiasmedia.com');
+  assert.equal(website.publisher['@id'],organization['@id']);
+  assert.ok(fs.existsSync('frontend/public/'+decodeURIComponent(new URL(organization.logo.url).pathname.slice(1))));
+  const feed=async()=>({ok:true,json:async()=>({articles:[article],currentPage:1,totalPages:1})});
+  for(const route of ['/','/index.html','/category/politics']){
+    const res=await request(route,feed,'GET',()=>sourceTemplate);
+    assert.equal(res.statusCode,200);
+    assert.deepEqual(structuredData(res.body),site);
+    assert.ok(res.body.indexOf('application/ld+json')<res.body.indexOf('</head>'));
+  }
+  const res=response();
+  await createHandler({readTemplate:()=>sourceTemplate,readPrerendered:()=>({'/about':'<h1>About Us</h1>'})})({method:'GET',query:{route:'/about'}},res);
+  assert.equal(res.statusCode,200);
+  assert.deepEqual(structuredData(res.body),site);
+});
+test('article JSON-LD coexists with the shared graph and references the same publisher and website',async()=>{
+  const res=await request(`/article/${id}`,ok,'GET',()=>fs.readFileSync('frontend/public/index.html','utf8'));
+  assert.equal(res.statusCode,200);
+  const schemas=structuredData(res.body);
+  assert.equal(schemas.length,2);
+  const graph=schemas.find(schema=>schema['@graph'])['@graph'];
+  const news=schemas.find(schema=>schema['@type']==='NewsArticle');
+  assert.equal(news.headline,article.title);
+  assert.equal(news.publisher['@id'],graph.find(node=>node['@type']==='NewsMediaOrganization')['@id']);
+  assert.equal(news.isPartOf['@id'],graph.find(node=>node['@type']==='WebSite')['@id']);
+});
+
+
+test('WebMCP manifest is linked for discovery and the private inbox remains a known client route',async()=>{
+  const manifest=JSON.parse(fs.readFileSync('frontend/public/webmcp.json','utf8'));
+  assert.deepEqual(manifest.tools.map(tool=>tool.name),['list_public_articles','get_public_article','prepare_inquiry']);
+  for(const tool of manifest.tools) {
+    assert.equal(tool.inputSchema.additionalProperties,false);
+    assert.ok(tool.outputSchema.oneOf.length===2);
+    assert.ok(tool.access.authentication);
+  }
+  const source=fs.readFileSync('frontend/public/index.html','utf8');
+  assert.match(source,/type="application\/json" href="\/webmcp.json"/);
+  assert.match(fs.readFileSync('frontend/public/llms.txt','utf8'),/webmcp.json/);
+  const res=await request('/admin/inquiries',()=>{throw Error('No public inbox fetch');});
+  assert.equal(res.statusCode,200);assert.equal(res.body,template);
+});
