@@ -106,10 +106,73 @@ router.post('/hash', async (req, res) => {
     postSalt = body.postSalt || '';
   } else {
     const fields = hashString.split('|');
-    if (!AUXILIARY_HASH_NAMES.has(hashName) || fields.length !== 4 ||
-        fields[0] !== merchantKey || fields[1] !== hashName ||
-        !fields[2].trim() || fields[3] !== '' || /[\r\n\0]/.test(hashString)) {
-      return res.status(400).json({ message: 'Unsupported SDK command or invalid hash format.' });
+    
+    // Enhanced error logging for debugging
+    console.log('=== PAYU AUXILIARY HASH DEBUG ===');
+    console.log('hashName:', hashName);
+    console.log('hashString:', hashString);
+    console.log('fields:', fields);
+    console.log('fields.length:', fields.length);
+    console.log('merchantKey matches:', fields[0] === merchantKey);
+    console.log('hashName matches:', fields[1] === hashName);
+    console.log('var1 is valid:', fields[2] && fields[2].trim().length > 0);
+    console.log('field[3] is empty:', fields[3] === '');
+    console.log('ends with |:', hashString.endsWith('|'));
+    console.log('hashName in allowed list:', AUXILIARY_HASH_NAMES.has(hashName));
+    
+    if (!AUXILIARY_HASH_NAMES.has(hashName)) {
+      return res.status(400).json({ 
+        message: 'Unsupported SDK command.',
+        detail: `hashName "${hashName}" is not in the allowed list.`,
+        allowedCommands: Array.from(AUXILIARY_HASH_NAMES)
+      });
+    }
+    
+    if (fields.length !== 4) {
+      return res.status(400).json({ 
+        message: 'Invalid hash format: incorrect number of fields.',
+        detail: `Expected 4 fields separated by |, got ${fields.length}.`,
+        expectedFormat: 'merchantKey|hashName|var1|',
+        receivedFields: fields
+      });
+    }
+    
+    if (fields[0] !== merchantKey) {
+      return res.status(400).json({ 
+        message: 'Invalid hash format: merchant key mismatch.',
+        detail: 'Field[0] must be your PayU merchant key.',
+        receivedField0: fields[0].substring(0, 10) + '...'
+      });
+    }
+    
+    if (fields[1] !== hashName) {
+      return res.status(400).json({ 
+        message: 'Invalid hash format: hashName mismatch.',
+        detail: `Field[1] must match hashName. Expected "${hashName}", got "${fields[1]}".`
+      });
+    }
+    
+    if (!fields[2].trim()) {
+      return res.status(400).json({ 
+        message: 'Invalid hash format: var1 is empty.',
+        detail: 'Field[2] (var1) must contain a non-empty value. For binBaseDetails, this should be the BIN number.',
+        expectedFormat: 'merchantKey|binBaseDetails|<BIN_NUMBER>|'
+      });
+    }
+    
+    if (fields[3] !== '') {
+      return res.status(400).json({ 
+        message: 'Invalid hash format: field[3] must be empty.',
+        detail: 'The hashString must end with a pipe (|). Field[3] should be an empty string.',
+        receivedField3: fields[3]
+      });
+    }
+    
+    if (/[\r\n\0]/.test(hashString)) {
+      return res.status(400).json({ 
+        message: 'Invalid hash format: contains invalid characters.',
+        detail: 'hashString cannot contain carriage return, newline, or null characters.'
+      });
     }
     if (body.postSalt != null && body.postSalt !== '') {
       return res.status(400).json({ message: 'postSalt is only valid for payment_hash.' });
