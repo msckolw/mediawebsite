@@ -56,6 +56,30 @@ test('initialization hashes match independent SHA-512 and HMAC-SHA256 vectors', 
   assert.equal(v2.body.get_sdk_configuration, 'ad153fd15c276c7ccfcd6325f25a5211a591361b9fceab92317ecc98a199a720');
 });
 
+test('native SDK auxiliary payloads are signed byte-for-byte', async () => {
+  const h = harness();
+  const cases = [
+    ['get_all_offer_details', '{"amount":10}|Thu, 26 Nov 2026 05:15:12 GMT|'],
+    ['quickPayEvent', '{"amount":10,"userToken":"","phone":"","requestId":"nbm0000000000000000000","requestType":"quickpay","deviceId":"dev","userCredential":"merchant_key_123:a@b.test"}|Thu, 26 Nov 2026 05:15:12 GMT|']
+  ];
+  for (const [hashName, hashString] of cases) {
+    for (const hashType of ['V1', 'V2']) {
+      const result = await h.send({ hashName, hashString, hashType });
+      assert.equal(result.statusCode, 200, `${hashName} ${hashType}`);
+      const expected = hashType === 'V2'
+        ? crypto.createHmac('sha256', salt).update(hashString).digest('hex')
+        : crypto.createHash('sha512').update(hashString + salt).digest('hex');
+      assert.equal(result.body[hashName], expected);
+    }
+  }
+  for (const body of [
+    { hashName: 'get_all_offer_details', hashString: '{"amount":10}|Thu, 26 Nov 2026 05:15:12 GMT' },
+    { hashName: 'quickPayEvent', hashString: '|Thu, 26 Nov 2026 05:15:12 GMT|' },
+    { hashName: 'quickPayEvent', hashString: '{"amount":10}||' },
+    { hashName: 'get_all_offer_details', hashString: `${key}|get_all_offer_details|default||` }
+  ]) assert.equal((await h.send(body)).statusCode, 400);
+});
+
 test('empty optional SDK fields do not reject otherwise valid initialization', async () => {
   const h = harness();
   for (const hashType of [undefined, null, '', 'V1', 'V2']) {

@@ -202,28 +202,37 @@ by native nullable fields; reserved fields after UDF5 must remain empty. Equival
 amounts (`50`, `50.0`, `50.00`) are accepted; the original SDK string is signed
 without reformatting. Settled sessions return 409 and must go to status.
 
-Auxiliary hashes require the exact configured merchant key and command matching
-the callback name in `key|command|var1|` format. Supported names:
+Auxiliary hashes normally require the exact configured merchant key and command
+matching the callback name in `key|command|var1|` format. Checkout Pro also emits
+native payloads for `get_all_offer_details`, `quickPayEvent`, and
+`binBaseDetails`, for example `{"amount":10}|Thu, 26 Nov 2026 05:15:12 GMT|`.
+Those three commands are accepted and signed byte-for-byte; rewriting their
+strings produces a hash PayU rejects with 5019. Supported names:
 `getBinInfo`, `validateVPA`, `get_checkout_details`,
 `get_eligible_payment_options`, `get_sdk_configuration`, `get_all_offer_details`,
 `quickPayEvent`, `eligibleBinsForEMI`, `payment_related_details_for_mobile_sdk`,
 `vas_for_mobile_sdk`, `binBaseDetails`, `check_isDomestic`, `check_offer_details`,
-and `getEmiAmountAccordingToInterest`. Unknown names and formats return 400.
-`payment_source` is a payment hash, never an auxiliary `key|command|var1|` hash.
+and `getEmiAmountAccordingToInterest`. Unknown names and malformed formats return
+400. `payment_source` is a payment hash, never an auxiliary hash.
 
 V1 (also the default for an omitted, null, or empty hashType) returns the hex
 SHA-512 of `hashString + merchantSalt + postSalt`. V2 returns the hex HMAC-SHA256
 of the original hashString, with the server's merchant salt as its key. Both
-versions enforce the same merchant/command and payment-session checks above;
-this does not authorize arbitrary opaque strings. Nonempty postSalt is supported
-only for V1 payment hashes; absent, null, and empty postSalt are treated as absent.
+versions enforce the payment-session checks above and the merchant/command checks
+for prefixed auxiliary hashes; native payloads are limited to the three SDK
+callbacks listed above. This does not authorize arbitrary opaque strings.
+Nonempty postSalt is supported only for V1 payment hashes; absent, null, and empty
+postSalt are treated as absent.
 Special-purpose hashes such as `lookup api hash` remain unsupported.
 
 Mobile initialization compatibility was updated October 27, 2026. Previously,
 the initialization names above were rejected, as were all V2 requests and SDK
 payment amounts formatted without two decimal places. These rejections can leave
-Checkout Pro waiting for a hash. The update requires backend deployment; the
-actual app's failing callback and on-device behavior have not been verified.
+Checkout Pro waiting for a hash. Native auxiliary payload signing was corrected
+on November 26, 2026 after an on-device capture showed the app rewriting
+`get_sdk_configuration` from `GET` to `default` and rebuilding other SDK payloads,
+which returned HTTP 200 but caused `5019 Invalid Hash`. Both fixes require
+backend deployment.
 Algorithm references: [PayU dynamic hashing](https://docs.payu.in/docs/generate-dynamic-hash-react)
 and [PayU V2 hashing](https://docs.payu.in/docs/hash-generation-for-checkoutpro-sdk#v2-hashes).
 
