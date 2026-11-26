@@ -23,6 +23,14 @@ const AUXILIARY_HASH_NAMES = new Set([
   'check_offer_details', 'getEmiAmountAccordingToInterest'
 ]);
 
+// These Checkout Pro callbacks send the SDK's own payload instead of the
+// documented `merchantKey|hashName|var1|` shape, e.g.
+// `{"amount":10}|Thu, 26 Nov 2026 05:15:12 GMT|`. The bytes must be signed
+// exactly as received; rebuilding them produces a hash PayU rejects with 5019.
+const NATIVE_RAW_HASH_NAMES = new Set([
+  'get_all_offer_details', 'quickPayEvent', 'binBaseDetails'
+]);
+
 function isRateLimited(clientId, now) {
   if (requestsByClient.size >= RATE_LIMIT_MAX_CLIENTS && !requestsByClient.has(clientId)) {
     for (const [id, entry] of requestsByClient) {
@@ -105,71 +113,79 @@ router.post('/hash', async (req, res) => {
     }
     postSalt = body.postSalt || '';
   } else {
-    const fields = hashString.split('|');
-    
-    // Enhanced error logging for debugging
-    console.log('=== PAYU AUXILIARY HASH DEBUG ===');
-    console.log('hashName:', hashName);
-    console.log('hashString:', hashString);
-    console.log('fields:', fields);
-    console.log('fields.length:', fields.length);
-    console.log('merchantKey matches:', fields[0] === merchantKey);
-    console.log('hashName matches:', fields[1] === hashName);
-    console.log('var1 is valid:', fields[2] && fields[2].trim().length > 0);
-    console.log('field[3] is empty:', fields[3] === '');
-    console.log('ends with |:', hashString.endsWith('|'));
-    console.log('hashName in allowed list:', AUXILIARY_HASH_NAMES.has(hashName));
-    
     if (!AUXILIARY_HASH_NAMES.has(hashName)) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Unsupported SDK command.',
         detail: `hashName "${hashName}" is not in the allowed list.`,
         allowedCommands: Array.from(AUXILIARY_HASH_NAMES)
       });
     }
-    
-    if (fields.length !== 4) {
-      return res.status(400).json({ 
-        message: 'Invalid hash format: incorrect number of fields.',
-        detail: `Expected 4 fields separated by |, got ${fields.length}.`,
-        expectedFormat: 'merchantKey|hashName|var1|',
-        receivedFields: fields
-      });
-    }
-    
-    if (fields[0] !== merchantKey) {
-      return res.status(400).json({ 
-        message: 'Invalid hash format: merchant key mismatch.',
-        detail: 'Field[0] must be your PayU merchant key.',
-        receivedField0: fields[0].substring(0, 10) + '...'
-      });
-    }
-    
-    if (fields[1] !== hashName) {
-      return res.status(400).json({ 
-        message: 'Invalid hash format: hashName mismatch.',
-        detail: `Field[1] must match hashName. Expected "${hashName}", got "${fields[1]}".`
-      });
-    }
-    
-    if (!fields[2].trim()) {
-      return res.status(400).json({ 
+
+    const fields = hashString.split('|');
+    const looksPrefixed = fields[0] === merchantKey || fields[1] === hashName;
+    const hasExpectedPrefix =
+      looksPrefixed &&
+      fields.length === 4 &&
+      fields[0] === merchantKey &&
+      fields[1] === hashName &&
+      fields[3] === '';
+
+    if (!hasExpectedPrefix) {
+      // Native callbacks are only accepted when they are not malformed
+      // attempts at the documented prefixed shape.
+      const isNativeRaw =
+        !looksPrefixed &&
+        NATIVE_RAW_HASH_NAMES.has(hashName) &&
+        fields.length >= 2 &&
+        hashString.endsWith('|') &&
+        fields[0].trim() &&
+        fields[fields.length - 2].trim();
+
+      if (!isNativeRaw) {
+        if (fields.length !== 4) {
+          return res.status(400).json({
+            message: 'Invalid hash format: incorrect number of fields.',
+            detail: `Expected 4 fields separated by |, got ${fields.length}.`,
+            expectedFormat: 'merchantKey|hashName|var1|',
+            receivedFields: fields
+          });
+        }
+        if (fields[0] !== merchantKey) {
+          return res.status(400).json({
+            message: 'Invalid hash format: merchant key mismatch.',
+            detail: 'Field[0] must be your PayU merchant key.',
+            receivedField0: fields[0].substring(0, 10) + '...'
+          });
+        }
+        if (fields[1] !== hashName) {
+          return res.status(400).json({
+            message: 'Invalid hash format: hashName mismatch.',
+            detail: `Field[1] must match hashName. Expected "${hashName}", got "${fields[1]}".`
+          });
+        }
+        if (!fields[2].trim()) {
+          return res.status(400).json({
+            message: 'Invalid hash format: var1 is empty.',
+            detail: 'Field[2] (var1) must contain a non-empty value. For binBaseDetails, this should be the BIN number.',
+            expectedFormat: 'merchantKey|binBaseDetails|<BIN_NUMBER>|'
+          });
+        }
+        return res.status(400).json({
+          message: 'Invalid hash format: field[3] must be empty.',
+          detail: 'The hashString must end with a pipe (|). Field[3] should be an empty string.',
+          receivedField3: fields[3]
+        });
+      }
+    } else if (!fields[2].trim()) {
+      return res.status(400).json({
         message: 'Invalid hash format: var1 is empty.',
-        detail: 'Field[2] (var1) must contain a non-empty value. For binBaseDetails, this should be the BIN number.',
-        expectedFormat: 'merchantKey|binBaseDetails|<BIN_NUMBER>|'
+        detail: 'Field[2] (var1) must contain a non-empty value.',
+        expectedFormat: `merchantKey|${hashName}|var1|`
       });
     }
-    
-    if (fields[3] !== '') {
-      return res.status(400).json({ 
-        message: 'Invalid hash format: field[3] must be empty.',
-        detail: 'The hashString must end with a pipe (|). Field[3] should be an empty string.',
-        receivedField3: fields[3]
-      });
-    }
-    
+
     if (/[\r\n\0]/.test(hashString)) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Invalid hash format: contains invalid characters.',
         detail: 'hashString cannot contain carriage return, newline, or null characters.'
       });

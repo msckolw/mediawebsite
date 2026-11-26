@@ -75,6 +75,35 @@ test('auxiliary command hashes match pinned V1 vectors and reject unbound comman
   });
 });
 
+test('native SDK auxiliary payloads are signed byte-for-byte', async () => {
+  process.env.PAYU_MERCHANT_KEY = 'merchant_key_123';
+  process.env.PAYU_MERCHANT_SALT = 'fake-salt';
+  const cases = [
+    ['get_all_offer_details', '{"amount":10}|Thu, 26 Nov 2026 05:15:12 GMT|'],
+    ['quickPayEvent', '{"amount":10,"userToken":"","phone":"","requestId":"nbm0000000000000000000","requestType":"quickpay","deviceId":"dev","userCredential":"merchant_key_123:a@b.test"}|Thu, 26 Nov 2026 05:15:12 GMT|']
+  ];
+  await withServer(async (baseUrl) => {
+    const send = (data) => fetch(`${baseUrl}/api/payments/payu/hash`, { method: 'POST',
+      headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) });
+    for (const [hashName, hashString] of cases) {
+      for (const hashType of ['V1', 'V2']) {
+        const response = await send({ hashName, hashString, hashType });
+        assert.equal(response.status, 200, `${hashName} ${hashType}`);
+        const expected = hashType === 'V2'
+          ? crypto.createHmac('sha256', 'fake-salt').update(hashString).digest('hex')
+          : crypto.createHash('sha512').update(`${hashString}fake-salt`).digest('hex');
+        assert.deepEqual(await response.json(), { [hashName]: expected });
+      }
+    }
+    for (const body of [
+      { hashName: 'get_all_offer_details', hashString: '{"amount":10}|Thu, 26 Nov 2026 05:15:12 GMT' },
+      { hashName: 'quickPayEvent', hashString: '|Thu, 26 Nov 2026 05:15:12 GMT|' },
+      { hashName: 'quickPayEvent', hashString: '{"amount":10}||' },
+      { hashName: 'get_all_offer_details', hashString: 'merchant_key_123|get_all_offer_details|default||' }
+    ]) assert.equal((await send(body)).status, 400);
+  });
+});
+
 test('SHA-512 known vector remains correct', () => {
   assert.equal(crypto.createHash('sha512').update('abc').digest('hex'),
     'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f');
